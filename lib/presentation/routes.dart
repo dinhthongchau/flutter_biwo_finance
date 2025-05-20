@@ -7,8 +7,10 @@ import 'package:finance_management/presentation/screens/sign_up/sign_up_screen.d
 import 'package:finance_management/presentation/screens/transaction/transaction_screen.dart';
 import 'package:finance_management/presentation/widgets/cubit/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:finance_management/presentation/widgets/cubit/page_view/page_view_cubit.dart';
+import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 
 class BottomNavigationBarScaffold extends StatefulWidget {
@@ -99,43 +101,146 @@ class _BottomNavigationBarScaffoldState
         physics: const NeverScrollableScrollPhysics(),
         children: _screens,
       ),
-      bottomNavigationBar: SizedBox(
-        height: 83,
-        child: ClipRRect(
-          borderRadius: const BorderRadius.only(
-            topLeft: Radius.circular(24.0),
-            topRight: Radius.circular(24.0),
-          ),
-          child: BottomNavigationBar(
-            type: BottomNavigationBarType.fixed,
-            backgroundColor: const Color(0xFFFFFFFF),
-            items: const <BottomNavigationBarItem>[
-              BottomNavigationBarItem(
-                icon: Icon(Icons.home, size: 24),
-                label: 'Home',
+      bottomNavigationBar: buildBottomNavigationBar(),
+    );
+  }
+
+  Widget buildBottomNavigationBar() {
+    return Container(
+      padding: const EdgeInsets.only(top: 0),
+      decoration: const BoxDecoration(
+        color: AppColors.lightGreen,
+        borderRadius: BorderRadius.only(
+          topLeft: Radius.circular(70.0),
+          topRight: Radius.circular(70.0),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.only(
+          top: 20,
+          left: 25,
+          right: 25,
+          bottom: 10,
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            GestureDetector(
+              onTap: () => _onItemTapped(0),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 16,
+                  right: 16,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      _selectedIndex == 0
+                          ? AppColors.caribbeanGreen
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: SvgPicture.asset(
+                  'assets/BottomNavigationIcon/Home.svg',
+                  width: 22,
+                  height: 27,
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.bar_chart, size: 24),
-                label: 'Statistics',
+            ),
+            GestureDetector(
+              onTap: () => _onItemTapped(1),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 16,
+                  right: 16,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      _selectedIndex == 1
+                          ? AppColors.caribbeanGreen
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: SvgPicture.asset(
+                  'assets/BottomNavigationIcon/Analysis.svg',
+                  width: 22,
+                  height: 27,
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.swap_horiz, size: 24), // Icon for transactions
-                label: 'Transactions',
+            ),
+            GestureDetector(
+              onTap: () => _onItemTapped(2),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 16,
+                  right: 16,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      _selectedIndex == 2
+                          ? AppColors.caribbeanGreen
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: SvgPicture.asset(
+                  'assets/BottomNavigationIcon/Transactions.svg',
+                  width: 27,
+                  height: 27,
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.category, size: 24), // Icon for categories
-                label: 'Categories',
+            ),
+            GestureDetector(
+              onTap: () => _onItemTapped(3),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 16,
+                  right: 16,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      _selectedIndex == 3
+                          ? AppColors.caribbeanGreen
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: SvgPicture.asset(
+                  'assets/BottomNavigationIcon/Category.svg',
+                  width: 22,
+                  height: 27,
+                ),
               ),
-              BottomNavigationBarItem(
-                icon: Icon(Icons.person, size: 24), // Icon for profile
-                label: 'Profile',
+            ),
+            GestureDetector(
+              onTap: () => _onItemTapped(4),
+              child: Container(
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 16,
+                  right: 16,
+                  bottom: 12,
+                ),
+                decoration: BoxDecoration(
+                  color:
+                      _selectedIndex == 4
+                          ? AppColors.caribbeanGreen
+                          : Colors.transparent,
+                  borderRadius: BorderRadius.circular(22),
+                ),
+                child: SvgPicture.asset(
+                  'assets/BottomNavigationIcon/Profile.svg',
+                  width: 22,
+                  height: 27,
+                ),
               ),
-            ],
-            currentIndex: _selectedIndex,
-            selectedItemColor: const Color(0xFFC67C4E),
-            unselectedItemColor: const Color(0xFFA2A2A2),
-            onTap: _onItemTapped,
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -147,7 +252,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: SignUpScreen.routeName,
+  initialLocation: HomeScreen.routeName,
   debugLogDiagnostics: true,
   routes: [
     GoRoute(
@@ -162,92 +267,155 @@ final router = GoRouter(
     ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => BottomNavigationCubit()),
-          BlocProvider(
-            create: (context) => PageViewCubit(
-              bottomNavigationCubit: context.read<BottomNavigationCubit>(),
-            ),
+      builder:
+          (context, state, child) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => BottomNavigationCubit()),
+              BlocProvider(
+                create:
+                    (context) => PageViewCubit(
+                      bottomNavigationCubit:
+                          context.read<BottomNavigationCubit>(),
+                    ),
+              ),
+            ],
+            child: BottomNavigationBarScaffold(child: child),
           ),
-        ],
-        child: BottomNavigationBarScaffold(child: child),
-      ),
       routes: [
         GoRoute(
           path: HomeScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const HomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const HomeScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: AnalysisScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const AnalysisScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(-1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const AnalysisScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(-1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: TransactionScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const TransactionScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const TransactionScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: CategoriesScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const CategoriesScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(-1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const CategoriesScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(-1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: ProfileScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const ProfileScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const ProfileScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
       ],
     ),
