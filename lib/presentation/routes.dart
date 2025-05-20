@@ -3,6 +3,7 @@ import 'package:finance_management/presentation/screens/categories/categories_sc
 import 'package:finance_management/presentation/screens/home/home_screen.dart';
 import 'package:finance_management/presentation/screens/login/login_screen.dart';
 import 'package:finance_management/presentation/screens/profile/profile_screen.dart';
+import 'package:finance_management/presentation/screens/sign_up/sign_up_screen.dart';
 import 'package:finance_management/presentation/screens/transaction/transaction_screen.dart';
 import 'package:finance_management/presentation/widgets/cubit/bottom_navigation/bottom_navigation_cubit.dart';
 import 'package:finance_management/presentation/widgets/cubit/page_view/page_view_cubit.dart';
@@ -146,9 +147,14 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: LoginScreen.routeName,
+  initialLocation: SignUpScreen.routeName,
   debugLogDiagnostics: true,
   routes: [
+    GoRoute(
+      path: SignUpScreen.routeName,
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const SignUpScreen(),
+    ),
     GoRoute(
       path: LoginScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
