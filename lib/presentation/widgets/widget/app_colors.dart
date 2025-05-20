@@ -11,4 +11,6 @@ class AppColors {
   static const Color lightBlue = Color(0xFF6DB6FE);
   static const Color vividBlue = Color(0xFF3299FF);
   static const Color oceanBlue = Color(0xFF0068FF);
+  static const Color blackHeader = Color(0xFF093030);
+  static const Color titleHeaderRegister = Color(0xFF363130);
 }
