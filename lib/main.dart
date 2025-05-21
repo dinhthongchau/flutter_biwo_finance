@@ -1,11 +1,23 @@
+import 'package:finance_management/data/model/user_model.dart';
+import 'package:finance_management/data/model/user_model_adapter.dart';
 import 'package:finance_management/presentation/bloc/bloc_observe.dart';
 import 'package:finance_management/presentation/routes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Get the application documents directory
+  final appDocumentDir = await getApplicationDocumentsDirectory(); // Use the function directly
+
+  Hive.init(appDocumentDir.path); // Initialize Hive with the path
+
+  Hive.registerAdapter(UserModelAdapter());
+  await Hive.openBox<UserModel>('users');
   Bloc.observer = MyBlocObserver();
   runApp(const MyApp());
 }
