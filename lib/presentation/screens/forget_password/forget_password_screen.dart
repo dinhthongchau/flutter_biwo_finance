@@ -1,47 +1,38 @@
-import 'package:finance_management/gen/assets.gen.dart';
-import 'package:finance_management/presentation/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:url_launcher/url_launcher.dart' ;
 import 'package:go_router/go_router.dart';
 
-class LoginScreen extends StatefulWidget {
-  static const String routeName = "/login-screen";
+class ForgetPasswordScreen extends StatefulWidget {
+  static const String routeName = "/forget-password-screen";
 
-  const LoginScreen({super.key});
+  const ForgetPasswordScreen({super.key});
 
   @override
-  State<LoginScreen> createState() => _LoginScreenState();
+  State<ForgetPasswordScreen> createState() => _ForgetPasswordScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
-  bool _obscurePassword = true;
+class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
   bool _isFacebookHovered = false;
   bool _isGoogleHovered = false;
 
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
-    if (!await url_launcher.launchUrl(uri)) {
+    if (!await launchUrl(uri)) {
       throw Exception('Could not launch $url');
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+    final screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBody(),
-    );
-  }
-
-  Widget buildBody() {
-    return SingleChildScrollView(
-      child: Builder(
-        builder: (context) {
-          final screenHeight = MediaQuery.of(context).size.height;
-          final screenWidth = MediaQuery.of(context).size.width;
-          return Column(
+      body: SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
             children: [
               SizedBox(
                 width: screenWidth,
@@ -50,7 +41,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   color: AppColors.caribbeanGreen,
                   child: const Center(
                     child: Text(
-                      'Welcome',
+                      'Forgot Password',
                       style: TextStyle(
                         fontSize: 32,
                         fontWeight: FontWeight.bold,
@@ -74,37 +65,42 @@ class _LoginScreenState extends State<LoginScreen> {
                   child: SingleChildScrollView(
                     child: Padding(
                       padding: const EdgeInsets.symmetric(
-                        horizontal: 60,
+                        horizontal: 32,
                         vertical: 40,
                       ),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const SizedBox(height: 30),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 5),
-                            child: Text(
-                              'Username Or Email',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppColors.blackHeader,
-                              ),
+                          const SizedBox(height: 10),
+                          const Text(
+                            'Reset Password?',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                              color: AppColors.blackHeader,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          const Text(
+                            'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.',
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppColors.blackHeader,
+                            ),
+                          ),
+                          const SizedBox(height: 32),
+                          const Text(
+                            'Enter Email Address',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
+                              color: AppColors.blackHeader,
                             ),
                           ),
                           const SizedBox(height: 8),
                           TextField(
                             decoration: InputDecoration(
-                              prefixIcon: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: SvgPicture.asset(
-                                  Assets.iconComponents.iconProfile.path,
-                                  width: 24,
-                                  height: 24,
-                                ),
-                              ),
-                              hintText: 'Example@example.com',
+                              hintText: 'example@example.com',
                               filled: true,
                               fillColor: AppColors.lightGreen,
                               contentPadding: const EdgeInsets.symmetric(
@@ -117,70 +113,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
-                          const Padding(
-                            padding: EdgeInsets.only(left: 5),
-                            child: Text(
-                              'Password',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 14,
-                                color: AppColors.blackHeader,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          TextField(
-                            obscureText: _obscurePassword,
-                            decoration: InputDecoration(
-                              prefixIcon: const Padding(
-                                padding: EdgeInsets.all(10.0),
-                                child: Icon(
-                                  Icons.lock_outline,
-                                  color: AppColors.lightBlue,
-                                ),
-                              ),
-                              suffixIcon: IconButton(
-                                icon: SvgPicture.asset(
-                                  _obscurePassword
-
-                                  ? Assets.functionalIcon.vector23.path
-                                  :Assets.functionalIcon.vector24.path,
-                                  width: 12,
-                                  height: 12,
-                                  colorFilter: const ColorFilter.mode(
-                                    Color.fromARGB(255, 2, 2, 2),
-                                    BlendMode.srcIn,
-                                  ),
-                                ),
-                                onPressed: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
-                                },
-                              ),
-                              hintText: 'Password',
-                              filled: true,
-                              fillColor: AppColors.lightGreen,
-                              contentPadding: const EdgeInsets.symmetric(
-                                vertical: 0,
-                                horizontal: 16,
-                              ),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(20),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-
-                          const SizedBox(height: 90),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 91,
-                              right: 92,
-                            ),
+                          const SizedBox(height: 32),
+                          Center(
                             child: SizedBox(
-                              width: double.infinity,
+                              width: 220,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.caribbeanGreen,
@@ -194,10 +130,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                   elevation: 0,
                                 ),
                                 onPressed: () {
-                                  context.go(HomeScreen.routeName);
+                                  context.go('/security-pin-screen');
                                 },
                                 child: const Text(
-                                  'Log In',
+                                  'Next Step',
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
@@ -207,30 +143,10 @@ class _LoginScreenState extends State<LoginScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(height: 20),
+                          const SizedBox(height: 32),
                           Center(
-                            child: TextButton(
-                              onPressed: () {
-                                context.go('/forget-password-screen');
-                              },
-                              child: const Text(
-                                'Forgot Password?',
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  color: AppColors.blackHeader,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Padding(
-                            padding: const EdgeInsets.only(
-                              left: 91,
-                              right: 92,
-                            ),
                             child: SizedBox(
-                              width: double.infinity,
+                              width: 220,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
                                   backgroundColor: AppColors.lightGreen,
@@ -258,42 +174,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          Container(
-                            alignment: Alignment.center,
-                            width: double.infinity,
-                            margin: const EdgeInsets.only(
-                              left: 45,
-                              right: 40,
-                            ),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                RichText(
-                                  textAlign: TextAlign.center,
-                                  text: const TextSpan(
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.blackHeader,
-                                    ),
-                                    children: [
-                                      TextSpan(text: 'Use '),
-                                      TextSpan(
-                                        text: 'Fingerprint',
-                                        style: TextStyle(
-                                          color: AppColors.vividBlue,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      TextSpan(text: ' To Access'),
-                                    ],
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const SizedBox(height: 16),
                           Center(
                             child: Column(
                               children: [
@@ -303,8 +183,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 ),
                                 const SizedBox(height: 8),
                                 Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.center,
+                                  mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     MouseRegion(
                                       cursor: SystemMouseCursors.click,
@@ -314,8 +193,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                       onExit:
                                           (_) => setState(
-                                            () =>
-                                                _isFacebookHovered = false,
+                                            () => _isFacebookHovered = false,
                                           ),
                                       child: GestureDetector(
                                         onTap:
@@ -328,12 +206,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           transform:
                                               Matrix4.identity()..scale(
-                                                _isFacebookHovered
-                                                    ? 1.2
-                                                    : 1.0,
+                                                _isFacebookHovered ? 1.2 : 1.0,
                                               ),
                                           child: SvgPicture.asset(
-                                            Assets.iconComponents.facebook.path,
+                                            'assets/IconComponents/Facebook.svg',
                                             width: 32,
                                             height: 32,
                                           ),
@@ -362,12 +238,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                           ),
                                           transform:
                                               Matrix4.identity()..scale(
-                                                _isGoogleHovered
-                                                    ? 1.2
-                                                    : 1.0,
+                                                _isGoogleHovered ? 1.2 : 1.0,
                                               ),
                                           child: SvgPicture.asset(
-                                            Assets.iconComponents.google.path,
+                                            'assets/IconComponents/Google.svg',
                                             width: 32,
                                             height: 32,
                                           ),
@@ -389,9 +263,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   style: TextStyle(fontSize: 12),
                                 ),
                                 GestureDetector(
-                                  onTap: () {
-                                    context.go('/signUp-screen');
-                                  },
+                                  onTap: () {},
                                   child: const Text(
                                     'Sign Up',
                                     style: TextStyle(
@@ -411,8 +283,8 @@ class _LoginScreenState extends State<LoginScreen> {
                 ),
               ),
             ],
-          );
-        },
+          ),
+        ),
       ),
     );
   }
