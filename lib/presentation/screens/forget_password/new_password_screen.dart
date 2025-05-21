@@ -75,161 +75,166 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
             child: FractionallySizedBox(
               heightFactor: 0.8,
               widthFactor: 1.0,
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.honeydew,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
+              child: SingleChildScrollView(
+                child: Container(
+                  decoration: const BoxDecoration(
+                    color: AppColors.honeydew,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(40),
+                      topRight: Radius.circular(40),
+                    ),
                   ),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'New Password',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.blackHeader,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 40, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'New Password',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.blackHeader,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: TextField(
-                          controller: _newPasswordController,
-                          obscureText: !_isNewPasswordVisible,
-                          onChanged: (value) => _validatePasswords(),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 15,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: SvgPicture.asset(
-                                _isNewPasswordVisible
-                                    ? 'assets/FunctionalIcon/Vector-24.svg'
-                                    : 'assets/FunctionalIcon/Vector-23.svg',
-                                width: 14,
-                                height: 14,
-                                colorFilter: const ColorFilter.mode(
-                                  Color.fromARGB(255, 2, 2, 2),
-                                  BlendMode.srcIn,
-                                ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.lightGreen,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: TextField(
+                            controller: _newPasswordController,
+                            obscureText: !_isNewPasswordVisible,
+                            onChanged: (value) => _validatePasswords(),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _isNewPasswordVisible =
-                                      !_isNewPasswordVisible;
-                                });
-                              },
+                              suffixIcon: IconButton(
+                                icon: SvgPicture.asset(
+                                  _isNewPasswordVisible
+                                      ? 'assets/FunctionalIcon/Vector-24.svg'
+                                      : 'assets/FunctionalIcon/Vector-23.svg',
+                                  width: 14,
+                                  height: 14,
+                                  colorFilter: const ColorFilter.mode(
+                                    Color.fromARGB(255, 2, 2, 2),
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isNewPasswordVisible =
+                                        !_isNewPasswordVisible;
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 24),
-                      const Text(
-                        'Confirm New Password',
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.w500,
-                          color: AppColors.blackHeader,
+                        const SizedBox(height: 24),
+                        const Text(
+                          'Confirm New Password',
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.w500,
+                            color: AppColors.blackHeader,
+                          ),
                         ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        decoration: BoxDecoration(
-                          color: AppColors.lightGreen,
-                          borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: TextField(
-                          controller: _confirmPasswordController,
-                          obscureText: !_isConfirmPasswordVisible,
-                          onChanged: (value) => _validatePasswords(),
-                          decoration: InputDecoration(
-                            border: InputBorder.none,
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 20,
-                              vertical: 15,
-                            ),
-                            suffixIcon: IconButton(
-                              icon: SvgPicture.asset(
-                                _isConfirmPasswordVisible
-                                    ? 'assets/FunctionalIcon/Vector-24.svg'
-                                    : 'assets/FunctionalIcon/Vector-23.svg',
-                                width: 14,
-                                height: 14,
-                                colorFilter: const ColorFilter.mode(
-                                  Color.fromARGB(255, 2, 2, 2),
-                                  BlendMode.srcIn,
-                                ),
+                        const SizedBox(height: 8),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: AppColors.lightGreen,
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: TextField(
+                            controller: _confirmPasswordController,
+                            obscureText: !_isConfirmPasswordVisible,
+                            onChanged: (value) => _validatePasswords(),
+                            decoration: InputDecoration(
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 20,
+                                vertical: 15,
                               ),
-                              onPressed: () {
-                                setState(() {
-                                  _isConfirmPasswordVisible =
-                                      !_isConfirmPasswordVisible;
-                                });
-                              },
+                              suffixIcon: IconButton(
+                                icon: SvgPicture.asset(
+                                  _isConfirmPasswordVisible
+                                      ? 'assets/FunctionalIcon/Vector-24.svg'
+                                      : 'assets/FunctionalIcon/Vector-23.svg',
+                                  width: 14,
+                                  height: 14,
+                                  colorFilter: const ColorFilter.mode(
+                                    Color.fromARGB(255, 2, 2, 2),
+                                    BlendMode.srcIn,
+                                  ),
+                                ),
+                                onPressed: () {
+                                  setState(() {
+                                    _isConfirmPasswordVisible =
+                                        !_isConfirmPasswordVisible;
+                                  });
+                                },
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                      if (_errorText != null)
+                        if (_errorText != null)
+                          Padding(
+                            padding: const EdgeInsets.only(top: 8, left: 8),
+                            child: Text(
+                              _errorText!,
+                              style: const TextStyle(
+                                color: Colors.red,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ),
+                        //const Spacer(),
                         Padding(
-                          padding: const EdgeInsets.only(top: 8, left: 8),
-                          child: Text(
-                            _errorText!,
-                            style: const TextStyle(
-                              color: Colors.red,
-                              fontSize: 12,
-                            ),
-                          ),
-                        ),
-                      const Spacer(),
-                      Center(
-                        child: SizedBox(
-                          width: 280,
-                          height: 40,
-                          child: ElevatedButton(
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppColors.caribbeanGreen,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              elevation: 0,
-                            ),
-                            onPressed:
-                                _errorText == null &&
-                                        _newPasswordController
-                                            .text
-                                            .isNotEmpty &&
-                                        _confirmPasswordController
-                                            .text
-                                            .isNotEmpty
-                                    ? () {
-                                      context.go('/password-changed-splash');
-                                    }
-                                    : null,
-                            child: const Text(
-                              'Change Password',
-                              style: TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                                color: AppColors.blackHeader,
+                          padding: const EdgeInsets.only(top: 50.0),
+                          child: Center(
+                            child: SizedBox(
+                              width: 280,
+                              height: 40,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.caribbeanGreen,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  elevation: 0,
+                                ),
+                                onPressed:
+                                    _errorText == null &&
+                                            _newPasswordController
+                                                .text
+                                                .isNotEmpty &&
+                                            _confirmPasswordController
+                                                .text
+                                                .isNotEmpty
+                                        ? () {
+                                          context.go('/password-changed-splash');
+                                        }
+                                        : null,
+                                child: const Text(
+                                  'Change Password',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.blackHeader,
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 130),
-                    ],
+                        SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 20 : 50),
+                      ],
+                    ),
                   ),
                 ),
               ),

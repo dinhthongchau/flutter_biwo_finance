@@ -131,124 +131,109 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                 child: Column(
                   children: [
                     Expanded(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const Text(
-                            'Enter Security Pin',
-                            style: TextStyle(
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.blackHeader,
+                      child: SingleChildScrollView(
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const Text(
+                              'Enter Security Pin',
+                              style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: AppColors.blackHeader,
+                              ),
                             ),
-                          ),
-                          const SizedBox(height: 28),
-                          Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              Opacity(
-                                opacity: 0.0,
-                                child: SizedBox(
-                                  width: 0,
-                                  height: 0,
-                                  child: TextField(
-                                    controller: _pinController,
-                                    focusNode: _focusNode,
-                                    keyboardType: TextInputType.number,
-                                    inputFormatters: [
-                                      FilteringTextInputFormatter.digitsOnly,
-                                      LengthLimitingTextInputFormatter(6),
-                                    ],
-                                    onChanged: (_) => setState(() {}),
-                                    autofocus: true,
+                            const SizedBox(height: 28),
+                            Stack(
+                              alignment: Alignment.center,
+                              children: [
+                                Opacity(
+                                  opacity: 0.0,
+                                  child: SizedBox(
+                                    width: 0,
+                                    height: 0,
+                                    child: TextField(
+                                      controller: _pinController,
+                                      focusNode: _focusNode,
+                                      keyboardType: TextInputType.number,
+                                      inputFormatters: [
+                                        FilteringTextInputFormatter.digitsOnly,
+                                        LengthLimitingTextInputFormatter(6),
+                                      ],
+                                      onChanged: (_) => setState(() {}),
+                                      autofocus: true,
+                                    ),
                                   ),
                                 ),
-                              ),
-                              _buildPinCircles(),
-                            ],
-                          ),
-                          const SizedBox(height: 32),
-                          SizedBox(
-                            width: 200,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.caribbeanGreen,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
+                                _buildPinCircles(),
+                              ],
+                            ),
+                            const SizedBox(height: 32),
+                            SizedBox(
+                              width: 200,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.caribbeanGreen,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  elevation: 0,
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                elevation: 0,
-                              ),
-                              onPressed:
-                                  _pinController.text.length == 6
-                                      ? () {
-                                        showDialog(
-                                          context: context,
-                                          barrierDismissible: false,
-                                          builder: (BuildContext context) {
-                                            return TweenAnimationBuilder(
-                                              duration: const Duration(
-                                                milliseconds: 600,
-                                              ),
-                                              tween: Tween<double>(
-                                                begin: 0,
-                                                end: 1,
-                                              ),
-                                              builder: (
-                                                BuildContext context,
-                                                double value,
-                                                Widget? child,
-                                              ) {
-                                                return Transform.scale(
-                                                  scale: value,
-                                                  child: AlertDialog(
-                                                    shape: RoundedRectangleBorder(
-                                                      borderRadius:
-                                                          BorderRadius.circular(
-                                                            24,
-                                                          ),
-                                                    ),
-                                                    backgroundColor:
-                                                        AppColors.honeydew,
-                                                    content: Column(
-                                                      mainAxisSize:
-                                                          MainAxisSize.min,
-                                                      children: [
-                                                        TweenAnimationBuilder(
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    800,
-                                                              ),
-                                                          tween: Tween<double>(
-                                                            begin: 0,
-                                                            end: 1,
-                                                          ),
-                                                          builder: (
-                                                            context,
-                                                            double value,
-                                                            child,
-                                                          ) {
-                                                            return Transform.scale(
-                                                              scale: value,
-                                                              child: Container(
-                                                                padding:
-                                                                    const EdgeInsets.all(
-                                                                      16,
-                                                                    ),
-                                                                decoration: BoxDecoration(
-                                                                  color: AppColors
-                                                                      .caribbeanGreen
-                                                                      .withAlpha(
-                                                                        (0.2 * 255)
-                                                                            .round(),
-                                                                      ),
-                                                                  shape:
-                                                                      BoxShape
-                                                                          .circle,
+                                onPressed:
+                                    _pinController.text.length == 6
+                                        ? () {
+                                          showDialog(
+                                            context: context,
+                                            barrierDismissible: false,
+                                            builder: (BuildContext context) {
+                                              return TweenAnimationBuilder(
+                                                duration: const Duration(
+                                                  milliseconds: 600,
+                                                ),
+                                                tween: Tween<double>(
+                                                  begin: 0,
+                                                  end: 1,
+                                                ),
+                                                builder: (
+                                                  BuildContext context,
+                                                  double value,
+                                                  Widget? child,
+                                                ) {
+                                                  return Transform.scale(
+                                                    scale: value,
+                                                    child: AlertDialog(
+                                                      shape: RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.circular(
+                                                              24,
+                                                            ),
+                                                      ),
+                                                      backgroundColor:
+                                                          AppColors.honeydew,
+                                                      content: Column(
+                                                        mainAxisSize:
+                                                            MainAxisSize.min,
+                                                        children: [
+                                                          TweenAnimationBuilder(
+                                                            duration:
+                                                                const Duration(
+                                                                  milliseconds:
+                                                                      800,
                                                                 ),
+                                                            tween: Tween<double>(
+                                                              begin: 0,
+                                                              end: 1,
+                                                            ),
+                                                            builder: (
+                                                              context,
+                                                              double value,
+                                                              child,
+                                                            ) {
+                                                              return Transform.scale(
+                                                                scale: value,
                                                                 child: Container(
                                                                   padding:
                                                                       const EdgeInsets.all(
@@ -258,51 +243,118 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                     color: AppColors
                                                                         .caribbeanGreen
                                                                         .withAlpha(
-                                                                          (0.3 *
-                                                                                  255)
+                                                                          (0.2 * 255)
                                                                               .round(),
                                                                         ),
                                                                     shape:
                                                                         BoxShape
                                                                             .circle,
                                                                   ),
-                                                                  child: const Icon(
-                                                                    Icons
-                                                                        .check_circle,
-                                                                    color:
-                                                                        AppColors
-                                                                            .caribbeanGreen,
-                                                                    size: 64,
+                                                                  child: Container(
+                                                                    padding:
+                                                                        const EdgeInsets.all(
+                                                                          16,
+                                                                        ),
+                                                                    decoration: BoxDecoration(
+                                                                      color: AppColors
+                                                                          .caribbeanGreen
+                                                                          .withAlpha(
+                                                                            (0.3 *
+                                                                                    255)
+                                                                                .round(),
+                                                                          ),
+                                                                      shape:
+                                                                          BoxShape
+                                                                              .circle,
+                                                                    ),
+                                                                    child: const Icon(
+                                                                      Icons
+                                                                          .check_circle,
+                                                                      color:
+                                                                          AppColors
+                                                                              .caribbeanGreen,
+                                                                      size: 64,
+                                                                    ),
                                                                   ),
                                                                 ),
-                                                              ),
-                                                            );
-                                                          },
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 24,
-                                                        ),
-                                                        TweenAnimationBuilder(
-                                                          duration:
-                                                              const Duration(
-                                                                milliseconds:
-                                                                    800,
-                                                              ),
-                                                          tween: Tween<double>(
-                                                            begin: 0,
-                                                            end: 1,
+                                                              );
+                                                            },
                                                           ),
-                                                          builder: (
-                                                            context,
-                                                            double value,
-                                                            child,
-                                                          ) {
-                                                            return Opacity(
-                                                              opacity: value,
+                                                          const SizedBox(
+                                                            height: 24,
+                                                          ),
+                                                          TweenAnimationBuilder(
+                                                            duration:
+                                                                const Duration(
+                                                                  milliseconds:
+                                                                      800,
+                                                                ),
+                                                            tween: Tween<double>(
+                                                              begin: 0,
+                                                              end: 1,
+                                                            ),
+                                                            builder: (
+                                                              context,
+                                                              double value,
+                                                              child,
+                                                            ) {
+                                                              return Opacity(
+                                                                opacity: value,
+                                                                child: const Text(
+                                                                  'Correct Pin!!!',
+                                                                  style: TextStyle(
+                                                                    fontSize: 24,
+                                                                    fontWeight:
+                                                                        FontWeight
+                                                                            .bold,
+                                                                    color:
+                                                                        AppColors
+                                                                            .blackHeader,
+                                                                  ),
+                                                                ),
+                                                              );
+                                                            },
+                                                          ),
+                                                          const SizedBox(
+                                                            height: 24,
+                                                          ),
+                                                          SizedBox(
+                                                            width:
+                                                                double.infinity,
+                                                            child: ElevatedButton(
+                                                              style: ElevatedButton.styleFrom(
+                                                                backgroundColor:
+                                                                    AppColors
+                                                                        .caribbeanGreen,
+                                                                shape: RoundedRectangleBorder(
+                                                                  borderRadius:
+                                                                      BorderRadius.circular(
+                                                                        18,
+                                                                      ),
+                                                                ),
+                                                                padding:
+                                                                    const EdgeInsets.symmetric(
+                                                                      vertical:
+                                                                          12,
+                                                                    ),
+                                                                elevation: 0,
+                                                              ),
+                                                              onPressed: () {
+                                                                Navigator.of(
+                                                                  context,
+                                                                ).pop();
+                                                                // GoRouter.of(
+                                                                //   rootNavigatorKey
+                                                                //       .currentContext!,
+                                                                // ).go(
+                                                                //   '/new-password-screen',
+                                                                // );
+                                                                context.go(NewPasswordScreen.routeName);
+                                                              },
                                                               child: const Text(
-                                                                'Correct Pin!!!',
+                                                                'OK',
                                                                 style: TextStyle(
-                                                                  fontSize: 24,
+                                                                  fontSize: 16,
                                                                   fontWeight:
                                                                       FontWeight
                                                                           .bold,
@@ -311,105 +363,55 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                           .blackHeader,
                                                                 ),
                                                               ),
-                                                            );
-                                                          },
-                                                        ),
-                                                        const SizedBox(
-                                                          height: 24,
-                                                        ),
-                                                        SizedBox(
-                                                          width:
-                                                              double.infinity,
-                                                          child: ElevatedButton(
-                                                            style: ElevatedButton.styleFrom(
-                                                              backgroundColor:
-                                                                  AppColors
-                                                                      .caribbeanGreen,
-                                                              shape: RoundedRectangleBorder(
-                                                                borderRadius:
-                                                                    BorderRadius.circular(
-                                                                      18,
-                                                                    ),
-                                                              ),
-                                                              padding:
-                                                                  const EdgeInsets.symmetric(
-                                                                    vertical:
-                                                                        12,
-                                                                  ),
-                                                              elevation: 0,
-                                                            ),
-                                                            onPressed: () {
-                                                              Navigator.of(
-                                                                context,
-                                                              ).pop();
-                                                              // GoRouter.of(
-                                                              //   rootNavigatorKey
-                                                              //       .currentContext!,
-                                                              // ).go(
-                                                              //   '/new-password-screen',
-                                                              // );
-                                                              context.go(NewPasswordScreen.routeName);
-                                                            },
-                                                            child: const Text(
-                                                              'OK',
-                                                              style: TextStyle(
-                                                                fontSize: 16,
-                                                                fontWeight:
-                                                                    FontWeight
-                                                                        .bold,
-                                                                color:
-                                                                    AppColors
-                                                                        .blackHeader,
-                                                              ),
                                                             ),
                                                           ),
-                                                        ),
-                                                      ],
+                                                        ],
+                                                      ),
                                                     ),
-                                                  ),
-                                                );
-                                              },
-                                            );
-                                          },
-                                        );
-                                      }
-                                      : null,
-                              child: const Text(
-                                'Accept',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.blackHeader,
+                                                  );
+                                                },
+                                              );
+                                            },
+                                          );
+                                        }
+                                        : null,
+                                child: const Text(
+                                  'Accept',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.blackHeader,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 14),
-                          SizedBox(
-                            width: 200,
-                            child: ElevatedButton(
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColors.lightGreen,
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(24),
+                            const SizedBox(height: 14),
+                            SizedBox(
+                              width: 200,
+                              child: ElevatedButton(
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: AppColors.lightGreen,
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  padding: const EdgeInsets.symmetric(
+                                    vertical: 12,
+                                  ),
+                                  elevation: 0,
                                 ),
-                                padding: const EdgeInsets.symmetric(
-                                  vertical: 12,
-                                ),
-                                elevation: 0,
-                              ),
-                              onPressed: () {},
-                              child: const Text(
-                                'Send Again',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppColors.blackHeader,
+                                onPressed: () {},
+                                child: const Text(
+                                  'Send Again',
+                                  style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppColors.blackHeader,
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                     const SizedBox(height: 20),
