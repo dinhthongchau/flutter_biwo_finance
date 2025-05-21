@@ -1,3 +1,4 @@
+import 'package:finance_management/gen/assets.gen.dart';
 import 'package:finance_management/presentation/routes.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
@@ -10,13 +11,12 @@ class TransactionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
-        appBar: _buildHeader( context),
-        body: const Text("hello Transaction")
+    return Scaffold(
+      appBar: _buildHeader(context),
+      body: const Text("hello Transaction"),
     );
   }
 }
-
 
 PreferredSizeWidget _buildHeader(BuildContext context) {
   return PreferredSize(
@@ -25,10 +25,7 @@ PreferredSizeWidget _buildHeader(BuildContext context) {
       padding: const EdgeInsets.only(left: 37, right: 36, top: 25),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _buildWelcomeText(),
-          _buildNotificationButton(context),
-        ],
+        children: [_buildWelcomeText(), _buildNotificationButton(context)],
       ),
     ),
   );
@@ -63,7 +60,7 @@ Widget _buildNotificationButton(BuildContext context) {
     onTap: () {
       context
           .findAncestorStateOfType<BottomNavigationBarScaffoldState>()
-          ?.goToNotifications();// Thay '/notification' bằng route thực tế
+          ?.goToNotifications();
     },
     child: Container(
       padding: const EdgeInsets.all(8),
@@ -72,7 +69,7 @@ Widget _buildNotificationButton(BuildContext context) {
         shape: BoxShape.circle,
       ),
       child: SvgPicture.asset(
-        'assets/FunctionalIcon/Vector.svg',
+        Assets.functionalIcon.vector.path,
         height: 19,
         width: 15,
       ),

@@ -1,3 +1,4 @@
+import 'package:finance_management/gen/assets.gen.dart';
 import 'package:finance_management/presentation/screens/analysis/analysis_screen.dart';
 import 'package:finance_management/presentation/screens/categories/categories_screen.dart';
 import 'package:finance_management/presentation/screens/forget_password/forget_password_screen.dart';
@@ -25,7 +26,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: SplashScreen.routeName,
+  initialLocation: HomeScreen.routeName,
   routes: [
     GoRoute(
       path: SplashScreen.routeName,
@@ -73,8 +74,8 @@ final router = GoRouter(
           ),
           routes: [
             GoRoute(
-              path: 'notifications',
-              builder: (context, state) => const NotificationScreen(label: 'Home'),
+              path: NotificationScreen.routeName,
+              builder: (context, state) => const NotificationScreen(),
             ),
           ],
         ),
@@ -185,11 +186,11 @@ class BottomNavigationBarScaffoldState extends State<BottomNavigationBarScaffold
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0, 'assets/BottomNavigationIcon/Home.svg'),
-            _buildNavItem(1, 'assets/BottomNavigationIcon/Analysis.svg'),
-            _buildNavItem(2, 'assets/BottomNavigationIcon/Transactions.svg'),
-            _buildNavItem(3, 'assets/BottomNavigationIcon/Category.svg'),
-            _buildNavItem(4, 'assets/BottomNavigationIcon/Profile.svg'),
+            _buildNavItem(0,   Assets.bottomNavigationIcon.homeSvg.path),
+            _buildNavItem(1,   Assets.bottomNavigationIcon.analysisSvg.path),
+            _buildNavItem(2,   Assets.bottomNavigationIcon.transactions.path),
+            _buildNavItem(3,   Assets.bottomNavigationIcon.categorySvg.path),
+            _buildNavItem(4,   Assets.bottomNavigationIcon.profileSvg.path),
           ],
         ),
       ),

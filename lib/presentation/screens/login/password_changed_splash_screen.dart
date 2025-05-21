@@ -1,3 +1,4 @@
+import 'package:finance_management/presentation/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
@@ -84,7 +85,7 @@ class _PasswordChangedSplashScreenState
                   elevation: 0,
                 ),
                 onPressed: () {
-                  context.go('/login-screen');
+                  context.go(LoginScreen.routeName);
                 },
                 child: const Text(
                   'Back to Log In',

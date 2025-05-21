@@ -1,3 +1,5 @@
+import 'package:finance_management/gen/assets.gen.dart';
+import 'package:finance_management/presentation/routes.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -13,14 +15,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildHeader( context),
+      appBar: _buildHeader(context),
       backgroundColor: AppColors.caribbeanGreen,
       body: SingleChildScrollView(
-        child: Column(
-          children: [
-            _buildBody(context),
-          ],
-        ),
+        child: Column(children: [_buildBody(context)]),
       ),
     );
   }
@@ -33,10 +31,7 @@ class HomeScreen extends StatelessWidget {
         padding: const EdgeInsets.only(left: 37, right: 36, top: 25),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            _buildWelcomeText(),
-            _buildNotificationButton(context),
-          ],
+          children: [_buildWelcomeText(), _buildNotificationButton(context)],
         ),
       ),
     );
@@ -69,7 +64,10 @@ class HomeScreen extends StatelessWidget {
   Widget _buildNotificationButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context.go('/home-screen/notifications');// Thay '/notification' bằng route thực tế
+        context
+            .findAncestorStateOfType<BottomNavigationBarScaffoldState>()
+            ?.goToNotifications();
+        // context.go(NotificationScreen.routeName);
       },
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -78,7 +76,7 @@ class HomeScreen extends StatelessWidget {
           shape: BoxShape.circle,
         ),
         child: SvgPicture.asset(
-          'assets/FunctionalIcon/Vector.svg',
+          Assets.functionalIcon.vector.path,
           height: 19,
           width: 15,
         ),
@@ -235,7 +233,7 @@ class HomeScreen extends StatelessWidget {
             ),
           ),
           Container(
-            padding:  const EdgeInsets.only(left: 175, right: 24),
+            padding: const EdgeInsets.only(left: 175, right: 24),
             decoration: BoxDecoration(
               color: AppColors.honeydew,
               borderRadius: BorderRadius.circular(30),
@@ -277,22 +275,16 @@ class HomeScreen extends StatelessWidget {
   // Savings and Revenue Sectionq
   Widget _buildSavingsRevenueSection() {
     return Container(
-      padding: const EdgeInsets.only(left: 37,right: 37, bottom: 22),
+      padding: const EdgeInsets.only(left: 37, right: 37, bottom: 22),
       decoration: BoxDecoration(
         color: AppColors.caribbeanGreen,
         borderRadius: BorderRadius.circular(22),
       ),
       child: Row(
         children: [
-          Expanded(
-            flex: 4,
-            child: _buildSavingsWidget(),
-          ),
+          Expanded(flex: 4, child: _buildSavingsWidget()),
           const SizedBox(width: 20),
-          Expanded(
-            flex: 6,
-            child: _buildRevenueWidget(),
-          ),
+          Expanded(flex: 6, child: _buildRevenueWidget()),
         ],
       ),
     );
@@ -302,9 +294,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       height: 115,
       decoration: const BoxDecoration(
-        border: Border(
-          right: BorderSide(color: AppColors.honeydew, width: 2),
-        ),
+        border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -354,7 +344,7 @@ class HomeScreen extends StatelessWidget {
               ),
             ),
             SvgPicture.asset(
-              'assets/IconComponents/Car.svg',
+              Assets.iconComponents.car.path,
               height: 30,
               width: 40,
             ),
@@ -395,24 +385,21 @@ class HomeScreen extends StatelessWidget {
   }) {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 11),
-      decoration: showDivider
-          ? const BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppColors.honeydew, width: 2),
-        ),
-      )
-          : null,
+      decoration:
+          showDivider
+              ? const BoxDecoration(
+                border: Border(
+                  bottom: BorderSide(color: AppColors.honeydew, width: 2),
+                ),
+              )
+              : null,
       child: Row(
         children: [
           Container(
             height: 40,
             width: 40,
             padding: const EdgeInsets.all(8),
-            child: SvgPicture.asset(
-              iconPath,
-              height: 40,
-              width: 40,
-            ),
+            child: SvgPicture.asset(iconPath, height: 40, width: 40),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -510,19 +497,22 @@ class HomeScreen extends StatelessWidget {
     ];
 
     return Column(
-      children: transactions
-          .map((transaction) => Padding(
-        padding: const EdgeInsets.only(bottom: 16),
-        child: _buildTransactionItem(
-          title: transaction['title'] as String,
-          iconPath: transaction['iconPath'] as String,
-          date: transaction['date'] as String,
-          label: transaction['label'] as String,
-          amount: transaction['amount'] as String,
-          backgroundColor: transaction['backgroundColor'] as Color,
-        ),
-      ))
-          .toList(),
+      children:
+          transactions
+              .map(
+                (transaction) => Padding(
+                  padding: const EdgeInsets.only(bottom: 16),
+                  child: _buildTransactionItem(
+                    title: transaction['title'] as String,
+                    iconPath: transaction['iconPath'] as String,
+                    date: transaction['date'] as String,
+                    label: transaction['label'] as String,
+                    amount: transaction['amount'] as String,
+                    backgroundColor: transaction['backgroundColor'] as Color,
+                  ),
+                ),
+              )
+              .toList(),
     );
   }
 
@@ -541,20 +531,11 @@ class HomeScreen extends StatelessWidget {
           backgroundColor: backgroundColor,
         ),
         const SizedBox(width: 16),
-        Expanded(
-          child: _buildTransactionDetails(
-            title: title,
-            date: date,
-          ),
-        ),
+        Expanded(child: _buildTransactionDetails(title: title, date: date)),
         _buildTransactionDivider(),
-        Expanded(
-          child: _buildTransactionLabel(label: label),
-        ),
+        Expanded(child: _buildTransactionLabel(label: label)),
         _buildTransactionDivider(),
-        Expanded(
-          child: _buildTransactionAmount(amount: amount),
-        ),
+        Expanded(child: _buildTransactionAmount(amount: amount)),
       ],
     );
   }
@@ -629,9 +610,10 @@ class HomeScreen extends StatelessWidget {
         style: TextStyle(
           fontSize: 10,
           fontWeight: FontWeight.w600,
-          color: amount.startsWith('-')
-              ? AppColors.oceanBlue
-              : AppColors.fenceGreen,
+          color:
+              amount.startsWith('-')
+                  ? AppColors.oceanBlue
+                  : AppColors.fenceGreen,
         ),
       ),
     );
@@ -641,7 +623,7 @@ class HomeScreen extends StatelessWidget {
     return Container(
       height: 40,
       width: 1,
-      color: AppColors.caribbeanGreen.withValues(alpha:0.3),
+      color: AppColors.caribbeanGreen.withValues(alpha: 0.3),
       margin: const EdgeInsets.symmetric(horizontal: 16),
     );
   }

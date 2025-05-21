@@ -1,3 +1,4 @@
+import 'package:finance_management/gen/assets.gen.dart';
 import 'package:finance_management/presentation/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -98,7 +99,7 @@ class _LoginScreenState extends State<LoginScreen> {
                               prefixIcon: Padding(
                                 padding: const EdgeInsets.all(10.0),
                                 child: SvgPicture.asset(
-                                  'assets/IconComponents/Icon Profile.svg',
+                                  Assets.iconComponents.iconProfile.path,
                                   width: 24,
                                   height: 24,
                                 ),
@@ -142,8 +143,9 @@ class _LoginScreenState extends State<LoginScreen> {
                               suffixIcon: IconButton(
                                 icon: SvgPicture.asset(
                                   _obscurePassword
-                                      ? 'assets/FunctionalIcon/Vector-23.svg'
-                                      : 'assets/FunctionalIcon/Vector-24.svg',
+
+                                  ? Assets.functionalIcon.vector23.path
+                                  :Assets.functionalIcon.vector24.path,
                                   width: 12,
                                   height: 12,
                                   colorFilter: const ColorFilter.mode(
@@ -331,7 +333,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     : 1.0,
                                               ),
                                           child: SvgPicture.asset(
-                                            'assets/IconComponents/Facebook.svg',
+                                            Assets.iconComponents.facebook.path,
                                             width: 32,
                                             height: 32,
                                           ),
@@ -365,7 +367,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                                     : 1.0,
                                               ),
                                           child: SvgPicture.asset(
-                                            'assets/IconComponents/Google.svg',
+                                            Assets.iconComponents.google.path,
                                             width: 32,
                                             height: 32,
                                           ),
