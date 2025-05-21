@@ -34,10 +34,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
     super.initState();
     _openBoxAndTest();
   }
+
   //just test and OK, 2005 will build again
   Future<void> _openBoxAndTest() async {
     _userBox = await Hive.openBox<UserModel>('users');
-    
+
     _fullNameController.text = 'Test User';
     _emailController.text = 'test@example.com';
     _mobileController.text = '1234567890';
@@ -45,9 +46,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _passwordController.text = 'password';
     _confirmPasswordController.text = 'password';
 
-    
     final user = UserModel(
-      id: 12345678, 
+      id: 12345678,
       fullName: _fullNameController.text,
       email: _emailController.text,
       mobile: _mobileController.text,
@@ -55,40 +55,75 @@ class _SignUpScreenState extends State<SignUpScreen> {
       password: _passwordController.text,
     );
 
-    
     await _userBox.put(user.id, user);
     //show dialog ok  with infomation
-    if ( mounted) {
-
+    if (mounted) {
       showDialog(
         context: context,
         builder: (context) {
           return AlertDialog(
-            title: const Text('Test Data, Ok rồi đó'),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
+            contentPadding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
             content: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Full Name: ${user.fullName}'),
-                Text('Email: ${user.email}'),
-                Text('Mobile: ${user.mobile}'),
-                Text('DoB: ${user.dob}'),
-                Text('Password: ${user.password}'),
+                const Icon(
+                  Icons.check_circle_rounded,
+                  color: AppColors.caribbeanGreen,
+                  size: 64,
+                ),
+                const SizedBox(height: 16),
+                const Text(
+                  'Test Data, Ok rồi đó',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.caribbeanGreen,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  'Full Name: ${user.fullName}\nEmail: ${user.email}\nMobile: ${user.mobile}\nDoB: ${user.dob}\nPassword: ${user.password}',
+                  textAlign: TextAlign.center,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: AppColors.blackHeader,
+                  ),
+                ),
+                const SizedBox(height: 24),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.caribbeanGreen,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18),
+                      ),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      elevation: 0,
+                    ),
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: const Text(
+                      'OK',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
-            actions: [
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
           );
         },
       );
     }
 
-    
     final retrievedUser = _userBox.get(user.id);
     if (retrievedUser != null) {
       debugPrint('--- Test Data ---');
@@ -101,6 +136,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
       debugPrint('User not found in Hive');
     }
   }
+
   @override
   void dispose() {
     _fullNameController.dispose();
@@ -111,12 +147,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _confirmPasswordController.dispose();
     super.dispose();
   }
+
   void _submitForm() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Passwords do not match')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Passwords do not match')));
         return;
       }
 
@@ -138,22 +175,70 @@ class _SignUpScreenState extends State<SignUpScreen> {
           context: context,
           builder: (context) {
             return AlertDialog(
-              title: const Text('Success'),
-              content: const Text('Sign-up successful!'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    context.pushNamed(LoginScreen.routeName);
-                  },
-                  child: const Text('OK'),
-                ),
-              ],
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(24),
+              ),
+              contentPadding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(
+                    Icons.check_circle_rounded,
+                    color: AppColors.caribbeanGreen,
+                    size: 64,
+                  ),
+                  const SizedBox(height: 16),
+                  const Text(
+                    'Sign Up Successful!',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.caribbeanGreen,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  const Text(
+                    'Your account has been created. You can now log in and start using the app!',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 15,
+                      color: AppColors.blackHeader,
+                    ),
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppColors.caribbeanGreen,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(18),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        elevation: 0,
+                      ),
+                      onPressed: () {
+                        context.go(LoginScreen.routeName);
+                      },
+                      child: const Text(
+                        'OK',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             );
           },
         );
       }
     }
   }
+
   @override
   @override
   Widget build(BuildContext context) {
@@ -205,7 +290,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: 'example@example.com',
                   filled: true,
                   hintStyle: TextStyle(
-                    color: AppColors.cyprus.withOpacity(0.45),
+                    color: AppColors.cyprus.withValues(
+                      alpha: (0.45 * 255).round().toDouble(),
+                    ),
                   ),
                   fillColor: AppColors.lightGreen,
                   border: OutlineInputBorder(
@@ -241,14 +328,16 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   if (value == null || value.isEmpty) {
                     return 'Please enter your email';
                   }
-                  return null;  // No error
+                  return null; // No error
                 },
 
                 decoration: InputDecoration(
                   hintText: 'example@example.com',
                   filled: true,
                   hintStyle: TextStyle(
-                    color: AppColors.cyprus.withOpacity(0.45),
+                    color: AppColors.cyprus.withValues(
+                      alpha: (0.45 * 255).round().toDouble(),
+                    ),
                   ),
                   fillColor: AppColors.lightGreen,
                   border: OutlineInputBorder(
@@ -285,7 +374,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: '+ 123 456 789',
                   filled: true,
                   hintStyle: TextStyle(
-                    color: AppColors.cyprus.withOpacity(0.45),
+                    color: AppColors.cyprus.withValues(
+                      alpha: (0.45 * 255).round().toDouble(),
+                    ),
                   ),
                   fillColor: AppColors.lightGreen,
                   border: OutlineInputBorder(
@@ -323,7 +414,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: 'DD / MM / YYY',
                   filled: true,
                   hintStyle: TextStyle(
-                    color: AppColors.cyprus.withOpacity(0.45),
+                    color: AppColors.cyprus.withValues(
+                      alpha: (0.45 * 255).round().toDouble(),
+                    ),
                   ),
                   fillColor: AppColors.lightGreen,
                   border: OutlineInputBorder(
@@ -361,7 +454,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: '• • • • • • • •',
                   filled: true,
                   hintStyle: TextStyle(
-                    color: AppColors.cyprus.withOpacity(0.45),
+                    color: AppColors.cyprus.withValues(
+                      alpha: (0.45 * 255).round().toDouble(),
+                    ),
                   ),
                   fillColor: AppColors.lightGreen,
                   border: OutlineInputBorder(
@@ -374,7 +469,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       _isPasswordVisible
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.grey,
+                      color: Colors.white.withValues(
+                        alpha: (0.08 * 255).round().toDouble(),
+                      ),
                     ),
                     onPressed: () {
                       setState(() {
@@ -412,7 +509,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   hintText: '• • • • • • • •',
                   filled: true,
                   hintStyle: TextStyle(
-                    color: AppColors.cyprus.withOpacity(0.45),
+                    color: AppColors.cyprus.withValues(
+                      alpha: (0.45 * 255).round().toDouble(),
+                    ),
                   ),
                   fillColor: AppColors.lightGreen,
                   border: OutlineInputBorder(
@@ -425,7 +524,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       _isConfirmPasswordVisible
                           ? Icons.visibility_off
                           : Icons.visibility,
-                      color: Colors.grey,
+                      color: Colors.white.withValues(
+                        alpha: (0.08 * 255).round().toDouble(),
+                      ),
                     ),
                     onPressed: () {
                       setState(() {
@@ -483,7 +584,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Padding(
-                        padding: EdgeInsets.only(left: 66, right: 66, top: 11, bottom: 12),
+                        padding: EdgeInsets.only(
+                          left: 66,
+                          right: 66,
+                          top: 11,
+                          bottom: 12,
+                        ),
                         child: Text(
                           'Sign Up',
                           style: TextStyle(
