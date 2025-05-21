@@ -10,6 +10,12 @@ import 'package:finance_management/presentation/widgets/cubit/page_view/page_vie
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/onboarding/onboarding_screen.dart';
+import 'package:finance_management/presentation/screens/onboarding/splash_screen.dart';
+import 'package:finance_management/presentation/screens/forgetpassword/forget_password_screen.dart';
+import 'package:finance_management/presentation/screens/forgetpassword/security_pin_screen.dart';
+import 'package:finance_management/presentation/screens/forgetpassword/new_password_screen.dart';
+import 'package:finance_management/presentation/screens/forgetpassword/password_changed_splash_screen.dart';
 
 class BottomNavigationBarScaffold extends StatefulWidget {
   const BottomNavigationBarScaffold({super.key, required this.child});
@@ -142,112 +148,205 @@ class _BottomNavigationBarScaffoldState
   }
 }
 
-final _rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
+final rootNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'root');
 final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final router = GoRouter(
-  navigatorKey: _rootNavigatorKey,
-  initialLocation: SignUpScreen.routeName,
+  navigatorKey: rootNavigatorKey,
+  initialLocation: SplashScreen.routeName,
   debugLogDiagnostics: true,
   routes: [
     GoRoute(
+      path: SplashScreen.routeName,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const SplashScreen(),
+    ),
+    GoRoute(
+      path: OnboardingScreen.routeName,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const OnboardingScreen(),
+    ),
+    GoRoute(
       path: SignUpScreen.routeName,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const SignUpScreen(),
     ),
     GoRoute(
       path: LoginScreen.routeName,
-      parentNavigatorKey: _rootNavigatorKey,
+      parentNavigatorKey: rootNavigatorKey,
       builder: (context, state) => const LoginScreen(),
+    ),
+    GoRoute(
+      path: ForgetPasswordScreen.routeName,
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const ForgetPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/security-pin-screen',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const SecurityPinScreen(),
+    ),
+    GoRoute(
+      path: '/new-password-screen',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const NewPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/password-changed-splash',
+      parentNavigatorKey: rootNavigatorKey,
+      builder: (context, state) => const PasswordChangedSplashScreen(),
     ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) => MultiBlocProvider(
-        providers: [
-          BlocProvider(create: (_) => BottomNavigationCubit()),
-          BlocProvider(
-            create: (context) => PageViewCubit(
-              bottomNavigationCubit: context.read<BottomNavigationCubit>(),
-            ),
+      builder:
+          (context, state, child) => MultiBlocProvider(
+            providers: [
+              BlocProvider(create: (_) => BottomNavigationCubit()),
+              BlocProvider(
+                create:
+                    (context) => PageViewCubit(
+                      bottomNavigationCubit:
+                          context.read<BottomNavigationCubit>(),
+                    ),
+              ),
+            ],
+            child: BottomNavigationBarScaffold(child: child),
           ),
-        ],
-        child: BottomNavigationBarScaffold(child: child),
-      ),
       routes: [
         GoRoute(
           path: HomeScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const HomeScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const HomeScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: AnalysisScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const AnalysisScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(-1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const AnalysisScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(-1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: TransactionScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const TransactionScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const TransactionScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: CategoriesScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const CategoriesScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(-1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const CategoriesScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(-1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
         GoRoute(
           path: ProfileScreen.routeName,
-          pageBuilder: (context, state) => CustomTransitionPage(
-            key: state.pageKey,
-            child: const ProfileScreen(),
-            transitionsBuilder: (context, animation, secondaryAnimation, child) {
-              const begin = Offset(1.0, 0.0); 
-              const end = Offset.zero;
-              const curve = Curves.easeInOut;
-              final tween = Tween(begin: begin, end: end).chain(CurveTween(curve: curve));
-              final offsetAnimation = animation.drive(tween);
-              return SlideTransition(position: offsetAnimation, child: child);
-            },
-          ),
+          pageBuilder:
+              (context, state) => CustomTransitionPage(
+                key: state.pageKey,
+                child: const ProfileScreen(),
+                transitionsBuilder: (
+                  context,
+                  animation,
+                  secondaryAnimation,
+                  child,
+                ) {
+                  const begin = Offset(1.0, 0.0);
+                  const end = Offset.zero;
+                  const curve = Curves.easeInOut;
+                  final tween = Tween(
+                    begin: begin,
+                    end: end,
+                  ).chain(CurveTween(curve: curve));
+                  final offsetAnimation = animation.drive(tween);
+                  return SlideTransition(
+                    position: offsetAnimation,
+                    child: child,
+                  );
+                },
+              ),
         ),
       ],
     ),
