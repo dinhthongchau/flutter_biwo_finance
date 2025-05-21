@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 2),
+      duration: const Duration(seconds: 4),
     );
     _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
     );
     _animController.forward();
-    _startAutoNext(0, const Duration(seconds: 2));
+    _startAutoNext(0, const Duration(seconds: 4));
   }
 
   void _startAutoNext(int page, Duration duration) {
@@ -56,7 +56,7 @@ class _SplashScreenState extends State<SplashScreen>
   void _goToPage(int page) {
     _pageController.animateToPage(
       page,
-      duration: const Duration(milliseconds: 400),
+      duration: const Duration(seconds: 2),
       curve: Curves.ease,
     );
   }
@@ -74,37 +74,41 @@ class _SplashScreenState extends State<SplashScreen>
   Widget _buildSplashA() {
     return Scaffold(
       backgroundColor: AppColors.caribbeanGreen,
-      body: Center(
-        child: AnimatedBuilder(
-          animation: _animController,
-          builder: (context, child) {
-            return Opacity(
-              opacity: _fadeAnim.value,
-              child: Transform.scale(
-                scale: _scaleAnim.value,
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/FunctionalIcon/Logo-1.svg',
-                      width: 120,
-                      height: 120,
+      body: buildBody(),
+    );
+  }
+
+  Widget buildBody() {
+    return Center(
+      child: AnimatedBuilder(
+        animation: _animController,
+        builder: (context, child) {
+          return Opacity(
+            opacity: _fadeAnim.value,
+            child: Transform.scale(
+              scale: _scaleAnim.value,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  SvgPicture.asset(
+                    'assets/FunctionalIcon/Logo-1.svg',
+                    width: 120,
+                    height: 120,
+                  ),
+                  const SizedBox(height: 24),
+                  const Text(
+                    'FinWise',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 36,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 24),
-                    const Text(
-                      'FinWise',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 36,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ],
-                ),
+                  ),
+                ],
               ),
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }

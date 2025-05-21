@@ -1,13 +1,14 @@
+import 'package:finance_management/presentation/screens/forget_password/new_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
-import 'package:finance_management/presentation/routes.dart';
 
 class SecurityPinScreen extends StatefulWidget {
   static const String routeName = '/security-pin-screen';
+
   const SecurityPinScreen({super.key});
 
   @override
@@ -341,12 +342,13 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                               Navigator.of(
                                                                 context,
                                                               ).pop();
-                                                              GoRouter.of(
-                                                                rootNavigatorKey
-                                                                    .currentContext!,
-                                                              ).go(
-                                                                '/new-password-screen',
-                                                              );
+                                                              // GoRouter.of(
+                                                              //   rootNavigatorKey
+                                                              //       .currentContext!,
+                                                              // ).go(
+                                                              //   '/new-password-screen',
+                                                              // );
+                                                              context.go(NewPasswordScreen.routeName);
                                                             },
                                                             child: const Text(
                                                               'OK',

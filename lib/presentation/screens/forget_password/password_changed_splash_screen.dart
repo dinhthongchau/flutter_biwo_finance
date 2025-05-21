@@ -1,3 +1,4 @@
+import 'package:finance_management/presentation/screens/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
@@ -33,7 +34,7 @@ class _PasswordChangedSplashScreenState
           children: [
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 1500),
+              duration: const Duration(milliseconds: 5000),
               curve: Curves.easeOutCubic,
               builder: (context, value, child) {
                 final double scale = value;
@@ -105,7 +106,7 @@ class _PasswordChangedSplashScreenState
                   elevation: 0,
                 ),
                 onPressed: () {
-                  context.go('/login-screen');
+                  context.go(LoginScreen.routeName);
                 },
                 child: const Text(
                   'Back to Log In',

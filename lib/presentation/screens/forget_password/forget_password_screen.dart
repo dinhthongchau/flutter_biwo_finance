@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:url_launcher/url_launcher.dart' ;
 import 'package:go_router/go_router.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
@@ -19,7 +19,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
 
   Future<void> _launchURL(String url) async {
     final Uri uri = Uri.parse(url);
-    if (!await url_launcher.launchUrl(uri)) {
+    if (!await launchUrl(uri)) {
       throw Exception('Could not launch $url');
     }
   }
