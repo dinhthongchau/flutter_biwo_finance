@@ -412,15 +412,12 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
                   padding: const EdgeInsets.symmetric(horizontal: 37),
                   child: SingleChildScrollView(
                     child: Column(
+                      spacing: 35,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        const SizedBox(height: 40),
                         _buildTabsSection(),
-                        const SizedBox(height: 35),
                         _buildChartSection(_currentChartData, chartMaxY),
-                        const SizedBox(height: 32),
                         _buildIncomeExpenseSection(totalIncome, totalExpense),
-                        const SizedBox(height: 32),
                         _buildTargetsSection(),
                       ],
                     ),
@@ -1012,94 +1009,94 @@ class _AnalysisScreenState extends State<AnalysisScreen> {
           ),
           SizedBox(
             height: 200,
-            child:
-                chartData.isEmpty
-                    ? const Center(
-                      child: Text(
-                        'No data available',
-                        style: TextStyle(
-                          color: AppColors.fenceGreen,
-                          fontSize: 16,
-                        ),
-                      ),
-                    )
-                    : SfCartesianChart(
-                      plotAreaBorderWidth: 0,
-                      primaryXAxis: const CategoryAxis(
-                        labelStyle: TextStyle(color: AppColors.fenceGreen),
-                        majorTickLines: MajorTickLines(width: 0),
-                        majorGridLines: MajorGridLines(width: 0),
-                        axisLine: AxisLine(
-                          width: 1,
-                          color: AppColors.fenceGreen,
-                        ),
-                      ),
-                      primaryYAxis: NumericAxis(
-                        maximum: maxYValue,
-                        minimum: 0,
-                        interval: maxYValue / 5,
-                        axisLine: const AxisLine(width: 0),
-                        majorTickLines: const MajorTickLines(width: 0),
-                        majorGridLines: const MajorGridLines(
-                          width: 1,
-                          color: AppColors.lightBlue,
-                          dashArray: [2, 2],
-                        ),
-                        labelStyle: const TextStyle(color: AppColors.lightBlue),
-                        numberFormat: NumberFormat.compactSimpleCurrency(
-                          locale: 'en_US',
-                          name: '\$',
-                        ),
-                        axisLabelFormatter: (AxisLabelRenderDetails args) {
-                          if (args.value == 0) {
-                            return ChartAxisLabel('', args.textStyle);
-                          } else {
-                            return ChartAxisLabel(args.text, args.textStyle);
-                          }
-                        },
-                      ),
-                      series: <ColumnSeries<BaseAnalysis, String>>[
-                        ColumnSeries<BaseAnalysis, String>(
-                          name: 'Income',
-                          enableTrackball: true,
-                          dataSource: chartData,
-                          xValueMapper: (BaseAnalysis data, _) => data.xValue,
-                          yValueMapper: (BaseAnalysis data, _) => data.income,
-                          width: 0.6,
-                          spacing: 0.5,
-                          color: AppColors.caribbeanGreen,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(4),
-                          ),
-                        ),
-                        ColumnSeries<BaseAnalysis, String>(
-                          name: 'Expense',
-                          enableTrackball: true,
-                          dataSource: chartData,
-                          xValueMapper: (BaseAnalysis data, _) => data.xValue,
-                          yValueMapper: (BaseAnalysis data, _) => data.expense,
-                          width: 0.6,
-                          spacing: 0.5,
-                          color: AppColors.oceanBlue,
-                          borderRadius: const BorderRadius.vertical(
-                            top: Radius.circular(4),
-                          ),
-                        ),
-                      ],
-                      trackballBehavior: TrackballBehavior(
-                        lineColor: AppColors.fenceGreen,
-                        enable: true,
-                        activationMode: ActivationMode.singleTap,
-                        tooltipSettings: const InteractiveTooltip(enable: true),
-                        markerSettings: const TrackballMarkerSettings(
-                          markerVisibility: TrackballVisibilityMode.hidden,
-                          color: AppColors.honeydew,
-                          height: 10,
-                          width: 10,
-                        ),
-                      ),
-                      tooltipBehavior: TooltipBehavior(enable: true),
-                    ),
+            child: chartData.isEmpty ||
+                chartData.every((data) => data.income == 0 && data.expense == 0)
+                ? const Center(
+              child: Text(
+                'No data available',
+                style: TextStyle(
+                  color: AppColors.fenceGreen,
+                  fontSize: 16,
+                ),
+              ),
+            )
+                : SfCartesianChart(
+              plotAreaBorderWidth: 0,
+              primaryXAxis: const CategoryAxis(
+                labelStyle: TextStyle(color: AppColors.fenceGreen),
+                majorTickLines: MajorTickLines(width: 0),
+                majorGridLines: MajorGridLines(width: 0),
+                axisLine: AxisLine(
+                  width: 1,
+                  color: AppColors.fenceGreen,
+                ),
+              ),
+              primaryYAxis: NumericAxis(
+                maximum: maxYValue,
+                minimum: 0,
+                interval: maxYValue > 0 ? maxYValue / 5 : 1000,
+                axisLine: const AxisLine(width: 0),
+                majorTickLines: const MajorTickLines(width: 0),
+                majorGridLines: const MajorGridLines(
+                  width: 1,
+                  color: AppColors.lightBlue,
+                  dashArray: [2, 2],
+                ),
+                labelStyle: const TextStyle(color: AppColors.lightBlue),
+                numberFormat: NumberFormat.compactSimpleCurrency(
+                  locale: 'en_US',
+                  name: '\$',
+                ),
+                axisLabelFormatter: (AxisLabelRenderDetails args) {
+                  if (args.value == 0) {
+                    return ChartAxisLabel('', args.textStyle);
+                  } else {
+                    return ChartAxisLabel(args.text, args.textStyle);
+                  }
+                },
+              ),
+              series: <ColumnSeries<BaseAnalysis, String>>[
+                ColumnSeries<BaseAnalysis, String>(
+                  name: 'Income',
+                  enableTrackball: true,
+                  dataSource: chartData,
+                  xValueMapper: (BaseAnalysis data, _) => data.xValue,
+                  yValueMapper: (BaseAnalysis data, _) => data.income,
+                  width: 0.6,
+                  spacing: 0.5,
+                  color: AppColors.caribbeanGreen,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(4),
+                  ),
+                ),
+                ColumnSeries<BaseAnalysis, String>(
+                  name: 'Expense',
+                  enableTrackball: true,
+                  dataSource: chartData,
+                  xValueMapper: (BaseAnalysis data, _) => data.xValue,
+                  yValueMapper: (BaseAnalysis data, _) => data.expense,
+                  width: 0.6,
+                  spacing: 0.5,
+                  color: AppColors.oceanBlue,
+                  borderRadius: const BorderRadius.vertical(
+                    top: Radius.circular(4),
+                  ),
+                ),
+              ],
+              trackballBehavior: TrackballBehavior(
+                lineColor: AppColors.fenceGreen,
+                enable: true,
+                activationMode: ActivationMode.singleTap,
+                tooltipSettings: const InteractiveTooltip(enable: true),
+                markerSettings: const TrackballMarkerSettings(
+                  markerVisibility: TrackballVisibilityMode.hidden,
+                  color: AppColors.honeydew,
+                  height: 10,
+                  width: 10,
+                ),
+              ),
+              tooltipBehavior: TooltipBehavior(enable: true),
+            ),
           ),
         ],
       ),
