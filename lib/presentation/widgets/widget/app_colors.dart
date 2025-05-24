@@ -14,5 +14,7 @@ class AppColors {
   static const Color blackHeader= Color(0xFF093030);
   static const Color titleHeaderRegister = Color(0xFF363130);
   static const Color termColor = Color(0xFF4B4544);
+  //redColor
+  static const Color redColor = Color(0xFFB00020);
 
 }

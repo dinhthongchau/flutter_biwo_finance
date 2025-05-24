@@ -295,6 +295,8 @@ class $AssetsFunctionalIconGen {
 
 class $AssetsIconComponentsGen {
   const $AssetsIconComponentsGen();
+  //assets/IconComponents/Calender.svg
+  SvgGenImage get calender => const SvgGenImage('assets/IconComponents/Calender.svg');
 
   /// File path: assets/IconComponents/+.svg
   SvgGenImage get a => const SvgGenImage('assets/IconComponents/+.svg');
@@ -527,6 +529,7 @@ class $AssetsIconComponentsGen {
 
   /// List of all assets
   List<SvgGenImage> get values => [
+    calender,
     a,
     botFacebook,
     botInstagram,
