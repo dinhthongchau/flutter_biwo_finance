@@ -1,21 +1,44 @@
-import 'package:finance_management/gen/assets.gen.dart';
-import 'package:finance_management/presentation/routes.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
+import 'package:finance_management/presentation/screens/categories/category_detail/category_detail_save_screen.dart';
+import 'package:finance_management/presentation/shared_data.dart';
+import 'package:finance_management/presentation/widgets/build_app_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
-class HomeScreen extends StatelessWidget {
+
+
+
+enum TimeFilter { daily, weekly, monthly }
+
+class HomeScreen extends StatefulWidget {
   static const String routeName = '/home-screen';
   final String label;
-  final String detailsPath;
+  final String notificationsScreenPath;
 
-  const HomeScreen({super.key, required this.label, required this.detailsPath});
+  const HomeScreen({super.key, required this.label, required this.notificationsScreenPath});
+
+  @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  TimeFilter _selectedTimeFilter = TimeFilter.monthly;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<TransactionBloc>().add(const LoadTransactionsEvent());
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: _buildHeader(context),
+
+      appBar: buildHeaderHome(context, widget.notificationsScreenPath),
       backgroundColor: AppColors.caribbeanGreen,
       body: SingleChildScrollView(
         child: Column(children: [_buildBody(context)]),
@@ -23,7 +46,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Header Section
   PreferredSizeWidget _buildHeader(BuildContext context) {
     return PreferredSize(
       preferredSize: const Size.fromHeight(kToolbarHeight + 25),
@@ -64,10 +86,12 @@ class HomeScreen extends StatelessWidget {
   Widget _buildNotificationButton(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        context
-            .findAncestorStateOfType<BottomNavigationBarScaffoldState>()
-            ?.goToNotifications();
-        // context.go(NotificationScreen.routeName);
+        //NOTTE
+        // context
+        //     .findAncestorStateOfType<BottomNavigationBarScaffoldState>()
+        //     ?.goToNotifications();
+        context.push(widget.notificationsScreenPath);
+        //context.push("/home-screen/notifications");
       },
       child: Container(
         padding: const EdgeInsets.all(8),
@@ -84,7 +108,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Body Section
   Widget _buildBody(BuildContext context) {
     return Column(
       children: [
@@ -95,17 +118,15 @@ class HomeScreen extends StatelessWidget {
               const SizedBox(height: 41),
               _buildBalanceExpenseSection(),
               const SizedBox(height: 12),
-              _buildProgressFeedbackSection(),
-              const SizedBox(height: 32),
+              // _buildProgressFeedbackSection(),
+              // const SizedBox(height: 32),
             ],
           ),
         ),
         Container(
-          decoration: const BoxDecoration(
+          decoration:  BoxDecoration(
             color: AppColors.honeydew,
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(40),
-              topRight: Radius.circular(40),
+            borderRadius: BorderRadius.circular(40
             ),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 37),
@@ -125,30 +146,39 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Balance and Expense Section
   Widget _buildBalanceExpenseSection() {
-    return IntrinsicHeight(
-      child: Row(
-        children: [
-          Expanded(
-            child: _buildBalanceCard(
-              iconPath: 'assets/IconComponents/Income.svg',
-              title: 'Total Balance',
-              amount: '\$7,783.00',
-              amountColor: AppColors.honeydew,
-            ),
+    final numberFormat = NumberFormat('#,###', 'en_US');
+
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        return IntrinsicHeight(
+          child: Row(
+            children: [
+              Expanded(
+                child: _buildBalanceCard(
+                  iconPath: 'assets/IconComponents/Income.svg',
+                  title: 'Total Balance',
+                  amount:
+                      '\$${numberFormat.format(state.financialsForSummary['totalBalance']!.abs())}',
+                  amountColor: AppColors.honeydew,
+                ),
+              ),
+              _buildVerticalDivider(),
+              Expanded(
+                child: _buildBalanceCard(
+                  iconPath: 'assets/IconComponents/Expense.svg',
+                  title: 'Total Expense',
+                  amount:
+                  //'-${NumberFormatUtils.formatAmount(context.read<TransactionBloc>().getCurrentMonthExpense())}',
+                      '\$${numberFormat.format(state.financialsForSummary['expense']!.abs())}',
+
+                  amountColor: AppColors.oceanBlue,
+                ),
+              ),
+            ],
           ),
-          _buildVerticalDivider(),
-          Expanded(
-            child: _buildBalanceCard(
-              iconPath: 'assets/IconComponents/Expense.svg',
-              title: 'Total Expense',
-              amount: '-\$1,187.40',
-              amountColor: AppColors.oceanBlue,
-            ),
-          ),
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -177,13 +207,19 @@ class HomeScreen extends StatelessWidget {
             ),
           ],
         ),
-        Text(
-          amount,
-          style: TextStyle(
-            fontSize: 24,
-            fontWeight: FontWeight.bold,
-            color: amountColor,
-          ),
+        Row(
+          children: [
+            Text(
+              amount,
+              style: TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: amountColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1,
+            ),
+          ],
         ),
       ],
     );
@@ -197,11 +233,10 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Progress Feedback Section
   Widget _buildProgressFeedbackSection() {
     return Column(
       children: [
-        _buildProgressIndicator(percentage: 30, amount: '\$20,000.00'),
+        _buildProgressIndicator(percentage: 30, amount: '\$20,000'),
         const SizedBox(height: 10),
         _buildFeedbackRow(),
       ],
@@ -261,7 +296,7 @@ class HomeScreen extends StatelessWidget {
         SvgPicture.asset('assets/IconComponents/check.svg'),
         const SizedBox(width: 10),
         const Text(
-          '30% Of Your Expenses, Looks Good.',
+          '30% Of Your Saving, Looks Good.',
           style: TextStyle(
             fontSize: 15,
             fontWeight: FontWeight.w400,
@@ -272,7 +307,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Savings and Revenue Sectionq
   Widget _buildSavingsRevenueSection() {
     return Container(
       padding: const EdgeInsets.only(left: 37, right: 37, bottom: 22),
@@ -289,39 +323,207 @@ class HomeScreen extends StatelessWidget {
       ),
     );
   }
-
   Widget _buildSavingsWidget() {
-    return Container(
-      height: 115,
-      decoration: const BoxDecoration(
-        border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          _buildAnimatedCircularProgress(),
-          const SizedBox(height: 5),
-          const Text(
-            'Savings',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: AppColors.blackHeader,
-            ),
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        final totalSavings = state.allTransactions
+            .where((t) => t.idCategory.moneyType == MoneyType.save)
+            .fold(0, (sum, t) => sum + t.amount);
+        final totalGoals = CategoryRepository.getAllCategories()
+            .where((c) => c.moneyType == MoneyType.save)
+            .map((c) => c.goalSave ?? 0)
+            .fold(0, (a, b) => a + b);
+        double progress = totalGoals > 0 ? (totalSavings / totalGoals).clamp(0.0, 1.0) : 0.0;
+
+        String iconPath = Assets.iconComponents.vector7.path; // Default icon
+        final savingsCategories = CategoryRepository.getAllCategories()
+            .where((c) => c.moneyType == MoneyType.save)
+            .toList();
+        late  final CategoryModel highestGoalCategory;
+        // Find the category with the highest goalSave
+        if (savingsCategories.isNotEmpty) {
+           highestGoalCategory = savingsCategories.reduce((a, b) =>
+          (a.goalSave ?? 0) > (b.goalSave ?? 0) ? a : b);
+          iconPath = _getCategoryIconPath(highestGoalCategory.categoryType);
+        }
+
+        return Container(
+          height: 115,
+          decoration: const BoxDecoration(
+            border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
           ),
-          const Text(
-            'On Goals',
-            style: TextStyle(
-              fontSize: 12,
-              fontWeight: FontWeight.w500,
-              color: AppColors.blackHeader,
-            ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  context.pushNamed(CategoryDetailSaveScreen.routeName, extra: highestGoalCategory);
+                                },
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    SizedBox(
+                      height: 70,
+                      width: 70,
+                      child: CircularProgressIndicator(
+                        value: progress,
+                        strokeWidth: 3,
+                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.oceanBlue),
+                        backgroundColor: AppColors.honeydew,
+                      ),
+                    ),
+                    SvgPicture.asset(
+                      iconPath,
+                      height: 30,
+                      width: 40,
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 5),
+              const Text(
+                'Savings',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.blackHeader,
+                ),
+              ),
+              const Text(
+                'Progress',
+                style: TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                  color: AppColors.blackHeader,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
+  String _getCategoryIconPath(String categoryType) {
+    switch (categoryType) {
+      case 'Travel':
+        return Assets.iconComponents.travel.path;
+      case 'New House':
+        return Assets.iconComponents.newHome.path;
+      case 'Wedding':
+        return Assets.iconComponents.weddingDay.path;
+      case 'Other Savings':
+        return Assets.iconComponents.travel.path;
+      default:
+        return Assets.iconComponents.vector7.path;
+    }
+  }
+  // Widget _buildSavingsWidget() {
+  //   return BlocBuilder<TransactionBloc, TransactionState>(
+  //     builder: (context, state) {
+  //       final totalSavings = state.allTransactions
+  //           .where((t) => t.idCategory.moneyType == MoneyType.save)
+  //           .fold(0, (sum, t) => sum + t.amount);
+  //       final totalGoals = CategoryRepository.getAllCategories()
+  //           .where((c) => c.moneyType == MoneyType.save)
+  //           .map((c) => c.goalSave ?? 0)
+  //           .reduce((a, b) => a + b);
+  //       double progress = totalGoals > 0 ? (totalSavings / totalGoals).clamp(0.0, 1.0) : 0.0;
+  //
+  //       return Container(
+  //         height: 115,
+  //         decoration: const BoxDecoration(
+  //           border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
+  //         ),
+  //         child: Column(
+  //           crossAxisAlignment: CrossAxisAlignment.start,
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             GestureDetector(
+  //               onTap: () {
+  //                 // context.pushNamed(CategoryDetailSaveScreen.routeName, extra: CategoryModel(
+  //                 //   id: 0,
+  //                 //   categoryType: 'Savings Overview',
+  //                 //   moneyType: MoneyType.save,
+  //                 //   goalSave: totalGoals,
+  //                 // ));
+  //               },
+  //               child: Stack(
+  //                 alignment: Alignment.center,
+  //                 children: [
+  //                   SizedBox(
+  //                     height: 70,
+  //                     width: 70,
+  //                     child: CircularProgressIndicator(
+  //                       value: progress,
+  //                       strokeWidth: 3,
+  //                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.oceanBlue),
+  //                       backgroundColor: AppColors.honeydew,
+  //                     ),
+  //                   ),
+  //                   SvgPicture.asset(
+  //                     Assets.iconComponents.vector7.path,
+  //                     height: 30,
+  //                     width: 40,
+  //                   ),
+  //                 ],
+  //               ),
+  //             ),
+  //             const SizedBox(height: 5),
+  //             const Text(
+  //               'Savings',
+  //               style: TextStyle(
+  //                 fontSize: 12,
+  //                 fontWeight: FontWeight.w500,
+  //                 color: AppColors.blackHeader,
+  //               ),
+  //             ),
+  //             const Text(
+  //               'On Goals',
+  //               style: TextStyle(
+  //                 fontSize: 12,
+  //                 fontWeight: FontWeight.w500,
+  //                 color: AppColors.blackHeader,
+  //               ),
+  //             ),
+  //           ],
+  //         ),
+  //       );
+  //     },
+  //   );
+  // }
+  // Widget _buildSavingsWidget() {
+  //   return Container(
+  //     height: 115,
+  //     decoration: const BoxDecoration(
+  //       border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
+  //     ),
+  //     child: Column(
+  //       crossAxisAlignment: CrossAxisAlignment.start,
+  //       mainAxisAlignment: MainAxisAlignment.center,
+  //       children: [
+  //         _buildAnimatedCircularProgress(),
+  //         const SizedBox(height: 5),
+  //         const Text(
+  //           'Savings',
+  //           style: TextStyle(
+  //             fontSize: 12,
+  //             fontWeight: FontWeight.w500,
+  //             color: AppColors.blackHeader,
+  //           ),
+  //         ),
+  //         const Text(
+  //           'On Goals',
+  //           style: TextStyle(
+  //             fontSize: 12,
+  //             fontWeight: FontWeight.w500,
+  //             color: AppColors.blackHeader,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   Widget _buildAnimatedCircularProgress() {
     return TweenAnimationBuilder<double>(
@@ -355,24 +557,39 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildRevenueWidget() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _buildRevenueItem(
-          iconPath: 'assets/IconComponents/Vector-1.svg',
-          title: 'Revenue Last Week',
-          amount: '\$4,000.00',
-          amountColor: AppColors.fenceGreen,
-          showDivider: true,
-        ),
-        _buildRevenueItem(
-          iconPath: 'assets/IconComponents/Salary.svg',
-          title: 'Food Last Week',
-          amount: '-\$100.00',
-          amountColor: AppColors.oceanBlue,
-          showDivider: false,
-        ),
-      ],
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        final transactionBloc = context.read<TransactionBloc>();
+
+        final revenueLastWeek =
+            state.allTransactions.isNotEmpty
+                ? transactionBloc.getRevenueLastWeek()
+                : 0;
+        final foodLastWeek =
+            state.allTransactions.isNotEmpty
+                ? transactionBloc.getFoodLastWeek()
+                : 0;
+
+        return Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildRevenueItem(
+              iconPath: 'assets/IconComponents/Vector-1.svg',
+              title: 'Revenue Last Week',
+              amount: '\$$revenueLastWeek',
+              amountColor: AppColors.fenceGreen,
+              showDivider: true,
+            ),
+            _buildRevenueItem(
+              iconPath: 'assets/IconComponents/Salary.svg',
+              title: 'Food Last Week',
+              amount: '-\$$foodLastWeek',
+              amountColor: AppColors.oceanBlue,
+              showDivider: false,
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -430,7 +647,6 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  // Tabs Section
   Widget _buildTabsSection() {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 5),
@@ -441,190 +657,263 @@ class HomeScreen extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          _buildTab('Daily', false),
-          _buildTab('Weekly', false),
-          _buildTab('Monthly', true),
+          _buildTab('Daily', _selectedTimeFilter == TimeFilter.daily),
+          _buildTab('Weekly', _selectedTimeFilter == TimeFilter.weekly),
+          _buildTab('Monthly', _selectedTimeFilter == TimeFilter.monthly),
         ],
       ),
     );
   }
 
   Widget _buildTab(String title, bool isSelected) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
-      decoration: BoxDecoration(
-        color: isSelected ? AppColors.caribbeanGreen : AppColors.lightGreen,
-        borderRadius: BorderRadius.circular(22),
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 15,
-          fontWeight: FontWeight.w400,
-          color: AppColors.fenceGreen,
-        ),
-      ),
-    );
-  }
-
-  // Transaction Section
-  Widget _buildTransactionSection(BuildContext context) {
-    final transactions = [
-      {
-        'title': 'Salary',
-        'iconPath': 'assets/IconComponents/salary-white.svg',
-        'date': '18:27 - April 30',
-        'label': 'Monthly',
-        'amount': '\$4,000.00',
-        'backgroundColor': AppColors.lightBlue,
+    TimeFilter filter;
+    switch (title.toLowerCase()) {
+      case 'daily':
+        filter = TimeFilter.daily;
+        break;
+      case 'weekly':
+        filter = TimeFilter.weekly;
+        break;
+      case 'monthly':
+        filter = TimeFilter.monthly;
+        break;
+      default:
+        filter = TimeFilter.monthly;
+    }
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _selectedTimeFilter = filter;
+        });
       },
-      {
-        'title': 'Groceries',
-        'iconPath': 'assets/IconComponents/groceries-white.svg',
-        'date': '17:00 - April 24',
-        'label': 'Pantry',
-        'amount': '-\$100.00',
-        'backgroundColor': AppColors.vividBlue,
-      },
-      {
-        'title': 'Rent',
-        'iconPath': 'assets/IconComponents/rent-white.svg',
-        'date': '8:30 - April 15',
-        'label': 'Rent',
-        'amount': '-\$674.40',
-        'backgroundColor': AppColors.oceanBlue,
-      },
-    ];
-
-    return Column(
-      children:
-          transactions
-              .map(
-                (transaction) => Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: _buildTransactionItem(
-                    title: transaction['title'] as String,
-                    iconPath: transaction['iconPath'] as String,
-                    date: transaction['date'] as String,
-                    label: transaction['label'] as String,
-                    amount: transaction['amount'] as String,
-                    backgroundColor: transaction['backgroundColor'] as Color,
-                  ),
-                ),
-              )
-              .toList(),
-    );
-  }
-
-  Widget _buildTransactionItem({
-    required String title,
-    required String iconPath,
-    required String date,
-    required String label,
-    required String amount,
-    required Color backgroundColor,
-  }) {
-    return Row(
-      children: [
-        _buildTransactionIcon(
-          iconPath: iconPath,
-          backgroundColor: backgroundColor,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+        decoration: BoxDecoration(
+          color: isSelected ? AppColors.caribbeanGreen : AppColors.lightGreen,
+          borderRadius: BorderRadius.circular(22),
         ),
-        const SizedBox(width: 16),
-        Expanded(child: _buildTransactionDetails(title: title, date: date)),
-        _buildTransactionDivider(),
-        Expanded(child: _buildTransactionLabel(label: label)),
-        _buildTransactionDivider(),
-        Expanded(child: _buildTransactionAmount(amount: amount)),
-      ],
-    );
-  }
-
-  Widget _buildTransactionIcon({
-    required String iconPath,
-    required Color backgroundColor,
-  }) {
-    return Container(
-      width: 56,
-      height: 56,
-      decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Center(
-        child: SvgPicture.asset(
-          iconPath,
-          width: 24,
-          height: 24,
-          color: Colors.white,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTransactionDetails({
-    required String title,
-    required String date,
-  }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
+        child: Text(
           title,
           style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w600,
+            fontSize: 15,
+            fontWeight: FontWeight.w400,
             color: AppColors.fenceGreen,
           ),
         ),
-        const SizedBox(height: 4),
-        Text(
-          date,
-          style: const TextStyle(
-            fontSize: 10,
-            fontWeight: FontWeight.w400,
-            color: AppColors.oceanBlue,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildTransactionLabel({required String label}) {
-    return Text(
-      label,
-      textAlign: TextAlign.center,
-      style: const TextStyle(
-        fontSize: 10,
-        fontWeight: FontWeight.w500,
-        color: AppColors.fenceGreen,
       ),
     );
   }
 
-  Widget _buildTransactionAmount({required String amount}) {
-    return Center(
-      child: Text(
-        amount,
-        textAlign: TextAlign.right,
-        style: TextStyle(
-          fontSize: 10,
-          fontWeight: FontWeight.w600,
-          color:
-              amount.startsWith('-')
-                  ? AppColors.oceanBlue
-                  : AppColors.fenceGreen,
-        ),
-      ),
+  Widget _buildTransactionSection(BuildContext context) {
+    return BlocConsumer<TransactionBloc, TransactionState>(
+      listener: (context, state) {
+        if (state is TransactionError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(state.errorMessage ?? 'An unknown error occurred'),
+            ),
+          );
+        }
+        if (state is TransactionLoading) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, true);
+          });
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, false);
+          });
+        }
+      },
+      builder: (context, state) {
+        if (state is TransactionLoading && state.allTransactions.isEmpty) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, true);
+          });
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, false);
+          });
+        }
+        if (state is TransactionError && state.allTransactions.isEmpty) {
+          return Center(
+            child: Text(state.errorMessage ?? 'Failed to load transactions.'),
+          );
+        }
+        if (state.allTransactions.isEmpty) {
+          return const Center(child: Text('No transactions available.'));
+        }
+
+        List<TransactionModel> transactions = state.allTransactions;
+       // DateTime now = DateTime.now();
+
+        switch (_selectedTimeFilter) {
+          case TimeFilter.daily:
+            transactions.sort((a, b) => b.time.compareTo(a.time));
+            break;
+          case TimeFilter.weekly:
+            transactions.sort((a, b) => b.time.compareTo(a.time));
+            break;
+          case TimeFilter.monthly:
+            transactions = context
+                .read<TransactionBloc>()
+                .getTransactionsForDisplay(
+                  state.allTransactions,
+                  state.selectedMonth,
+                  state.currentListFilterType,
+                );
+
+            transactions.sort((a, b) => b.time.compareTo(a.time));
+            break;
+        }
+
+        Map<String, List<TransactionModel>> groupedTransactions = {};
+        if (transactions.isNotEmpty) {
+          for (var transaction in transactions) {
+            String dateKey = '';
+            if (_selectedTimeFilter == TimeFilter.daily) {
+              dateKey = DateFormat('EEEE, d MMMM, y').format(transaction.time);
+            } else if (_selectedTimeFilter == TimeFilter.weekly) {
+              int day = transaction.time.day;
+              String monthYear = DateFormat('MMMM, y').format(transaction.time);
+              if (day >= 1 && day <= 7) {
+                dateKey = 'Week 1, $monthYear';
+              } else if (day >= 8 && day <= 15) {
+                dateKey = 'Week 2, $monthYear';
+              } else if (day >= 16 && day <= 22) {
+                dateKey = 'Week 3, $monthYear';
+              } else {
+                dateKey = 'Week 4, $monthYear';
+              }
+            } else {
+              dateKey = DateFormat('MMMM, y').format(transaction.time);
+            }
+
+            if (!groupedTransactions.containsKey(dateKey)) {
+              groupedTransactions[dateKey] = [];
+            }
+            groupedTransactions[dateKey]!.add(transaction);
+          }
+        }
+
+        List<String> sortedDateKeys = groupedTransactions.keys.toList();
+        sortedDateKeys.sort((a, b) {
+          DateTime dateA;
+          DateTime dateB;
+
+          if (_selectedTimeFilter == TimeFilter.daily) {
+            dateA = DateFormat('EEEE, d MMMM, y').parse(a);
+            dateB = DateFormat('EEEE, d MMMM, y').parse(b);
+          } else if (_selectedTimeFilter == TimeFilter.weekly) {
+            RegExp regExp = RegExp(r'Week (\d+), (\w+) (\d{4})');
+            Match? matchA = regExp.firstMatch(a);
+            Match? matchB = regExp.firstMatch(b);
+
+            if (matchA != null && matchB != null) {
+              int weekNumA = int.parse(matchA.group(1)!);
+              String monthNameA = matchA.group(2)!;
+              int yearA = int.parse(matchA.group(3)!);
+
+              int weekNumB = int.parse(matchB.group(1)!);
+              String monthNameB = matchB.group(2)!;
+              int yearB = int.parse(matchB.group(3)!);
+
+              DateTime tempDateA = DateTime(
+                yearA,
+                DateFormat('MMMM').parse(monthNameA).month,
+                (weekNumA - 1) * 7 + 1,
+              );
+              DateTime tempDateB = DateTime(
+                yearB,
+                DateFormat('MMMM').parse(monthNameB).month,
+                (weekNumB - 1) * 7 + 1,
+              );
+
+              return tempDateB.compareTo(tempDateA);
+            }
+            return 0;
+          } else {
+            dateA = DateFormat('MMMM, y').parse(a);
+            dateB = DateFormat('MMMM, y').parse(b);
+          }
+          return dateB.compareTo(dateA);
+        });
+
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (transactions.isEmpty)
+              const Center(child: Text('No transactions for this period.'))
+            else
+              ...sortedDateKeys.map((dateHeader) {
+                List<TransactionModel> dailyTransactions =
+                    groupedTransactions[dateHeader]!;
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        dateHeader,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.blackHeader,
+                        ),
+                      ),
+                    ),
+                    ...dailyTransactions.map((transaction) {
+                      final isIncome =
+                          transaction.idCategory.moneyType == MoneyType.income;
+                      return Padding(
+                        padding: const EdgeInsets.only(bottom: 16),
+                        child: buildTransactionItem(
+                          context: context,
+                          transactionId: transaction.id,
+                          title: transaction.title,
+                          iconPath:
+                              isIncome
+                                  ? Assets.iconComponents.salaryWhite.path
+                                  : _getExpenseIcon(
+                                    transaction.idCategory.categoryType,
+                                  ),
+                          date: _formatDate(
+                            transaction.time,
+                            _selectedTimeFilter,
+                          ),
+                          label: transaction.idCategory.categoryType,
+                          amount:
+                              '${isIncome ? '' : '-'}${transaction.amount}',
+                          backgroundColor:
+                              isIncome
+                                  ? AppColors.lightBlue
+                                  : AppColors.vividBlue,
+                          showDividers: true,
+                        ),
+                      );
+                    }),
+                  ],
+                );
+              }),
+          ],
+        );
+      },
     );
   }
 
-  Widget _buildTransactionDivider() {
-    return Container(
-      height: 40,
-      width: 1,
-      color: AppColors.caribbeanGreen.withValues(alpha: 0.3),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-    );
+  String _formatDate(DateTime date, TimeFilter filter) {
+    return DateFormat('dd/MM/yy').format(date);
+  }
+
+  String _getExpenseIcon(String category) {
+    switch (category) {
+      case 'Groceries':
+        return Assets.iconComponents.groceriesWhite.path;
+      case 'Rent':
+        return Assets.iconComponents.rentWhite.path;
+      case 'Transport':
+        return Assets.iconComponents.iconTransport.path;
+      default:
+        return Assets.iconComponents.expense.path;
+    }
   }
 }
