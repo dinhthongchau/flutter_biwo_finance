@@ -12,6 +12,24 @@ class TransactionModel {
 
   TransactionModel(this.idUser, this.id, this.time, this.amount,
       this.idCategory, this.title, this.note);
-
+  TransactionModel copyWith({
+    UserModel? idUser,
+    int? id,
+    DateTime? time,
+    int? amount,
+    CategoryModel? idCategory,
+    String? title,
+    String? note,
+  }) {
+    return TransactionModel(
+      idUser ?? this.idUser,
+      id ?? this.id,
+      time ?? this.time,
+      amount ?? this.amount,
+      idCategory ?? this.idCategory,
+      title ?? this.title,
+      note ?? this.note,
+    );
+  }
 
 }
