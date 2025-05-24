@@ -1,8 +1,10 @@
+import 'package:finance_management/data/model/notification_model.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 Widget buildTransactionItem({
   required BuildContext context,
@@ -16,53 +18,57 @@ Widget buildTransactionItem({
   bool showDividers = true,
 }) {
   final amountColor =
-  amount.startsWith('-') ? AppColors.redColor : AppColors.fenceGreen;
+      amount.startsWith('-') ? AppColors.redColor : AppColors.fenceGreen;
   final displayAmount = amount;
 
   return Dismissible(
-    //key: ValueKey(transactionId),
-    // Use transactionId as the key
     key: UniqueKey(),
-    direction: DismissDirection.horizontal, // Allow both directions
+    direction: DismissDirection.horizontal,
     confirmDismiss: (direction) async {
       if (direction == DismissDirection.endToStart) {
-        // Delete confirmation
         return await DialogUtils.showDeleteConfirmationDialog(context);
       } else if (direction == DismissDirection.startToEnd) {
-        // Edit action
         final transaction = await context
             .read<TransactionBloc>()
             .getTransactionById(transactionId);
         if (transaction != null) {
-          if ( context.mounted) {
+          if (context.mounted) {
             _showEditTransactionDialog(context, transaction);
           }
-
         }
-        return false; // Prevent deletion on edit
+        return false;
       }
-      return false; // Don't dismiss in other cases
+      return false;
     },
     onDismissed: (direction) {
       if (direction == DismissDirection.endToStart) {
-        // Dispatch delete event using BlocProvider
-        BlocProvider.of<TransactionBloc>(context)
-            .add(DeleteTransactionEvent(transactionId));
+        context.read<TransactionBloc>().add(
+          DeleteTransactionEvent(transactionId),
+        );
+        final notificationModel = NotificationModel(
+          iconPath: Assets.iconComponents.check.path,
+          title: 'Transaction Deleted',
+          subtitle: 'Deleted $title',
+          time: DateFormat('HH:mm - MMMM dd').format(DateTime.now()),
+          date: DateTime.now().toIso8601String(),
+        );
+        context.read<NotificationBloc>().add(
+          AddNotification(notificationModel),
+        );
         SnackbarUtils.showNoticeSnackbar(context, '$title deleted', false);
       }
-      // No need to handle edit here, dialog handles it
     },
     background: Container(
-      color: Colors.blue, // Edit background color
+      color: Colors.blue,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       alignment: Alignment.centerLeft,
-      child: const Icon(Icons.edit, color: Colors.white), // Edit icon
+      child: const Icon(Icons.edit, color: Colors.white),
     ),
     secondaryBackground: Container(
-      color: AppColors.redColor, // Delete background color
+      color: AppColors.redColor,
       padding: const EdgeInsets.symmetric(horizontal: 20),
       alignment: Alignment.centerRight,
-      child: const Icon(Icons.delete, color: Colors.white), // Delete icon
+      child: const Icon(Icons.delete, color: Colors.white),
     ),
     child: Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -138,11 +144,10 @@ Widget buildTransactionItem({
   );
 }
 
-
 Future<void> _showEditTransactionDialog(
-    BuildContext context,
-    TransactionModel transaction,
-    ) async {
+  BuildContext context,
+  TransactionModel transaction,
+) async {
   String editedTitle = transaction.title;
   String editedAmount = transaction.amount.toString();
   DateTime editedDate = transaction.time;
@@ -157,7 +162,10 @@ Future<void> _showEditTransactionDialog(
           children: [
             Icon(Icons.edit_rounded, color: AppColors.caribbeanGreen),
             SizedBox(width: 8),
-            Text('Edit transaction', style: TextStyle(fontWeight: FontWeight.bold)),
+            Text(
+              'Edit transaction',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ],
         ),
         content: SingleChildScrollView(
@@ -168,7 +176,9 @@ Future<void> _showEditTransactionDialog(
                 initialValue: editedTitle,
                 decoration: InputDecoration(
                   labelText: 'Tiêu đề',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onChanged: (value) => editedTitle = value,
               ),
@@ -177,24 +187,27 @@ Future<void> _showEditTransactionDialog(
                 initialValue: editedAmount,
                 decoration: InputDecoration(
                   labelText: 'Số tiền',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onChanged: (value) => editedAmount = value,
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 12),
               TextFormField(
-                initialValue: '${editedDate.year}-${editedDate.month}-${editedDate.day}',
+                initialValue:
+                    '${editedDate.year}-${editedDate.month}-${editedDate.day}',
                 decoration: InputDecoration(
                   labelText: 'Ngày (YYYY-MM-DD)',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onChanged: (value) {
                   try {
                     editedDate = DateTime.parse(value);
-                  } catch (e) {
-                    // Handle invalid date format
-                  }
+                  } catch (e) {}
                 },
               ),
               const SizedBox(height: 12),
@@ -203,11 +216,12 @@ Future<void> _showEditTransactionDialog(
                 maxLines: 2,
                 decoration: InputDecoration(
                   labelText: 'Ghi chú',
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
                 ),
                 onChanged: (value) => editedLabel = value,
               ),
-              // Add more fields as needed
             ],
           ),
         ),
@@ -216,22 +230,39 @@ Future<void> _showEditTransactionDialog(
             onPressed: () => context.pop(),
             style: TextButton.styleFrom(
               foregroundColor: AppColors.oceanBlue,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            child: const Text('Hủy', style: TextStyle(fontWeight: FontWeight.w500)),
+            child: const Text(
+              'Hủy',
+              style: TextStyle(fontWeight: FontWeight.w500),
+            ),
           ),
           ElevatedButton(
             onPressed: () {
-              // Dispatch event to update the transaction
-              BlocProvider.of<TransactionBloc>(context).add(
+              context.read<TransactionBloc>().add(
                 EditTransactionEvent(
                   transaction.copyWith(
                     title: editedTitle,
-                    amount: (double.tryParse(editedAmount) ?? transaction.amount).toInt(),
+                    amount:
+                        (double.tryParse(editedAmount) ?? transaction.amount)
+                            .toInt(),
                     time: editedDate,
                     note: editedLabel,
                   ),
                 ),
+              );
+
+              final notificationModel = NotificationModel(
+                iconPath: Assets.iconComponents.group359.path,
+                title: 'Transaction Edited',
+                subtitle: 'Edited $editedTitle',
+                time: DateFormat('HH:mm - MMMM dd').format(DateTime.now()),
+                date: DateTime.now().toIso8601String(),
+              );
+              context.read<NotificationBloc>().add(
+                AddNotification(notificationModel),
               );
               SnackbarUtils.showNoticeSnackbar(context, 'Đã chỉnh sửa', false);
               context.pop();
@@ -239,9 +270,14 @@ Future<void> _showEditTransactionDialog(
             style: ElevatedButton.styleFrom(
               backgroundColor: AppColors.caribbeanGreen,
               foregroundColor: Colors.white,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(10),
+              ),
             ),
-            child: const Text('Lưu', style: TextStyle(fontWeight: FontWeight.bold)),
+            child: const Text(
+              'Lưu',
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
           ),
         ],
       );
@@ -265,7 +301,10 @@ Widget _buildTransactionIcon({
         iconPath,
         width: 20,
         height: 20,
-        colorFilter: const ColorFilter.mode(AppColors.honeydew, BlendMode.srcIn),
+        colorFilter: const ColorFilter.mode(
+          AppColors.honeydew,
+          BlendMode.srcIn,
+        ),
       ),
     ),
   );

@@ -151,14 +151,7 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
       //   'date': DateTime.now().toIso8601String(),
       // }));
       //_selectedDate
-      final notificationModel = NotificationModel(
-        iconPath: Assets.iconComponents.check.path,
-        title: 'Transaction Added',
-        subtitle: 'Added ${_titleController.text} to ${_selectedCategory!.categoryType}',
-        time: DateFormat('HH:mm - MMMM dd').format(_selectedDate),
-        date:  DateTime.now().toIso8601String(),
-      );
-      context.read<NotificationBloc>().add(AddNotification(notificationModel));
+
       context.pop();
     }
   }
@@ -189,7 +182,16 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
         }
 
         if (state is TransactionSuccess) {
+          final notificationModel = NotificationModel(
+            iconPath: Assets.iconComponents.check.path,
+            title: 'Transaction Added',
+            subtitle: 'Added ${_titleController.text} to ${_selectedCategory!.categoryType}',
+            time: DateFormat('HH:mm - MMMM dd').format(_selectedDate),
+            date:  DateTime.now().toIso8601String(),
+          );
+          context.read<NotificationBloc>().add(AddNotification(notificationModel));
           DialogUtils.isSuccessDialog(context, 'Transaction added successfully!');
+
           // NotificationModel.addNotification({
           //   'iconPath': Assets.functionalIcon.vector25.path,
           //   'title': 'Transactions',
