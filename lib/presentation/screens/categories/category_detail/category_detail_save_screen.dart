@@ -85,21 +85,21 @@ class CategoryDetailSaveScreen extends StatelessWidget {
   Widget buildBody() {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
-        if (state is TransactionLoading && state.allTransactions.isEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, true);
-          });
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, false);
-          });
-        }
-        if (state is TransactionError && state.allTransactions.isEmpty) {
-          return Center(child: Text(state.errorMessage ?? 'Failed to load transactions.'));
-        }
-        if (state.allTransactions.isEmpty) {
-          return const Center(child: Text('No transactions available.'));
-        }
+        // if (state is TransactionLoading && state.allTransactions.isEmpty) {
+        //   WidgetsBinding.instance.addPostFrameCallback((_) {
+        //     LoadingUtils.showLoading(context, true);
+        //   });
+        // } else {
+        //   WidgetsBinding.instance.addPostFrameCallback((_) {
+        //     LoadingUtils.showLoading(context, false);
+        //   });
+        // }
+        // if (state is TransactionError && state.allTransactions.isEmpty) {
+        //   return Center(child: Text(state.errorMessage ?? 'Failed to load transactions.'));
+        // }
+        // if (state.allTransactions.isEmpty) {
+        //   return const Center(child: Text('No transactions available.'));
+        // }
 
         final filteredTransactions = state.allTransactions
             .where((t) => t.idCategory.id == category.id)

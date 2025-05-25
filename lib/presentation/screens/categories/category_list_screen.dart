@@ -80,7 +80,6 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // floatingActionButtonLocation: FloatingActionButtonLocation.miniStartTop,
       floatingActionButton: Container(
         alignment: Alignment.bottomCenter,
         padding: const EdgeInsets.only(bottom: 80.0, left: 150),
@@ -137,144 +136,250 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
         centerTitle: true,
       ),
       backgroundColor: AppColors.caribbeanGreen,
-      body: BlocBuilder<TransactionBloc, TransactionState>(
-        builder: (context, state) {
-          if (state is TransactionLoading && state.allTransactions.isEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              LoadingUtils.showLoading(context, true);
-            });
-          } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              LoadingUtils.showLoading(context, false);
-            });
-          }
-          if (state is TransactionError && state.allTransactions.isEmpty) {
-            return Center(
-              child: Text(state.errorMessage ?? 'Failed to load transactions.'),
-            );
-          }
-          if (state.allTransactions.isEmpty) {
-            return const Center(child: Text('No transactions available.'));
-          }
+      body: buildBody2(),
+    );
+  }
 
-          final totalBalance = context
-              .read<TransactionBloc>()
-              .calculateTotalBalance(state.allTransactions);
-          final totalMoneyType =
-              context.read<TransactionBloc>().calculateFinancialsForMoneyType(
-                state.allTransactions,
-                widget.moneyType,
-              )['totalAmount']!;
+  Widget buildBody() {
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        final totalBalance = context
+            .read<TransactionBloc>()
+            .calculateTotalBalance(state.allTransactions);
+        final totalMoneyType =
+            context.read<TransactionBloc>().calculateFinancialsForMoneyType(
+              state.allTransactions,
+              widget.moneyType,
+            )['totalAmount']!;
 
-          return Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(20.0),
-                child: Row(
-                  children: [
-                    Expanded(child: _buildTotalBalanceCard(totalBalance)),
-                    const SizedBox(width: 16),
-                    Expanded(
-                      child: _buildTotalMoneyTypeCard(
-                        totalMoneyType,
-                        widget.moneyType,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  decoration: const BoxDecoration(
-                    color: AppColors.honeydew,
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(40),
-                      topRight: Radius.circular(40),
+        return Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                children: [
+                  Expanded(child: _buildTotalBalanceCard(totalBalance)),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: _buildTotalMoneyTypeCard(
+                      totalMoneyType,
+                      widget.moneyType,
                     ),
                   ),
-                  child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 20.0,
-                      vertical: 20.0,
-                    ),
-                    child: FutureBuilder<List<CategoryModel>>(
-                      future: _categoriesFuture,
-                      builder: (context, categorySnapshot) {
-                        if (categorySnapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            LoadingUtils.showLoading(context, true);
-                          });
-                        } else {
-                          WidgetsBinding.instance.addPostFrameCallback((_) {
-                            LoadingUtils.showLoading(context, false);
-                          });
-                        }
-                        if (categorySnapshot.hasError) {
-                          return Center(
-                            child: Text(
-                              'Error loading categories: ${categorySnapshot.error}',
-                            ),
-                          );
-                        }
-                        if (!categorySnapshot.hasData ||
-                            categorySnapshot.data!.isEmpty) {
-                          return Center(
-                            child: Text(
-                              'No ${widget.moneyType.toString().split('.').last} categories defined.',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                color: AppColors.fenceGreen,
-                              ),
-                            ),
-                          );
-                        }
-
-                        final categoriesOfType = categorySnapshot.data!;
-
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 17),
-                          child: GridView.builder(
-                            shrinkWrap: true,
-                            physics: const NeverScrollableScrollPhysics(),
-                            gridDelegate:
-                                const SliverGridDelegateWithFixedCrossAxisCount(
-                                  crossAxisCount: 3,
-                                  crossAxisSpacing: 10,
-                                  mainAxisSpacing: 10,
-                                  childAspectRatio: 1.0,
-                                ),
-                            itemCount: categoriesOfType.length + 1,
-                            itemBuilder: (context, index) {
-                              if (index < categoriesOfType.length) {
-                                final category = categoriesOfType[index];
-                                return _buildCategoryGridItem(
-                                  context,
-                                  category: category,
-                                  iconPath: _getCategoryIconPath(
-                                    category.categoryType,
-                                    category.moneyType,
-                                  ),
-                                  color: _getCategoryColor(category.moneyType),
-                                );
-                              } else {
-                                return _buildMoreCategoryGridItem(
-                                  context,
-                                  widget.moneyType,
-                                );
-                              }
-                            },
+                ],
+              ),
+            ),
+            Expanded(
+              child: Container(
+                decoration: const BoxDecoration(
+                  color: AppColors.honeydew,
+                  borderRadius: BorderRadius.only(
+                    topLeft: Radius.circular(40),
+                    topRight: Radius.circular(40),
+                  ),
+                ),
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 20.0,
+                    vertical: 20.0,
+                  ),
+                  child: FutureBuilder<List<CategoryModel>>(
+                    future: _categoriesFuture,
+                    builder: (context, categorySnapshot) {
+                      if (categorySnapshot.connectionState ==
+                          ConnectionState.waiting) {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          LoadingUtils.showLoading(context, true);
+                        });
+                      } else {
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          LoadingUtils.showLoading(context, false);
+                        });
+                      }
+                      if (categorySnapshot.hasError) {
+                        return Center(
+                          child: Text(
+                            'Error loading categories: ${categorySnapshot.error}',
                           ),
                         );
-                      },
-                    ),
+                      }
+                      if (!categorySnapshot.hasData ||
+                          categorySnapshot.data!.isEmpty) {
+                        return Center(
+                          child: Text(
+                            'No ${widget.moneyType.toString().split('.').last} categories defined.',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: AppColors.fenceGreen,
+                            ),
+                          ),
+                        );
+                      }
+
+                      final categoriesOfType = categorySnapshot.data!;
+
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 17),
+                        child: GridView.builder(
+                          shrinkWrap: true,
+                          physics: const NeverScrollableScrollPhysics(),
+                          gridDelegate:
+                              const SliverGridDelegateWithFixedCrossAxisCount(
+                                crossAxisCount: 3,
+                                crossAxisSpacing: 10,
+                                mainAxisSpacing: 10,
+                                childAspectRatio: 1.0,
+                              ),
+                          itemCount: categoriesOfType.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index < categoriesOfType.length) {
+                              final category = categoriesOfType[index];
+                              return _buildCategoryGridItem(
+                                context,
+                                category: category,
+                                iconPath: _getCategoryIconPath(
+                                  category.categoryType,
+                                  category.moneyType,
+                                ),
+                                color: _getCategoryColor(category.moneyType),
+                              );
+                            } else {
+                              return _buildMoreCategoryGridItem(
+                                context,
+                                widget.moneyType,
+                              );
+                            }
+                          },
+                        ),
+                      );
+                    },
                   ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget buildBody2() {
+    final transactionBloc = context.read<TransactionBloc>();
+    final totalBalance = transactionBloc.calculateTotalBalance(
+      transactionBloc.state.allTransactions,
+    );
+    final totalMoneyType =
+        transactionBloc.calculateFinancialsForMoneyType(
+          transactionBloc.state.allTransactions,
+          widget.moneyType,
+        )['totalAmount']!;
+
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            children: [
+              Expanded(child: _buildTotalBalanceCard(totalBalance)),
+              const SizedBox(width: 16),
+              Expanded(
+                child: _buildTotalMoneyTypeCard(
+                  totalMoneyType,
+                  widget.moneyType,
                 ),
               ),
             ],
-          );
-        },
-      ),
+          ),
+        ),
+        Expanded(
+          child: Container(
+            decoration: const BoxDecoration(
+              color: AppColors.honeydew,
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(40),
+                topRight: Radius.circular(40),
+              ),
+            ),
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 20.0,
+                vertical: 20.0,
+              ),
+              child: FutureBuilder<List<CategoryModel>>(
+                future: _categoriesFuture,
+                builder: (context, categorySnapshot) {
+                  if (categorySnapshot.connectionState ==
+                      ConnectionState.waiting) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      LoadingUtils.showLoading(context, true);
+                    });
+                  } else {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      LoadingUtils.showLoading(context, false);
+                    });
+                  }
+                  if (categorySnapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error loading categories: ${categorySnapshot.error}',
+                      ),
+                    );
+                  }
+                  if (!categorySnapshot.hasData ||
+                      categorySnapshot.data!.isEmpty) {
+                    return Center(
+                      child: Text(
+                        'No ${widget.moneyType.toString().split('.').last} categories defined.',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: AppColors.fenceGreen,
+                        ),
+                      ),
+                    );
+                  }
+
+                  final categoriesOfType = categorySnapshot.data!;
+
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 17),
+                    child: GridView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      gridDelegate:
+                          const SliverGridDelegateWithFixedCrossAxisCount(
+                            crossAxisCount: 3,
+                            crossAxisSpacing: 10,
+                            mainAxisSpacing: 10,
+                            childAspectRatio: 1.0,
+                          ),
+                      itemCount: categoriesOfType.length + 1,
+                      itemBuilder: (context, index) {
+                        if (index < categoriesOfType.length) {
+                          final category = categoriesOfType[index];
+                          return _buildCategoryGridItem(
+                            context,
+                            category: category,
+                            iconPath: _getCategoryIconPath(
+                              category.categoryType,
+                              category.moneyType,
+                            ),
+                            color: _getCategoryColor(category.moneyType),
+                          );
+                        } else {
+                          return _buildMoreCategoryGridItem(
+                            context,
+                            widget.moneyType,
+                          );
+                        }
+                      },
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
@@ -375,19 +480,35 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
     );
   }
 
-  Widget _buildCategoryGridItem(BuildContext context, {required CategoryModel category, required String iconPath, required Color color}) {
-    final hasTransactions = context.read<TransactionBloc>().state.allTransactions.any((t) => t.idCategory.id == category.id);
+  Widget _buildCategoryGridItem(
+    BuildContext context, {
+    required CategoryModel category,
+    required String iconPath,
+    required Color color,
+  }) {
+    final hasTransactions = context
+        .read<TransactionBloc>()
+        .state
+        .allTransactions
+        .any((t) => t.idCategory.id == category.id);
 
     return GestureDetector(
-      onTap: hasTransactions
-          ? () {
-        if (category.moneyType == MoneyType.save) {
-          context.pushNamed(CategoryDetailSaveScreen.routeName, extra: category);
-        } else {
-          context.pushNamed(CategoryDetailScreen.routeName, extra: category);
-        }
-      }
-          : null,
+      onTap:
+          hasTransactions
+              ? () {
+                if (category.moneyType == MoneyType.save) {
+                  context.pushNamed(
+                    CategoryDetailSaveScreen.routeName,
+                    extra: category,
+                  );
+                } else {
+                  context.pushNamed(
+                    CategoryDetailScreen.routeName,
+                    extra: category,
+                  );
+                }
+              }
+              : null,
       child: Opacity(
         opacity: hasTransactions ? 1.0 : 0.4,
         child: Container(
@@ -396,7 +517,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
             borderRadius: BorderRadius.circular(16),
             boxShadow: [
               BoxShadow(
-                color: AppColors.fenceGreen.withValues(alpha:0.05),
+                color: AppColors.fenceGreen.withValues(alpha: 0.05),
                 blurRadius: 5,
                 offset: const Offset(0, 3),
               ),
@@ -406,10 +527,16 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               SvgPicture.asset(
-                CategoryIconUtils.getCategoryIconPath(category.categoryType, category.moneyType),
+                CategoryIconUtils.getCategoryIconPath(
+                  category.categoryType,
+                  category.moneyType,
+                ),
                 width: 40,
                 height: 40,
-                colorFilter: const ColorFilter.mode(AppColors.honeydew, BlendMode.srcIn),
+                colorFilter: const ColorFilter.mode(
+                  AppColors.honeydew,
+                  BlendMode.srcIn,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
@@ -598,7 +725,7 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
           goalSave = moneyType == MoneyType.save ? result['goalSave'] : null;
 
           if (moneyType == MoneyType.save && goalSave == null) {
-            if ( context.mounted) {
+            if (context.mounted) {
               SnackbarUtils.showNoticeSnackbar(
                 context,
                 'Invalid Goal Save amount',
@@ -661,191 +788,4 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
       ),
     );
   }
-
-  // Widget _buildMoreCategoryGridItem(BuildContext context, MoneyType moneyType) {
-  //   return GestureDetector(
-  //     onTap: () async {
-  //       final newCategoryName = await showDialog<String>(
-  //         context: context,
-  //         builder: (context) {
-  //           String? inputName;
-  //           // return AlertDialog(
-  //           //   title: Text('New Category'),
-  //           //   content: TextField(
-  //           //     onChanged: (value) => inputName = value,
-  //           //     decoration: const InputDecoration(hintText: 'Category Name'),
-  //           //   ),
-  //           //   actions: [
-  //           //     TextButton(
-  //           //       onPressed: () => Navigator.pop(context),
-  //           //       child: const Text('Cancel'),
-  //           //     ),
-  //           //     TextButton(
-  //           //       onPressed: () {
-  //           //         if (inputName != null && inputName!.isNotEmpty) {
-  //           //           final categories = CategoryRepository.getAllCategories();
-  //           //           if (categories.any((c) => c.categoryType.toLowerCase() == inputName!.toLowerCase() && c.moneyType == moneyType)) {
-  //           //             ScaffoldMessenger.of(context).showSnackBar(
-  //           //               const SnackBar(content: Text('Category already exists')),
-  //           //             );
-  //           //             return;
-  //           //           }
-  //           //           Navigator.pop(context, inputName);
-  //           //         }
-  //           //       },
-  //           //       child: const Text('Add'),
-  //           //     ),
-  //           //   ],
-  //           // );
-  //           return Dialog(
-  //             backgroundColor: Colors.transparent,
-  //             child: Container(
-  //               padding: const EdgeInsets.all(24),
-  //               decoration: BoxDecoration(
-  //                 color: Colors.white,
-  //                 borderRadius: BorderRadius.circular(20),
-  //                 boxShadow: [
-  //                   BoxShadow(
-  //                     color: Colors.black.withValues(alpha: 0.1),
-  //                     blurRadius: 10,
-  //                     offset: const Offset(0, 5),
-  //                   ),
-  //                 ],
-  //               ),
-  //               child: Column(
-  //                 mainAxisSize: MainAxisSize.min,
-  //                 children: [
-  //                   const Text(
-  //                     'New Category',
-  //                     style: TextStyle(
-  //                       fontSize: 22,
-  //                       fontWeight: FontWeight.bold,
-  //                       color: Colors.black87,
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 24),
-  //                   Container(
-  //                     padding: const EdgeInsets.symmetric(horizontal: 16),
-  //                     decoration: BoxDecoration(
-  //                       color: AppColors.lightGreen,
-  //                       borderRadius: BorderRadius.circular(12),
-  //                     ),
-  //                     child: TextField(
-  //                       onChanged: (value) => inputName = value,
-  //                       decoration: const InputDecoration(
-  //                         hintText: 'Write...',
-  //                         border: InputBorder.none,
-  //                         hintStyle: TextStyle(color: AppColors.caribbeanGreen),
-  //                       ),
-  //                       style: const TextStyle(color: AppColors.fenceGreen),
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 24),
-  //                   GestureDetector(
-  //                     onTap: () {
-  //                       if (inputName != null && inputName!.isNotEmpty) {
-  //                         final categories = CategoryRepository.getAllCategories();
-  //                         if (categories.any((c) => c.categoryType.toLowerCase() == inputName!.toLowerCase() && c.moneyType == moneyType)) {
-  //                           SnackbarUtils.showNoticeSnackbar(context, 'Category already exists', true);
-  //                           return;
-  //                         }
-  //                         Navigator.pop(context, inputName);
-  //                       }
-  //                     },
-  //                     child: Container(
-  //                       width: double.infinity * 0.8,
-  //                       padding: const EdgeInsets.symmetric(vertical: 16),
-  //                       decoration: BoxDecoration(
-  //                         color: AppColors.caribbeanGreen,
-  //                         borderRadius: BorderRadius.circular(30),
-  //                       ),
-  //                       child: const Center(
-  //                         child: Text(
-  //                           'Save',
-  //                           style: TextStyle(
-  //                             fontSize: 18,
-  //                             fontWeight: FontWeight.bold,
-  //                             color: Colors.white,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                   const SizedBox(height: 12),
-  //                   GestureDetector(
-  //                     onTap: () => Navigator.pop(context),
-  //                     child: Container(
-  //                       width: double.infinity * 0.8,
-  //                       padding: const EdgeInsets.symmetric(vertical: 16),
-  //                       decoration: BoxDecoration(
-  //                         color: AppColors.lightGreen,
-  //                         borderRadius: BorderRadius.circular(30),
-  //                       ),
-  //                       child: const Center(
-  //                         child: Text(
-  //                           'Cancel',
-  //                           style: TextStyle(
-  //                             fontSize: 18,
-  //                             fontWeight: FontWeight.bold,
-  //                             color: AppColors.fenceGreen,
-  //                           ),
-  //                         ),
-  //                       ),
-  //                     ),
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //           );
-  //         },
-  //       );
-  //
-  //       if (newCategoryName != null && newCategoryName.isNotEmpty) {
-  //         await CategoryRepository().addCategory(newCategoryName, moneyType);
-  //         setState(() {
-  //           _categoriesFuture = CategoryRepository().getCategoriesByMoneyType(moneyType);
-  //         });
-  //         if ( context.mounted){
-  //           DialogUtils.isSuccessDialog(context, 'Added $newCategoryName');
-  //         }
-  //
-  //       }
-  //     },
-  //     child: Transform.scale(
-  //       scale: 1.05,
-  //       child: Opacity(
-  //         opacity: 1.0,
-  //         child: Container(
-  //           decoration: BoxDecoration(
-  //             color: AppColors.caribbeanGreen,
-  //             borderRadius: BorderRadius.circular(16),
-  //             boxShadow: [
-  //               BoxShadow(
-  //                 color: AppColors.fenceGreen.withValues(alpha:0.1),
-  //                 blurRadius: 8,
-  //                 offset: const Offset(0, 4),
-  //               ),
-  //             ],
-  //           ),
-  //           child: const Column(
-  //             mainAxisAlignment: MainAxisAlignment.center,
-  //             children: [
-  //               Icon(Icons.add, size: 40, color: AppColors.honeydew),
-  //               SizedBox(height: 8),
-  //               Text(
-  //                 'Add More',
-  //                 textAlign: TextAlign.center,
-  //                 style: TextStyle(
-  //                   fontSize: 14,
-  //                   fontWeight: FontWeight.w500,
-  //                   color: AppColors.honeydew,
-  //                 ),
-  //               ),
-  //             ],
-  //           ),
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
 }

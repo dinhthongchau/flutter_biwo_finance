@@ -19,9 +19,9 @@ import 'package:finance_management/presentation/widgets/build_app_bar.dart';
     void initState() {
       super.initState();
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<TransactionBloc>().add(const LoadTransactionsEvent());
-      });
+      // WidgetsBinding.instance.addPostFrameCallback((_) {
+      //   context.read<TransactionBloc>().add(const LoadTransactionsEvent());
+      // });
     }
 
     @override

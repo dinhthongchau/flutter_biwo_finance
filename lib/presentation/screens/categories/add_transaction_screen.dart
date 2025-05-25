@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:collection/collection.dart'; // Thêm import này
+import 'package:collection/collection.dart';
 
 class AddTransactionScreen extends StatefulWidget {
   static const String routeName = "/add-transaction-screen";
@@ -38,9 +38,7 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
   void initState() {
     super.initState();
     _selectedDate = DateTime.now();
-    // _amountController.text = '';
-    // _titleController.text = '';
-    // _messageController.text = '';
+
     _amountController.text = '2000';
     _titleController.text = 'Title Test';
     _messageController.text = 'Message Test';
@@ -64,15 +62,15 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
   }
 
   Future<void> _loadCategories() async {
-    final categories =
-    await CategoryRepository().getCategoriesByMoneyType(_currentMoneyType);
+    final categories = await CategoryRepository().getCategoriesByMoneyType(
+      _currentMoneyType,
+    );
     setState(() {
       _availableCategories = categories;
       if (widget.initialSelectedCategory != null) {
         if (widget.initialSelectedCategory!.moneyType == _currentMoneyType) {
-          // Sử dụng firstWhereOrNull để tránh lỗi
-          _selectedCategory = _availableCategories.firstWhereOrNull( // Sửa ở đây
-                (cat) => cat.id == widget.initialSelectedCategory!.id,
+          _selectedCategory = _availableCategories.firstWhereOrNull(
+            (cat) => cat.id == widget.initialSelectedCategory!.id,
           );
         } else {
           _selectedCategory = null;
@@ -143,14 +141,6 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
       );
 
       context.read<TransactionBloc>().add(AddTransactionEvent(newTransaction));
-      // context.read<NotificationBloc>().add(AddNotification({
-      //   'iconPath': Assets.iconComponents.check.path,
-      //   'title': 'Transaction Added',
-      //   'subtitle': 'Added ${_titleController.text} to ${_selectedCategory!.categoryType}',
-      //   'time': DateFormat('HH:mm - MMMM dd').format(DateTime.now()),
-      //   'date': DateTime.now().toIso8601String(),
-      // }));
-      //_selectedDate
 
       context.pop();
     }
@@ -171,41 +161,27 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
   Widget build(BuildContext context) {
     return BlocListener<TransactionBloc, TransactionState>(
       listener: (context, state) {
-        if (state is TransactionLoading) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, true);
-          });
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, false);
-          });
-        }
-
         if (state is TransactionSuccess) {
           final notificationModel = NotificationModel(
             iconPath: Assets.iconComponents.check.path,
             title: 'Transaction Added',
-            subtitle: 'Added ${_titleController.text} to ${_selectedCategory!.categoryType}',
+            subtitle:
+                'Added ${_titleController.text} to ${_selectedCategory!.categoryType}',
             time: DateFormat('HH:mm - MMMM dd').format(_selectedDate),
-            date:  DateTime.now().toIso8601String(),
+            date: DateTime.now().toIso8601String(),
           );
-          context.read<NotificationBloc>().add(AddNotification(notificationModel));
-          DialogUtils.isSuccessDialog(context, 'Transaction added successfully!');
-
-          // NotificationModel.addNotification({
-          //   'iconPath': Assets.functionalIcon.vector25.path,
-          //   'title': 'Transactions',
-          //   'subtitle':
-          //   'A new transaction has been registered\n${_titleController.text} | ${_selectedCategory!.categoryType} | ${widget.initialSelectedCategory?.moneyType == MoneyType.expense || widget.initialMoneyType == MoneyType.expense ? '-' : '+'}\$${_amountController.text}',
-          //   'time': DateFormat('HH:mm - MMMM dd').format(DateTime.now()),
-          //   'iconColor': 'AppColors.caribbeanGreen',
-          //   'date': DateTime.now().toIso8601String(),
-          // });
+          context.read<NotificationBloc>().add(
+            AddNotification(notificationModel),
+          );
+          DialogUtils.isSuccessDialog(
+            context,
+            'Transaction added successfully!',
+          );
         } else if (state is TransactionError) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-                content:
-                Text(state.errorMessage ?? 'Failed to add transaction.')),
+              content: Text(state.errorMessage ?? 'Failed to add transaction.'),
+            ),
           );
         }
       },
@@ -228,8 +204,10 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
           centerTitle: true,
           actions: [
             IconButton(
-              icon: const Icon(Icons.notifications_none,
-                  color: AppColors.fenceGreen),
+              icon: const Icon(
+                Icons.notifications_none,
+                color: AppColors.fenceGreen,
+              ),
               onPressed: () => context.push(NotificationScreen.routeName),
             ),
           ],
@@ -259,8 +237,10 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
                           readOnly: true,
                           onTap: () => _selectDate(context),
                           controller: TextEditingController(
-                              text: DateFormat('MMMM dd,yyyy')
-                                  .format(_selectedDate)),
+                            text: DateFormat(
+                              'MMMM dd,yyyy',
+                            ).format(_selectedDate),
+                          ),
                           suffixIcon: Icons.calendar_today,
                         ),
                         const SizedBox(height: 20),
@@ -275,11 +255,17 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
                         const SizedBox(height: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 4),
+                            horizontal: 12,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: AppColors.lightGreen,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: AppColors.caribbeanGreen.withValues(alpha: 0.5)),
+                            border: Border.all(
+                              color: AppColors.caribbeanGreen.withValues(
+                                alpha: 0.5,
+                              ),
+                            ),
                           ),
                           child: DropdownButtonFormField<CategoryModel>(
                             value: _selectedCategory,
@@ -290,19 +276,23 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
                               contentPadding: EdgeInsets.symmetric(vertical: 8),
                             ),
                             hint: const Text('Select the category'),
-                            items: _availableCategories.map((category) {
-                              return DropdownMenuItem(
-                                value: category,
-                                child: Text(category.categoryType),
-                              );
-                            }).toList(),
+                            items:
+                                _availableCategories.map((category) {
+                                  return DropdownMenuItem(
+                                    value: category,
+                                    child: Text(category.categoryType),
+                                  );
+                                }).toList(),
                             onChanged: (CategoryModel? newValue) {
                               setState(() {
                                 _selectedCategory = newValue;
                               });
                             },
-                            validator: (value) =>
-                            value == null ? 'Please select a category' : null,
+                            validator:
+                                (value) =>
+                                    value == null
+                                        ? 'Please select a category'
+                                        : null,
                           ),
                         ),
                         const SizedBox(height: 20),
@@ -323,11 +313,12 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
                         ),
                         const SizedBox(height: 20),
                         _buildInputField(
-                          label: _currentMoneyType == MoneyType.expense
-                              ? 'Expense Title'
-                              : (_currentMoneyType == MoneyType.income
-                              ? 'Income Title'
-                              : 'Saving Title'),
+                          label:
+                              _currentMoneyType == MoneyType.expense
+                                  ? 'Expense Title'
+                                  : (_currentMoneyType == MoneyType.income
+                                      ? 'Income Title'
+                                      : 'Saving Title'),
                           controller: _titleController,
                           validator: (value) {
                             if (value == null || value.isEmpty) {
@@ -348,14 +339,17 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
                             onTap: _onSaveTransaction,
                             child: Container(
                               padding: const EdgeInsets.symmetric(
-                                  horizontal: 24, vertical: 12),
+                                horizontal: 24,
+                                vertical: 12,
+                              ),
                               decoration: BoxDecoration(
                                 color: AppColors.caribbeanGreen,
                                 borderRadius: BorderRadius.circular(30),
                                 boxShadow: [
                                   BoxShadow(
-                                    color:
-                                    AppColors.fenceGreen.withValues(alpha: 0.2),
+                                    color: AppColors.fenceGreen.withValues(
+                                      alpha: 0.2,
+                                    ),
                                     blurRadius: 4,
                                     offset: const Offset(0, 2),
                                   ),
@@ -363,13 +357,16 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
                               ),
                               child: Text(
                                 'Save',
-                                style: Theme.of(context)
-                                    .elevatedButtonTheme
-                                    .style
-                                    ?.textStyle
-                                    ?.resolve({}) ??
+                                style:
+                                    Theme.of(context)
+                                        .elevatedButtonTheme
+                                        .style
+                                        ?.textStyle
+                                        ?.resolve({}) ??
                                     const TextStyle(
-                                        color: AppColors.fenceGreen, fontSize: 15),
+                                      color: AppColors.fenceGreen,
+                                      fontSize: 15,
+                                    ),
                               ),
                             ),
                           ),
@@ -429,14 +426,19 @@ class AddTransactionScreenState extends State<AddTransactionScreen> {
             ),
             focusedBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide:
-              const BorderSide(color: AppColors.caribbeanGreen, width: 2),
+              borderSide: const BorderSide(
+                color: AppColors.caribbeanGreen,
+                width: 2,
+              ),
             ),
-            suffixIcon: suffixIcon != null
-                ? Icon(suffixIcon, color: AppColors.caribbeanGreen)
-                : null,
-            contentPadding:
-            const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
+            suffixIcon:
+                suffixIcon != null
+                    ? Icon(suffixIcon, color: AppColors.caribbeanGreen)
+                    : null,
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 15,
+              vertical: 12,
+            ),
           ),
           validator: validator,
         ),

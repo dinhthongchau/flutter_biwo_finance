@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 class CategoryDetailScreen extends StatelessWidget {
   static const String routeName = "/category-detail-screen";
-  final CategoryModel category; // Now receives a CategoryModel
+  final CategoryModel category; 
 
   const CategoryDetailScreen({super.key, required this.category});
 
@@ -22,7 +22,7 @@ class CategoryDetailScreen extends StatelessWidget {
       case 'Transport':
         return Assets.iconComponents.iconTransport.path;
       case 'Food':
-        return Assets.iconComponents.groceriesWhite.path; // Reusing for food
+        return Assets.iconComponents.groceriesWhite.path; 
       case 'Medicine':
         return Assets.iconComponents.iconMedicine.path;
       case 'Gifts':
@@ -32,17 +32,17 @@ class CategoryDetailScreen extends StatelessWidget {
       case 'Travel':
         return Assets.iconComponents.travel.path;
       case 'New House':
-        return Assets.iconComponents.newHome.path; // Assuming a home icon
+        return Assets.iconComponents.newHome.path; 
       case 'Wedding':
-        return Assets.iconComponents.weddingDay.path; // Assuming a wedding icon
+        return Assets.iconComponents.weddingDay.path; 
       case 'Salary':
         return Assets.iconComponents.salaryWhite.path;
       case 'Other Income':
-        return Assets.iconComponents.income.path; // Generic icon for 'Other Income'
+        return Assets.iconComponents.income.path; 
       case 'Other Expense':
-        return Assets.iconComponents.expense.path; // Generic icon for 'Other Expense'
+        return Assets.iconComponents.expense.path; 
       case 'Other Savings':
-        return Assets.iconComponents.travel.path; // Generic icon for 'Other Savings'
+        return Assets.iconComponents.travel.path; 
       default:
         return Assets.iconComponents.expense.path;
     }
@@ -96,28 +96,28 @@ class CategoryDetailScreen extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      backgroundColor: AppColors.caribbeanGreen, // Background for the list section
+      backgroundColor: AppColors.caribbeanGreen, 
       body: BlocBuilder<TransactionBloc, TransactionState>(
         builder: (context, state) {
-          if (state is TransactionLoading && state.allTransactions.isEmpty) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              LoadingUtils.showLoading(context, true);
-            });
-          } else {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              LoadingUtils.showLoading(context, false);
-            });
-          }
-          if (state is TransactionError && state.allTransactions.isEmpty) {
-            return Center(child: Text(state.errorMessage ?? 'Failed to load transactions.'));
-          }
-          if (state.allTransactions.isEmpty) {
-            return const Center(child: Text('No transactions available.'));
-          }
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
+          
 
-          // Filter transactions based on the specific category passed to this screen
+          
           final filteredTransactions = state.allTransactions.where(
-                (t) => t.idCategory.id == category.id, // Filter by category ID
+                (t) => t.idCategory.id == category.id, 
           ).toList();
 
           if (filteredTransactions.isEmpty) {
@@ -129,13 +129,13 @@ class CategoryDetailScreen extends StatelessWidget {
             );
           }
 
-          // Calculate the overall total balance from all transactions
+          
           final totalBalance = context.read<TransactionBloc>().calculateTotalBalance(state.allTransactions);
 
-          // Calculate total amount for this specific category
+          
           final totalCategoryAmount = _calculateTotalCategoryAmount(filteredTransactions);
 
-          // Group transactions by month and year for display
+          
           Map<String, List<TransactionModel>> groupedTransactions = {};
           for (var t in filteredTransactions) {
             final monthYear = context.read<TransactionBloc>().getMonthName(t.time.month, t.time.year);
@@ -145,7 +145,7 @@ class CategoryDetailScreen extends StatelessWidget {
             groupedTransactions[monthYear]!.add(t);
           }
 
-          // Sort the month-year keys from newest to oldest
+          
           final sortedMonthYears =
           groupedTransactions.keys.toList()..sort((a, b) {
             final aParts = a.split(' ');
@@ -157,10 +157,10 @@ class CategoryDetailScreen extends StatelessWidget {
             return bDate.compareTo(aDate);
           });
 
-          return Column( // Changed to Column to stack elements vertically
+          return Column( 
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0), // Padding for the cards
+                padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 10.0), 
                 child: Row(
                   children: [
                     Expanded(child: _buildTotalBalanceCard(totalBalance)),
@@ -169,7 +169,7 @@ class CategoryDetailScreen extends StatelessWidget {
                   ],
                 ),
               ),
-              Expanded( // The rounded container should take up the remaining space
+              Expanded( 
                 child: Container(
                   decoration: const BoxDecoration(
                     color: AppColors.honeydew,
@@ -179,7 +179,7 @@ class CategoryDetailScreen extends StatelessWidget {
                     ),
                   ),
                   child: SingleChildScrollView(
-                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0), // Padding for content inside the rounded container
+                    padding: const EdgeInsets.symmetric(horizontal: 20.0, vertical: 20.0), 
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -225,7 +225,7 @@ class CategoryDetailScreen extends StatelessWidget {
                                       isIncome
                                           ? AppColors.lightBlue
                                           : AppColors.vividBlue,
-                                      showDividers: false, // No dividers in this specific list
+                                      showDividers: false, 
                                     ),
                                   );
                                 }).toList(),
@@ -245,7 +245,7 @@ class CategoryDetailScreen extends StatelessWidget {
     );
   }
 
-  // Helper to calculate the total amount for the transactions of the current category
+  
   int _calculateTotalCategoryAmount(List<TransactionModel> transactions) {
     int total = 0;
     for (var transaction in transactions) {
@@ -272,7 +272,7 @@ class CategoryDetailScreen extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            'Total Balance', // Kept as 'Total Balance'
+            'Total Balance', 
             style: TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w500,

@@ -7,9 +7,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
-
-
-
 enum TimeFilter { daily, weekly, monthly }
 
 class HomeScreen extends StatefulWidget {
@@ -17,7 +14,11 @@ class HomeScreen extends StatefulWidget {
   final String label;
   final String notificationsScreenPath;
 
-  const HomeScreen({super.key, required this.label, required this.notificationsScreenPath});
+  const HomeScreen({
+    super.key,
+    required this.label,
+    required this.notificationsScreenPath,
+  });
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -27,83 +28,12 @@ class _HomeScreenState extends State<HomeScreen> {
   TimeFilter _selectedTimeFilter = TimeFilter.monthly;
 
   @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<TransactionBloc>().add(const LoadTransactionsEvent());
-    });
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       appBar: buildHeaderHome(context, widget.notificationsScreenPath),
       backgroundColor: AppColors.caribbeanGreen,
       body: SingleChildScrollView(
         child: Column(children: [_buildBody(context)]),
-      ),
-    );
-  }
-
-  PreferredSizeWidget _buildHeader(BuildContext context) {
-    return PreferredSize(
-      preferredSize: const Size.fromHeight(kToolbarHeight + 25),
-      child: Padding(
-        padding: const EdgeInsets.only(left: 37, right: 36, top: 25),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [_buildWelcomeText(), _buildNotificationButton(context)],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildWelcomeText() {
-    return const Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          'Hi, Welcome Back',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.w600,
-            color: AppColors.fenceGreen,
-          ),
-        ),
-        Text(
-          'Good Morning',
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppColors.fenceGreen,
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildNotificationButton(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        //NOTTE
-        // context
-        //     .findAncestorStateOfType<BottomNavigationBarScaffoldState>()
-        //     ?.goToNotifications();
-        context.push(widget.notificationsScreenPath);
-        //context.push("/home-screen/notifications");
-      },
-      child: Container(
-        padding: const EdgeInsets.all(8),
-        decoration: const BoxDecoration(
-          color: AppColors.honeydew,
-          shape: BoxShape.circle,
-        ),
-        child: SvgPicture.asset(
-          Assets.functionalIcon.vector.path,
-          height: 19,
-          width: 15,
-        ),
       ),
     );
   }
@@ -124,10 +54,9 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         Container(
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
             color: AppColors.honeydew,
-            borderRadius: BorderRadius.circular(40
-            ),
+            borderRadius: BorderRadius.circular(40),
           ),
           padding: const EdgeInsets.symmetric(horizontal: 37),
           child: Column(
@@ -169,7 +98,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   iconPath: 'assets/IconComponents/Expense.svg',
                   title: 'Total Expense',
                   amount:
-                  //'-${NumberFormatUtils.formatAmount(context.read<TransactionBloc>().getCurrentMonthExpense())}',
+                      //'-${NumberFormatUtils.formatAmount(context.read<TransactionBloc>().getCurrentMonthExpense())}',
                       '\$${numberFormat.format(state.financialsForSummary['expense']!.abs())}',
 
                   amountColor: AppColors.oceanBlue,
@@ -188,40 +117,45 @@ class _HomeScreenState extends State<HomeScreen> {
     required String amount,
     required Color amountColor,
   }) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
+    return BlocBuilder<TransactionBloc, TransactionState>(
+      builder: (context, state) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Padding(
-              padding: const EdgeInsets.only(right: 6),
-              child: SvgPicture.asset(iconPath),
+            Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.only(right: 6),
+                  child: SvgPicture.asset(iconPath),
+                ),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 12,
+                    fontWeight: FontWeight.w400,
+                    color: AppColors.blackHeader,
+                  ),
+                ),
+              ],
             ),
-            Text(
-              title,
-              style: const TextStyle(
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-                color: AppColors.blackHeader,
-              ),
+            Row(
+              children: [
+                Text(
+                  //state is TransactionLoading ? '0' : amount,
+                  amount,
+                  style: TextStyle(
+                    fontSize: 24,
+                    fontWeight: FontWeight.bold,
+                    color: amountColor,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                ),
+              ],
             ),
           ],
-        ),
-        Row(
-          children: [
-            Text(
-              amount,
-              style: TextStyle(
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-                color: amountColor,
-              ),
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-            ),
-          ],
-        ),
-      ],
+        );
+      },
     );
   }
 
@@ -323,6 +257,7 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
     );
   }
+
   Widget _buildSavingsWidget() {
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
@@ -333,24 +268,29 @@ class _HomeScreenState extends State<HomeScreen> {
             .where((c) => c.moneyType == MoneyType.save)
             .map((c) => c.goalSave ?? 0)
             .fold(0, (a, b) => a + b);
-        double progress = totalGoals > 0 ? (totalSavings / totalGoals).clamp(0.0, 1.0) : 0.0;
+        double progress =
+            totalGoals > 0 ? (totalSavings / totalGoals).clamp(0.0, 1.0) : 0.0;
 
         String iconPath = Assets.iconComponents.vector7.path; // Default icon
-        final savingsCategories = CategoryRepository.getAllCategories()
-            .where((c) => c.moneyType == MoneyType.save)
-            .toList();
-        late  final CategoryModel highestGoalCategory;
+        final savingsCategories =
+            CategoryRepository.getAllCategories()
+                .where((c) => c.moneyType == MoneyType.save)
+                .toList();
+        late final CategoryModel highestGoalCategory;
         // Find the category with the highest goalSave
         if (savingsCategories.isNotEmpty) {
-           highestGoalCategory = savingsCategories.reduce((a, b) =>
-          (a.goalSave ?? 0) > (b.goalSave ?? 0) ? a : b);
+          highestGoalCategory = savingsCategories.reduce(
+            (a, b) => (a.goalSave ?? 0) > (b.goalSave ?? 0) ? a : b,
+          );
           iconPath = _getCategoryIconPath(highestGoalCategory.categoryType);
         }
 
         return Container(
           height: 115,
           decoration: const BoxDecoration(
-            border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
+            border: Border(
+              right: BorderSide(color: AppColors.honeydew, width: 2),
+            ),
           ),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -358,8 +298,11 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               GestureDetector(
                 onTap: () {
-                  context.pushNamed(CategoryDetailSaveScreen.routeName, extra: highestGoalCategory);
-                                },
+                  context.pushNamed(
+                    CategoryDetailSaveScreen.routeName,
+                    extra: highestGoalCategory,
+                  );
+                },
                 child: Stack(
                   alignment: Alignment.center,
                   children: [
@@ -369,15 +312,13 @@ class _HomeScreenState extends State<HomeScreen> {
                       child: CircularProgressIndicator(
                         value: progress,
                         strokeWidth: 3,
-                        valueColor: const AlwaysStoppedAnimation<Color>(AppColors.oceanBlue),
+                        valueColor: const AlwaysStoppedAnimation<Color>(
+                          AppColors.oceanBlue,
+                        ),
                         backgroundColor: AppColors.honeydew,
                       ),
                     ),
-                    SvgPicture.asset(
-                      iconPath,
-                      height: 30,
-                      width: 40,
-                    ),
+                    SvgPicture.asset(iconPath, height: 30, width: 40),
                   ],
                 ),
               ),
@@ -404,6 +345,7 @@ class _HomeScreenState extends State<HomeScreen> {
       },
     );
   }
+
   String _getCategoryIconPath(String categoryType) {
     switch (categoryType) {
       case 'Travel':
@@ -418,112 +360,6 @@ class _HomeScreenState extends State<HomeScreen> {
         return Assets.iconComponents.vector7.path;
     }
   }
-  // Widget _buildSavingsWidget() {
-  //   return BlocBuilder<TransactionBloc, TransactionState>(
-  //     builder: (context, state) {
-  //       final totalSavings = state.allTransactions
-  //           .where((t) => t.idCategory.moneyType == MoneyType.save)
-  //           .fold(0, (sum, t) => sum + t.amount);
-  //       final totalGoals = CategoryRepository.getAllCategories()
-  //           .where((c) => c.moneyType == MoneyType.save)
-  //           .map((c) => c.goalSave ?? 0)
-  //           .reduce((a, b) => a + b);
-  //       double progress = totalGoals > 0 ? (totalSavings / totalGoals).clamp(0.0, 1.0) : 0.0;
-  //
-  //       return Container(
-  //         height: 115,
-  //         decoration: const BoxDecoration(
-  //           border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
-  //         ),
-  //         child: Column(
-  //           crossAxisAlignment: CrossAxisAlignment.start,
-  //           mainAxisAlignment: MainAxisAlignment.center,
-  //           children: [
-  //             GestureDetector(
-  //               onTap: () {
-  //                 // context.pushNamed(CategoryDetailSaveScreen.routeName, extra: CategoryModel(
-  //                 //   id: 0,
-  //                 //   categoryType: 'Savings Overview',
-  //                 //   moneyType: MoneyType.save,
-  //                 //   goalSave: totalGoals,
-  //                 // ));
-  //               },
-  //               child: Stack(
-  //                 alignment: Alignment.center,
-  //                 children: [
-  //                   SizedBox(
-  //                     height: 70,
-  //                     width: 70,
-  //                     child: CircularProgressIndicator(
-  //                       value: progress,
-  //                       strokeWidth: 3,
-  //                       valueColor: const AlwaysStoppedAnimation<Color>(AppColors.oceanBlue),
-  //                       backgroundColor: AppColors.honeydew,
-  //                     ),
-  //                   ),
-  //                   SvgPicture.asset(
-  //                     Assets.iconComponents.vector7.path,
-  //                     height: 30,
-  //                     width: 40,
-  //                   ),
-  //                 ],
-  //               ),
-  //             ),
-  //             const SizedBox(height: 5),
-  //             const Text(
-  //               'Savings',
-  //               style: TextStyle(
-  //                 fontSize: 12,
-  //                 fontWeight: FontWeight.w500,
-  //                 color: AppColors.blackHeader,
-  //               ),
-  //             ),
-  //             const Text(
-  //               'On Goals',
-  //               style: TextStyle(
-  //                 fontSize: 12,
-  //                 fontWeight: FontWeight.w500,
-  //                 color: AppColors.blackHeader,
-  //               ),
-  //             ),
-  //           ],
-  //         ),
-  //       );
-  //     },
-  //   );
-  // }
-  // Widget _buildSavingsWidget() {
-  //   return Container(
-  //     height: 115,
-  //     decoration: const BoxDecoration(
-  //       border: Border(right: BorderSide(color: AppColors.honeydew, width: 2)),
-  //     ),
-  //     child: Column(
-  //       crossAxisAlignment: CrossAxisAlignment.start,
-  //       mainAxisAlignment: MainAxisAlignment.center,
-  //       children: [
-  //         _buildAnimatedCircularProgress(),
-  //         const SizedBox(height: 5),
-  //         const Text(
-  //           'Savings',
-  //           style: TextStyle(
-  //             fontSize: 12,
-  //             fontWeight: FontWeight.w500,
-  //             color: AppColors.blackHeader,
-  //           ),
-  //         ),
-  //         const Text(
-  //           'On Goals',
-  //           style: TextStyle(
-  //             fontSize: 12,
-  //             fontWeight: FontWeight.w500,
-  //             color: AppColors.blackHeader,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
 
   Widget _buildAnimatedCircularProgress() {
     return TweenAnimationBuilder<double>(
@@ -706,45 +542,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildTransactionSection(BuildContext context) {
     return BlocConsumer<TransactionBloc, TransactionState>(
-      listener: (context, state) {
-        if (state is TransactionError) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(state.errorMessage ?? 'An unknown error occurred'),
-            ),
-          );
-        }
-        if (state is TransactionLoading) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, true);
-          });
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, false);
-          });
-        }
-      },
+      listener: (context, state) {},
       builder: (context, state) {
-        if (state is TransactionLoading && state.allTransactions.isEmpty) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, true);
-          });
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, false);
-          });
-        }
-        if (state is TransactionError && state.allTransactions.isEmpty) {
-          return Center(
-            child: Text(state.errorMessage ?? 'Failed to load transactions.'),
-          );
-        }
+        // if (state is TransactionLoading) {
+        //   return const Center(child: CircularProgressIndicator());
+        // }
         if (state.allTransactions.isEmpty) {
           return const Center(child: Text('No transactions available.'));
         }
 
         List<TransactionModel> transactions = state.allTransactions;
-       // DateTime now = DateTime.now();
+        // DateTime now = DateTime.now();
 
         switch (_selectedTimeFilter) {
           case TimeFilter.daily:
@@ -841,7 +649,7 @@ class _HomeScreenState extends State<HomeScreen> {
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            if (transactions.isEmpty)
+            if (transactions.isEmpty || state is TransactionLoading)
               const Center(child: Text('No transactions for this period.'))
             else
               ...sortedDateKeys.map((dateHeader) {
@@ -881,8 +689,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             _selectedTimeFilter,
                           ),
                           label: transaction.idCategory.categoryType,
-                          amount:
-                              '${isIncome ? '' : '-'}${transaction.amount}',
+                          amount: '${isIncome ? '' : '-'}${transaction.amount}',
                           backgroundColor:
                               isIncome
                                   ? AppColors.lightBlue

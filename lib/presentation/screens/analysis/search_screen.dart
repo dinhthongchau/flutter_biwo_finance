@@ -19,7 +19,8 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
   CategoryModel? _selectedCategory;
   DateTime? _selectedDate;
-  ReportType _selectedReportType = ReportType.expense;
+  ReportType? _selectedReportType;
+
   List<TransactionModel> _filteredTransactions = [];
 
   List<CategoryModel> _allCategories = [];
@@ -28,7 +29,7 @@ class _SearchScreenState extends State<SearchScreen> {
   void initState() {
     super.initState();
     _allCategories = CategoryRepository.getAllCategories();
-    context.read<TransactionBloc>().add(const LoadTransactionsEvent());
+
     _searchController.addListener(_applyFilters);
   }
 
@@ -38,46 +39,50 @@ class _SearchScreenState extends State<SearchScreen> {
       List<TransactionModel> filtered = state.allTransactions;
 
       if (_searchController.text.isNotEmpty) {
-        filtered = filtered.where((transaction) {
-          return transaction.title.toLowerCase().contains(
-            _searchController.text.toLowerCase(),
-          ) ||
-              transaction.note.toLowerCase().contains(
-                _searchController.text.toLowerCase(),
-              ) ||
-              transaction.idCategory.categoryType.toLowerCase().contains(
-                _searchController.text.toLowerCase(),
-              );
-        }).toList();
+        filtered =
+            filtered.where((transaction) {
+              return transaction.title.toLowerCase().contains(
+                    _searchController.text.toLowerCase(),
+                  ) ||
+                  transaction.note.toLowerCase().contains(
+                    _searchController.text.toLowerCase(),
+                  ) ||
+                  transaction.idCategory.categoryType.toLowerCase().contains(
+                    _searchController.text.toLowerCase(),
+                  );
+            }).toList();
       }
 
       if (_selectedCategory != null) {
-        filtered = filtered.where((transaction) {
-          return transaction.idCategory.id == _selectedCategory!.id;
-        }).toList();
+        filtered =
+            filtered.where((transaction) {
+              return transaction.idCategory.id == _selectedCategory!.id;
+            }).toList();
       }
 
       if (_selectedDate != null) {
-        filtered = filtered.where((transaction) {
-          return transaction.time.year == _selectedDate!.year &&
-              transaction.time.month == _selectedDate!.month &&
-              transaction.time.day == _selectedDate!.day;
-        }).toList();
+        filtered =
+            filtered.where((transaction) {
+              return transaction.time.year == _selectedDate!.year &&
+                  transaction.time.month == _selectedDate!.month &&
+                  transaction.time.day == _selectedDate!.day;
+            }).toList();
       }
 
-      if (_selectedReportType != ReportType.all) {
-        filtered = filtered.where((transaction) {
-          switch (_selectedReportType) {
-            case ReportType.income:
-              return transaction.idCategory.moneyType == MoneyType.income;
-            case ReportType.expense:
-              return transaction.idCategory.moneyType == MoneyType.expense;
-            case ReportType.saving:
-              return transaction.idCategory.moneyType == MoneyType.save;
-            default:
-              return true;
-          }
-        }).toList();
+      if (_selectedReportType != null) {
+        filtered =
+            filtered.where((transaction) {
+              switch (_selectedReportType!) {
+                case ReportType.income:
+                  return transaction.idCategory.moneyType == MoneyType.income;
+                case ReportType.expense:
+                  return transaction.idCategory.moneyType == MoneyType.expense;
+                case ReportType.saving:
+                  return transaction.idCategory.moneyType == MoneyType.save;
+                case ReportType.all:
+                  return true;
+              }
+            }).toList();
       }
 
       setState(() {
@@ -188,13 +193,11 @@ class _SearchScreenState extends State<SearchScreen> {
                   itemBuilder: (context, index) {
                     final category = _allCategories[index];
                     if (category.moneyType.toString().split('.').last ==
-                        _selectedReportType.toString().split('.').last ||
+                            _selectedReportType.toString().split('.').last ||
                         _selectedReportType == ReportType.all) {
                       return ListTile(
                         title: Text(category.categoryType),
-                        subtitle: Text(
-                          category.moneyType.toString().split('.').last,
-                        ),
+
                         onTap: () {
                           setState(() {
                             _selectedCategory = category;
@@ -229,7 +232,10 @@ class _SearchScreenState extends State<SearchScreen> {
       case 'rent':
         return Assets.iconComponents.iconRent.svg(width: 24, height: 24);
       case 'entertainment':
-        return Assets.iconComponents.iconEntertainment.svg(width: 24, height: 24);
+        return Assets.iconComponents.iconEntertainment.svg(
+          width: 24,
+          height: 24,
+        );
       case 'salary':
         return Assets.iconComponents.iconSalary.svg(width: 24, height: 24);
       case 'travel':
@@ -247,15 +253,6 @@ class _SearchScreenState extends State<SearchScreen> {
   Widget build(BuildContext context) {
     return BlocConsumer<TransactionBloc, TransactionState>(
       listener: (context, state) {
-        if (state is TransactionLoading ) {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, true);
-          });
-        } else {
-          WidgetsBinding.instance.addPostFrameCallback((_) {
-            LoadingUtils.showLoading(context, false);
-          });
-        }
         if (state is TransactionSuccess) {
           _applyFilters();
         }
@@ -329,24 +326,13 @@ class _SearchScreenState extends State<SearchScreen> {
                 topRight: Radius.circular(40),
               ),
             ),
-            child: state is TransactionLoading
-                ? const Center(
-              child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColors.fenceGreen,
-                ),
-              ),
-            )
-                : Column(
+            child: Column(
               children: [
                 _buildFilters(),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildReportRadio(
-                      title: 'All',
-                      value: ReportType.all,
-                    ),
+                    _buildReportRadio(title: 'All', value: ReportType.all),
                     _buildReportRadio(
                       title: 'Income',
                       value: ReportType.income,
@@ -419,9 +405,10 @@ class _SearchScreenState extends State<SearchScreen> {
                   Text(
                     _selectedCategory?.categoryType ?? 'Select the category',
                     style: TextStyle(
-                      color: _selectedCategory != null
-                          ? AppColors.fenceGreen
-                          : AppColors.fenceGreen.withValues(alpha: 0.5),
+                      color:
+                          _selectedCategory != null
+                              ? AppColors.fenceGreen
+                              : AppColors.fenceGreen.withValues(alpha: 0.5),
                       fontSize: 14,
                     ),
                   ),
@@ -502,13 +489,11 @@ class _SearchScreenState extends State<SearchScreen> {
               value: value,
               groupValue: _selectedReportType,
               onChanged: (ReportType? newValue) {
-                if (newValue != null) {
-                  setState(() {
-                    _selectedReportType = newValue;
-                    _selectedCategory = null;
-                  });
-                  _applyFilters();
-                }
+                setState(() {
+                  _selectedReportType = newValue!;
+                  _selectedCategory = null;
+                });
+                _applyFilters();
               },
               activeColor: AppColors.caribbeanGreen,
             ),
@@ -564,7 +549,7 @@ class _SearchScreenState extends State<SearchScreen> {
               Icon(Icons.search_off, size: 80, color: AppColors.lightBlue),
               SizedBox(height: 20),
               Text(
-                'No transactions found',
+                'No transactions',
                 style: TextStyle(color: AppColors.fenceGreen, fontSize: 16),
               ),
             ],
@@ -587,11 +572,12 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildTransactionItem(TransactionModel transaction) {
     final moneyType = transaction.idCategory.moneyType;
-    final color = moneyType == MoneyType.income
-        ? AppColors.caribbeanGreen
-        : moneyType == MoneyType.expense
-        ? AppColors.oceanBlue
-        : AppColors.lightBlue;
+    final color =
+        moneyType == MoneyType.income
+            ? AppColors.caribbeanGreen
+            : moneyType == MoneyType.expense
+            ? AppColors.oceanBlue
+            : AppColors.lightBlue;
     final prefix = moneyType == MoneyType.income ? '+' : '-';
 
     return Container(
