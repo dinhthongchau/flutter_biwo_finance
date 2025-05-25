@@ -1,3 +1,4 @@
+import 'package:finance_management/presentation/bloc/category/category_bloc.dart';
 import 'package:finance_management/presentation/screens/categories/category_detail/category_detail_save_screen.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
@@ -16,14 +17,10 @@ class CategoryListScreen extends StatefulWidget {
 }
 
 class _CategoryListScreenState extends State<CategoryListScreen> {
-  late Future<List<CategoryModel>> _categoriesFuture;
-
   @override
   void initState() {
     super.initState();
-    _categoriesFuture = CategoryRepository().getCategoriesByMoneyType(
-      widget.moneyType,
-    );
+    context.read<CategoryBloc>().add(LoadCategories(widget.moneyType));
   }
 
   String _getScreenTitle(MoneyType type) {
@@ -140,131 +137,8 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
     );
   }
 
-  Widget buildBody() {
-    return BlocBuilder<TransactionBloc, TransactionState>(
-      builder: (context, state) {
-        final totalBalance = context
-            .read<TransactionBloc>()
-            .calculateTotalBalance(state.allTransactions);
-        final totalMoneyType =
-            context.read<TransactionBloc>().calculateFinancialsForMoneyType(
-              state.allTransactions,
-              widget.moneyType,
-            )['totalAmount']!;
-
-        return Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(20.0),
-              child: Row(
-                children: [
-                  Expanded(child: _buildTotalBalanceCard(totalBalance)),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTotalMoneyTypeCard(
-                      totalMoneyType,
-                      widget.moneyType,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Expanded(
-              child: Container(
-                decoration: const BoxDecoration(
-                  color: AppColors.honeydew,
-                  borderRadius: BorderRadius.only(
-                    topLeft: Radius.circular(40),
-                    topRight: Radius.circular(40),
-                  ),
-                ),
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 20.0,
-                    vertical: 20.0,
-                  ),
-                  child: FutureBuilder<List<CategoryModel>>(
-                    future: _categoriesFuture,
-                    builder: (context, categorySnapshot) {
-                      if (categorySnapshot.connectionState ==
-                          ConnectionState.waiting) {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          LoadingUtils.showLoading(context, true);
-                        });
-                      } else {
-                        WidgetsBinding.instance.addPostFrameCallback((_) {
-                          LoadingUtils.showLoading(context, false);
-                        });
-                      }
-                      if (categorySnapshot.hasError) {
-                        return Center(
-                          child: Text(
-                            'Error loading categories: ${categorySnapshot.error}',
-                          ),
-                        );
-                      }
-                      if (!categorySnapshot.hasData ||
-                          categorySnapshot.data!.isEmpty) {
-                        return Center(
-                          child: Text(
-                            'No ${widget.moneyType.toString().split('.').last} categories defined.',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: AppColors.fenceGreen,
-                            ),
-                          ),
-                        );
-                      }
-
-                      final categoriesOfType = categorySnapshot.data!;
-
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 17),
-                        child: GridView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          gridDelegate:
-                              const SliverGridDelegateWithFixedCrossAxisCount(
-                                crossAxisCount: 3,
-                                crossAxisSpacing: 10,
-                                mainAxisSpacing: 10,
-                                childAspectRatio: 1.0,
-                              ),
-                          itemCount: categoriesOfType.length + 1,
-                          itemBuilder: (context, index) {
-                            if (index < categoriesOfType.length) {
-                              final category = categoriesOfType[index];
-                              return _buildCategoryGridItem(
-                                context,
-                                category: category,
-                                iconPath: _getCategoryIconPath(
-                                  category.categoryType,
-                                  category.moneyType,
-                                ),
-                                color: _getCategoryColor(category.moneyType),
-                              );
-                            } else {
-                              return _buildMoreCategoryGridItem(
-                                context,
-                                widget.moneyType,
-                              );
-                            }
-                          },
-                        ),
-                      );
-                    },
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
   Widget buildBody2() {
-    final transactionBloc = context.read<TransactionBloc>();
+    final transactionBloc = context.watch<TransactionBloc>();
     final totalBalance = transactionBloc.calculateTotalBalance(
       transactionBloc.state.allTransactions,
     );
@@ -305,28 +179,38 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                 horizontal: 20.0,
                 vertical: 20.0,
               ),
-              child: FutureBuilder<List<CategoryModel>>(
-                future: _categoriesFuture,
-                builder: (context, categorySnapshot) {
-                  if (categorySnapshot.connectionState ==
-                      ConnectionState.waiting) {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
+              child: BlocConsumer<CategoryBloc, CategoryState>(
+                listener: (context, state) {
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    if (state is CategoryLoading) {
                       LoadingUtils.showLoading(context, true);
-                    });
-                  } else {
-                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                    } else {
                       LoadingUtils.showLoading(context, false);
-                    });
-                  }
-                  if (categorySnapshot.hasError) {
+                    }
+                    if (state is CategoryError) {
+                      debugPrint(
+                        "Error loading categories: ${state.errorMessage}",
+                      );
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            "Lỗi tải dữ liệu: ${state.errorMessage}",
+                          ),
+                          backgroundColor: Colors.red,
+                        ),
+                      );
+                    }
+                  });
+                },
+                builder: (context, state) {
+                  if (state is CategoryError) {
                     return Center(
                       child: Text(
-                        'Error loading categories: ${categorySnapshot.error}',
+                        'Error loading categories: ${state.errorMessage}',
                       ),
                     );
                   }
-                  if (!categorySnapshot.hasData ||
-                      categorySnapshot.data!.isEmpty) {
+                  if (state is CategorySuccess && state.categories.isEmpty) {
                     return Center(
                       child: Text(
                         'No ${widget.moneyType.toString().split('.').last} categories defined.',
@@ -338,7 +222,8 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                     );
                   }
 
-                  final categoriesOfType = categorySnapshot.data!;
+                  final categoriesOfType =
+                      state is CategorySuccess ? state.categories : [];
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 17),
@@ -497,18 +382,229 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
           hasTransactions
               ? () {
                 if (category.moneyType == MoneyType.save) {
-                  context.pushNamed(
+                  context.push(
                     CategoryDetailSaveScreen.routeName,
                     extra: category,
                   );
                 } else {
-                  context.pushNamed(
-                    CategoryDetailScreen.routeName,
-                    extra: category,
-                  );
+                  context.push(CategoryDetailScreen.routeName, extra: category);
                 }
               }
               : null,
+      onLongPress: () {
+        showDialog(
+          context: context,
+          builder: (context) {
+            String? updatedName = category.categoryType;
+            String? updatedGoalSave = category.goalSave?.toString();
+
+            return Dialog(
+              backgroundColor: Colors.transparent,
+              child: Container(
+                padding: const EdgeInsets.all(24),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(20),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withValues(alpha: 0.1),
+                      blurRadius: 10,
+                      offset: const Offset(0, 5),
+                    ),
+                  ],
+                ),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Text(
+                      'Edit Category',
+                      style: TextStyle(
+                        fontSize: 22,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black87,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      decoration: BoxDecoration(
+                        color: AppColors.lightGreen,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: TextField(
+                        onChanged: (value) => updatedName = value,
+                        decoration: InputDecoration(
+                          hintText: 'Category Name',
+                          border: InputBorder.none,
+                          hintStyle: const TextStyle(
+                            color: AppColors.caribbeanGreen,
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                            vertical: 14,
+                          ),
+                        ),
+                        style: const TextStyle(color: AppColors.fenceGreen),
+                        controller: TextEditingController(
+                          text: category.categoryType,
+                        ),
+                      ),
+                    ),
+                    if (category.moneyType == MoneyType.save) ...[
+                      const SizedBox(height: 16),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightGreen,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: TextField(
+                          onChanged: (value) => updatedGoalSave = value,
+                          decoration: InputDecoration(
+                            hintText: 'Goal Save Amount',
+                            border: InputBorder.none,
+                            hintStyle: const TextStyle(
+                              color: AppColors.caribbeanGreen,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              vertical: 14,
+                            ),
+                          ),
+                          style: const TextStyle(color: AppColors.fenceGreen),
+                          keyboardType: TextInputType.number,
+                          controller: TextEditingController(
+                            text: category.goalSave?.toString(),
+                          ),
+                        ),
+                      ),
+                    ],
+                    const SizedBox(height: 24),
+                    GestureDetector(
+                      onTap: () {
+                        if (updatedName != null && updatedName!.isNotEmpty) {
+                          final categories =
+                              CategoryRepository.getAllCategories();
+                          if (categories.any(
+                            (c) =>
+                                c.categoryType.toLowerCase() ==
+                                    updatedName!.toLowerCase() &&
+                                c.moneyType == category.moneyType &&
+                                c.id != category.id,
+                          )) {
+                            SnackbarUtils.showNoticeSnackbar(
+                              context,
+                              'Category already exists',
+                              true,
+                            );
+                            return;
+                          }
+                          if (category.moneyType == MoneyType.save &&
+                              (updatedGoalSave == null ||
+                                  updatedGoalSave!.isEmpty)) {
+                            SnackbarUtils.showNoticeSnackbar(
+                              context,
+                              'Goal Save is required',
+                              true,
+                            );
+                            return;
+                          }
+                          final updatedCategory = CategoryModel(
+                            category.id,
+                            category.moneyType,
+                            updatedName!,
+                            goalSave:
+                                category.moneyType == MoneyType.save
+                                    ? int.tryParse(updatedGoalSave!)
+                                    : null,
+                          );
+                          context.read<CategoryBloc>().add(
+                            UpdateCategory(updatedCategory),
+                          );
+                          Navigator.pop(context);
+                          DialogUtils.isSuccessDialog(
+                            context,
+                            'Updated $updatedName',
+                          );
+                        }
+                      },
+                      child: Container(
+                        width: double.infinity * 0.8,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.caribbeanGreen,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Save',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: () {
+                        context.read<CategoryBloc>().add(
+                          DeleteCategory(category.id),
+                        );
+                        Navigator.pop(context);
+                        DialogUtils.isSuccessDialog(
+                          context,
+                          'Deleted ${category.categoryType}',
+                        );
+                      },
+                      child: Container(
+                        width: double.infinity * 0.8,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.oceanBlue,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Delete',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    GestureDetector(
+                      onTap: () => Navigator.pop(context),
+                      child: Container(
+                        width: double.infinity * 0.8,
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        decoration: BoxDecoration(
+                          color: AppColors.lightGreen,
+                          borderRadius: BorderRadius.circular(30),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'Cancel',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: AppColors.fenceGreen,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+        );
+      },
       child: Opacity(
         opacity: hasTransactions ? 1.0 : 0.4,
         child: Container(
@@ -732,20 +828,23 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                 true,
               );
             }
-
             return;
           }
 
-          await CategoryRepository().addCategory(
-            newCategoryName!,
+          final newId =
+              CategoryRepository.getAllCategories().isEmpty
+                  ? 1
+                  : CategoryRepository.getAllCategories()
+                          .map((c) => c.id)
+                          .reduce((a, b) => a > b ? a : b) +
+                      1;
+          final newCategory = CategoryModel(
+            newId,
             moneyType,
+            newCategoryName!,
             goalSave: goalSave,
           );
-          setState(() {
-            _categoriesFuture = CategoryRepository().getCategoriesByMoneyType(
-              moneyType,
-            );
-          });
+          context.read<CategoryBloc>().add(AddCategory(newCategory));
           if (context.mounted) {
             DialogUtils.isSuccessDialog(context, 'Added $newCategoryName');
           }

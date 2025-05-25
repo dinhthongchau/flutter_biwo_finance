@@ -1,7 +1,6 @@
 import 'package:finance_management/data/model/category_model.dart';
 
 class CategoryRepository {
-  // This list should ideally come from a persistent storage or API
   static final List<CategoryModel> _allCategories = [
     CategoryModel(1, MoneyType.expense, "Food"),
     CategoryModel(2, MoneyType.expense, "Transport"),
@@ -18,8 +17,7 @@ class CategoryRepository {
     CategoryModel(14, MoneyType.save, "Other Savings", goalSave: 500),
   ];
 
-  static List<CategoryModel> getAllCategories()  {
-
+  static List<CategoryModel> getAllCategories() {
     return _allCategories;
   }
 
@@ -28,11 +26,32 @@ class CategoryRepository {
     return _allCategories.where((c) => c.moneyType == type).toList();
   }
 
-  Future<void> addCategory(String name, MoneyType moneyType, {int? goalSave}) async {
+  Future<void> addCategory(
+    String name,
+    MoneyType moneyType, {
+    int? goalSave,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 300));
-    final newId = _allCategories.isEmpty
-        ? 1
-        : _allCategories.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
-    _allCategories.add(CategoryModel(newId, moneyType, name, goalSave: goalSave));
+    final newId =
+        _allCategories.isEmpty
+            ? 1
+            : _allCategories.map((c) => c.id).reduce((a, b) => a > b ? a : b) +
+                1;
+    _allCategories.add(
+      CategoryModel(newId, moneyType, name, goalSave: goalSave),
+    );
+  }
+
+  Future<void> updateCategory(CategoryModel category) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final index = _allCategories.indexWhere((c) => c.id == category.id);
+    if (index != -1) {
+      _allCategories[index] = category;
+    }
+  }
+
+  Future<void> deleteCategory(int categoryId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    _allCategories.removeWhere((c) => c.id == categoryId);
   }
 }
