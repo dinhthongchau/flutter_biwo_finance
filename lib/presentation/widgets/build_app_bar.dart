@@ -28,7 +28,11 @@ Widget notificationBellIcon({
                 color: iconBackgroundColor,
                 shape: BoxShape.circle,
               ),
-              child: SvgPicture.asset(iconPath, height: 19, width: 15),
+              child: SvgPicture.asset(
+                iconPath,
+                height: 19,
+                width: 15,
+              ),
             ),
           ),
           if (notificationCount > 0)
@@ -53,10 +57,10 @@ Widget notificationBellIcon({
             ),
         ],
       );
+
     },
   );
 }
-
 PreferredSizeWidget buildAppBarNotification(BuildContext context) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight),
@@ -88,18 +92,14 @@ PreferredSizeWidget buildAppBarNotification(BuildContext context) {
                   content: 'Bạn có chắc chắn muốn xóa hết thông báo không?',
                 );
                 if (confirm == true) {
-                  if (context.mounted) {
-                    context.read<NotificationBloc>().add(
-                      const ClearNotifications(),
-                    );
-                  }
+  if ( context.mounted) {
+    context.read<NotificationBloc>().add(const ClearNotifications());
+  }
+
                 }
               },
               child: Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 8,
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
                 decoration: BoxDecoration(
                   color: AppColors.lightGreen.withValues(alpha: 0.8),
                   borderRadius: BorderRadius.circular(8),
@@ -123,15 +123,12 @@ PreferredSizeWidget buildAppBarNotification(BuildContext context) {
         ),
         const SizedBox(width: 30),
       ],
+
     ),
   );
 }
 
-PreferredSizeWidget buildHeader(
-  BuildContext context,
-  String title,
-  String notificationsScreenPath,
-) {
+PreferredSizeWidget buildHeader(BuildContext context, String title, String notificationsScreenPath) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight + 25),
     child: Container(
@@ -189,10 +186,7 @@ Widget _buildWelcomeText() {
   );
 }
 
-Widget _buildNotificationButton(
-  BuildContext context,
-  String notificationsScreenPath,
-) {
+Widget _buildNotificationButton(BuildContext context, String notificationsScreenPath) {
   return notificationBellIcon(
     iconPath: Assets.functionalIcon.vector.path,
     onPressed: () {
@@ -201,10 +195,7 @@ Widget _buildNotificationButton(
   );
 }
 
-PreferredSizeWidget buildHeaderHome(
-  BuildContext context,
-  String notificationsScreenPath,
-) {
+PreferredSizeWidget buildHeaderHome(BuildContext context, String notificationsScreenPath) {
   return PreferredSize(
     preferredSize: const Size.fromHeight(kToolbarHeight + 25),
     child: Padding(
@@ -213,7 +204,7 @@ PreferredSizeWidget buildHeaderHome(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           _buildWelcomeText(),
-          _buildNotificationButton(context, notificationsScreenPath),
+          _buildNotificationButton(context, notificationsScreenPath)
         ],
       ),
     ),

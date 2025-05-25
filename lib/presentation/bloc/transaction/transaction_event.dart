@@ -12,7 +12,12 @@ abstract class TransactionEvent extends Equatable {
 }
 
 class LoadTransactionsEvent extends TransactionEvent {
-  const LoadTransactionsEvent();
+  final String? month; // Make 'month' optional
+
+  const LoadTransactionsEvent({this.month});
+
+  @override
+  List<Object?> get props => [month];
 }
 
 class SelectMonthEvent extends TransactionEvent {

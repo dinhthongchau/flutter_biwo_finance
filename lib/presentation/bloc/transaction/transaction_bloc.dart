@@ -258,39 +258,44 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       'monthlyNetBalance': monthlyNetBalance,
     };
   }
-
   Future<void> _onLoadTransactions(
-    LoadTransactionsEvent event,
-    Emitter<TransactionState> emit,
-  ) async {
+      LoadTransactionsEvent event,
+      Emitter<TransactionState> emit,
+      ) async {
+    emit(const TransactionInitial(
+      allTransactions: [],
+      selectedMonth: 'All',
+      availableMonths: ['All'],
+      currentListFilterType: null,
+      financialsForSummary: {
+        'totalBalance': 0,
+        'income': 0,
+        'expense': 0,
+        'save': 0,
+      },
+    ));
     emit(TransactionLoading.fromState(state: state));
     try {
+      //await Future.delayed(const Duration(seconds: 2));
       final updatedTransactions =
-          await _transactionRepository.getTransactionsAPI();
+      await _transactionRepository.getTransactionsAPI();
 
       final months =
-          updatedTransactions
-              .map((t) => DateTime(t.time.year, t.time.month))
-              .toSet()
-              .toList()
-            ..sort((a, b) => b.compareTo(a));
-      final availableMonths =
-          ['All'] +
-          months.map((date) => getMonthName(date.month, date.year)).toList();
+      updatedTransactions
+          .map((t) => DateTime(t.time.year, t.time.month))
+          .toSet()
+          .toList()
+        ..sort((a, b) => b.compareTo(a));
 
-      // String initialSelectedMonth = getMonthName(
-      //   DateTime.now().month,
-      //   DateTime.now().year,
-      // );
-      String initialSelectedMonth = 'All';
+      final availableMonths = ['All'] + months.map((date) => getMonthName(date.month, date.year)).toList();
+
+      String initialSelectedMonth = event.month ?? 'All'; // Use event.month if provided, otherwise 'All'
       if (!availableMonths.contains(initialSelectedMonth)) {
-        initialSelectedMonth =
-            availableMonths.isNotEmpty ? availableMonths.first : 'All';
+        initialSelectedMonth = availableMonths.isNotEmpty ? availableMonths.first : 'All';
       }
 
       final initialFinancials = _calculateCumulativeFinancials(
-        updatedTransactions,
-        initialSelectedMonth,
+          updatedTransactions, initialSelectedMonth
       );
 
       emit(
@@ -321,9 +326,72 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         ),
       );
     }
-
-
   }
+  // Future<void> _onLoadTransactions(
+  //   LoadTransactionsEvent event,
+  //   Emitter<TransactionState> emit,
+  // ) async {
+  //   emit(TransactionLoading.fromState(state: state));
+  //   try {
+  //     final updatedTransactions =
+  //         await _transactionRepository.getTransactionsAPI();
+  //
+  //     final months =
+  //         updatedTransactions
+  //             .map((t) => DateTime(t.time.year, t.time.month))
+  //             .toSet()
+  //             .toList()
+  //           ..sort((a, b) => b.compareTo(a));
+  //     final availableMonths =
+  //         ['All'] +
+  //         months.map((date) => getMonthName(date.month, date.year)).toList();
+  //
+  //     // String initialSelectedMonth = getMonthName(
+  //     //   DateTime.now().month,
+  //     //   DateTime.now().year,
+  //     // );
+  //     String initialSelectedMonth = 'All';
+  //     if (!availableMonths.contains(initialSelectedMonth)) {
+  //       initialSelectedMonth =
+  //           availableMonths.isNotEmpty ? availableMonths.first : 'All';
+  //     }
+  //
+  //     final initialFinancials = _calculateCumulativeFinancials(
+  //       updatedTransactions,
+  //       initialSelectedMonth,
+  //     );
+  //
+  //     emit(
+  //       TransactionSuccess(
+  //         allTransactions: updatedTransactions,
+  //         selectedMonth: initialSelectedMonth,
+  //         availableMonths: availableMonths,
+  //         currentListFilterType: null,
+  //         financialsForSummary: initialFinancials,
+  //       ),
+  //     );
+  //   } catch (e, stackTrace) {
+  //     String errorMessage;
+  //     if (e is TimeoutException) {
+  //       errorMessage = 'Request timed out: ${e.message}';
+  //     } else {
+  //       errorMessage = 'Unknown error: ${e.toString()}';
+  //     }
+  //     debugPrint('Stack trace: $stackTrace');
+  //     emit(
+  //       TransactionError(
+  //         allTransactions: state.allTransactions,
+  //         selectedMonth: state.selectedMonth,
+  //         availableMonths: state.availableMonths,
+  //         currentListFilterType: state.currentListFilterType,
+  //         financialsForSummary: state.financialsForSummary,
+  //         errorMessage: errorMessage,
+  //       ),
+  //     );
+  //   }
+  //
+  //
+  // }
   Future<void> _onEditTransaction(
       EditTransactionEvent event,
       Emitter<TransactionState> emit,

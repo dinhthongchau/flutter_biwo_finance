@@ -49,10 +49,12 @@ class LoadingUtils {
                     
                   ),
                   SizedBox(height: 15),
-                  Text(
-                    "Loading...",
-                    style: TextStyle(color: AppColors.caribbeanGreen, fontWeight: FontWeight.bold),
-                  ),
+                  // Scaffold(
+                  //   body: Text(
+                  //     "Loading...",
+                  //     style: TextStyle(color: AppColors.caribbeanGreen, fontWeight: FontWeight.bold),
+                  //   ),
+                  // ),
                 ],
               ),),
             ],
