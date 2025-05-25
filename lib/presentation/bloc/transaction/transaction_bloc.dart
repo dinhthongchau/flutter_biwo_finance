@@ -521,9 +521,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
         return; // Skip adding the duplicate
       }
       await _transactionRepository.addTransaction(event.newTransaction);
-      final updatedTransactions = List<TransactionModel>.from(
-        state.allTransactions,
-      )..add(event.newTransaction);
+      final updatedTransactions = await _transactionRepository.getTransactionsAPI();
       final financials = _calculateCumulativeFinancials(
         updatedTransactions,
         state.selectedMonth,

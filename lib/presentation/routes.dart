@@ -2,7 +2,7 @@
 
 import 'package:finance_management/presentation/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart'; //tesst
 import 'package:finance_management/presentation/shared_data.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
@@ -63,38 +63,28 @@ final router = GoRouter(
     ),
     GoRoute(
       path: CategoryDetailScreen.routeName,
-      name: CategoryDetailScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final category = state.extra as CategoryModel?;
         if (category != null) {
           return CategoryDetailScreen(category: category);
         }
-        return const Scaffold(
-          body: Center(
-            child: Text(
-              'Error: Category details not provided for detail screen.',
-            ),
-          ),
-        );
+        //to test flutter inspector
+        final categoryModel = CategoryModel(1, MoneyType.expense, "Food");
+        return CategoryDetailScreen(category: categoryModel);
       },
     ),
     GoRoute(
       path: CategoryDetailSaveScreen.routeName,
-      name: CategoryDetailSaveScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
         final category = state.extra as CategoryModel?;
         if (category != null) {
           return CategoryDetailSaveScreen(category: category);
         }
-        return const Scaffold(
-          body: Center(
-            child: Text(
-              'Error: Category details not provided for detail saving screen.',
-            ),
-          ),
-        );
+        // !to test flutter inspector
+        final categoryModel = CategoryModel(1, MoneyType.expense, "Food");
+        return CategoryDetailSaveScreen(category: categoryModel);
       },
     ),
 
@@ -201,7 +191,7 @@ final router = GoRouter(
                   pageBuilder: (context, state) {
                     final moneyType = state.extra as MoneyType?;
                     return NoTransitionPage(
-                      child: CategoryListScreen(moneyType: moneyType!),
+                      child: CategoryListScreen(moneyType: moneyType ?? MoneyType.expense),
                     );
                   },
                 ),

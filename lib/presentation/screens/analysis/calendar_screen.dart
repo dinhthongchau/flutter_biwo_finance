@@ -127,7 +127,7 @@ class CalendarScreen extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.notifications_outlined,
+                Icons.calendar_month,
                 color: AppColors.fenceGreen,
                 size: 20,
               ),

@@ -1,7 +1,11 @@
 import 'package:finance_management/data/model/user_model.dart';
 import 'package:finance_management/data/model/user_model_adapter.dart';
+import 'package:finance_management/data/repositories/category_repository.dart';
 import 'package:finance_management/data/repositories/transaction_repository.dart';
 import 'package:finance_management/presentation/bloc/bloc_observe.dart';
+import 'package:finance_management/presentation/bloc/calendar/calendar_bloc.dart';
+import 'package:finance_management/presentation/bloc/calendar/calendar_event.dart';
+import 'package:finance_management/presentation/bloc/category/category_bloc.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
 import 'package:finance_management/presentation/bloc/transaction/transaction_bloc.dart';
@@ -39,6 +43,12 @@ class MyApp extends StatelessWidget {
           ),
           BlocProvider(
             create: (context) => NotificationBloc()..add(const LoadNotifications()),
+          ),
+          BlocProvider(
+            create: (context) => CategoryBloc(CategoryRepository()),
+          ),
+          BlocProvider(
+            create: (context) => CalendarBloc(TransactionRepository())..add(const LoadCalendarTransactionsEvent()),
           ),
         ],
         child: MaterialApp.router(

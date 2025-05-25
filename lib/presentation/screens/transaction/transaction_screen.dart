@@ -197,7 +197,7 @@ import 'package:finance_management/presentation/widgets/build_app_bar.dart';
               child: _buildBalanceCard(
                 iconPath: '',
                 title: 'Total Balance',
-                amount: '\$${totalBalance.abs()}',
+                amount:'${totalBalance < 0 ? '-' : ''}\$${totalBalance.abs()}',
                 amountColor:
                     totalBalance >= 0
                         ? AppColors.fenceGreen

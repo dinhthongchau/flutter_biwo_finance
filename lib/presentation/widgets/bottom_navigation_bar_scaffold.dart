@@ -36,11 +36,18 @@ class BottomNavigationBarScaffold extends StatelessWidget {
         if (state is TransactionLoading) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             LoadingUtils.showLoading(context, true);
-          });
+          }
+          );
         } else if (state is TransactionSuccess) {
-          LoadingUtils.showLoading(context, false);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, false);
+          }
+          );
         } else if (state is TransactionError) {
-          LoadingUtils.showLoading(context, true);
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, false);
+          }
+          );
           debugPrint("Error loading all transactions: ${state.errorMessage}");
 
           ScaffoldMessenger.of(context).showSnackBar(

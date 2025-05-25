@@ -298,7 +298,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 shape: BoxShape.circle,
               ),
               child: const Icon(
-                Icons.notifications_outlined,
+                Icons.search,
                 color: AppColors.fenceGreen,
                 size: 20,
               ),
@@ -349,6 +349,7 @@ class _SearchScreenState extends State<SearchScreen> {
                 ),
                 _buildSearchButton(),
                 _buildTransactionsList(state),
+                const SizedBox(height: 100,)
               ],
             ),
           ),

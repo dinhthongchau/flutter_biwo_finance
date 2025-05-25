@@ -252,6 +252,9 @@ class NumberFormatUtils {
     final numberFormat = NumberFormat.currency(locale: 'en_US', symbol: '\$', decimalDigits: 0);
     return numberFormat.format(amount.abs());
   }
+  static String formatCurrency(int amount) {
+    return '\$${NumberFormat('#,###', 'en_US').format(amount.abs())}';
+  }
 }
 
 class SnackbarUtils {

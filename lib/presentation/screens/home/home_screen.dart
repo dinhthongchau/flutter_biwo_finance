@@ -68,6 +68,7 @@ class _HomeScreenState extends State<HomeScreen> {
               _buildTabsSection(),
               const SizedBox(height: 24),
               _buildTransactionSection(context),
+              const SizedBox(height: 24),
             ],
           ),
         ),
@@ -80,6 +81,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return BlocBuilder<TransactionBloc, TransactionState>(
       builder: (context, state) {
+        final totalBalance =state.financialsForSummary['totalBalance'];
         return IntrinsicHeight(
           child: Row(
             children: [
@@ -88,7 +90,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   iconPath: 'assets/IconComponents/Income.svg',
                   title: 'Total Balance',
                   amount:
-                      '\$${numberFormat.format(state.financialsForSummary['totalBalance']!.abs())}',
+                  '${totalBalance! < 0 ? '-' : ''}${NumberFormatUtils.formatAmount(totalBalance.abs())}',
                   amountColor: AppColors.honeydew,
                 ),
               ),
@@ -298,7 +300,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               GestureDetector(
                 onTap: () {
-                  context.pushNamed(
+                  context.push(
                     CategoryDetailSaveScreen.routeName,
                     extra: highestGoalCategory,
                   );
