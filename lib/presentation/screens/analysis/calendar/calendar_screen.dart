@@ -1,6 +1,4 @@
-import 'package:finance_management/presentation/bloc/calendar/calendar_bloc.dart';
-import 'package:finance_management/presentation/bloc/calendar/calendar_event.dart';
-import 'package:finance_management/presentation/bloc/calendar/calendar_state.dart';
+
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -17,7 +15,7 @@ class ChartSampleData {
   ChartSampleData({required this.x, required this.y, required this.color});
 }
 
-enum ChartType { spends, categories }
+
 
 class CalendarScreen extends StatelessWidget {
   static const String routeName = '/calendar-screen';
@@ -74,7 +72,7 @@ class CalendarScreen extends StatelessWidget {
                           const SizedBox(height: 30),
                           _buildChartTypeSelector(context, state),
                           const SizedBox(height: 20),
-                          if (state.selectedChartType == ChartType.categories &&
+                          if (state.selectedChartType == ChartTypeCalendar.categories &&
                               state.chartData.isNotEmpty)
                             Column(
                               children: [
@@ -437,7 +435,7 @@ class CalendarScreen extends StatelessWidget {
                   false;
 
               return GestureDetector(
-                onTap: hasTransactions ? () => context.read<CalendarBloc>().add(SelectDateEvent(dayIndex)) : null,
+                onTap: hasTransactions ? () => context.read<CalendarBloc>().add(SelectDateCalendarEvent(dayIndex)) : null,
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
@@ -512,11 +510,11 @@ class CalendarScreen extends StatelessWidget {
       children: [
         Expanded(
           child: GestureDetector(
-            onTap: () => context.read<CalendarBloc>().add(const ChangeChartTypeEvent(ChartType.spends)),
+            onTap: () => context.read<CalendarBloc>().add(const ChangeChartTypeEvent(ChartTypeCalendar.spends)),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                color: state.selectedChartType == ChartType.spends
+                color: state.selectedChartType == ChartTypeCalendar.spends
                     ? AppColors.caribbeanGreen
                     : AppColors.lightGreen,
                 borderRadius: BorderRadius.circular(25),
@@ -537,11 +535,11 @@ class CalendarScreen extends StatelessWidget {
         const SizedBox(width: 20),
         Expanded(
           child: GestureDetector(
-            onTap: () => context.read<CalendarBloc>().add(const ChangeChartTypeEvent(ChartType.categories)),
+            onTap: () => context.read<CalendarBloc>().add(const ChangeChartTypeEvent(ChartTypeCalendar.categories)),
             child: Container(
               padding: const EdgeInsets.symmetric(vertical: 15),
               decoration: BoxDecoration(
-                color: state.selectedChartType == ChartType.categories
+                color: state.selectedChartType == ChartTypeCalendar.categories
                     ? AppColors.caribbeanGreen
                     : AppColors.lightGreen,
                 borderRadius: BorderRadius.circular(25),
@@ -564,7 +562,7 @@ class CalendarScreen extends StatelessWidget {
   }
 
   Widget _buildSemiPieChart(BuildContext context, CalendarState state) {
-    if (state.selectedChartType == ChartType.spends) {
+    if (state.selectedChartType == ChartTypeCalendar.spends) {
       final selectedDateTransactions = state.allTransactions
           ?.where((t) => state.showAllMonth
           ? (t.time.year == state.currentMonth.year && t.time.month == state.currentMonth.month)

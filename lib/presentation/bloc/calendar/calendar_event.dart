@@ -8,10 +8,10 @@ abstract class CalendarEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class SelectDateEvent extends CalendarEvent {
+class SelectDateCalendarEvent extends CalendarEvent {
   final int day;
 
-  const SelectDateEvent(this.day);
+  const SelectDateCalendarEvent(this.day);
 
   @override
   List<Object?> get props => [day];
@@ -43,7 +43,7 @@ class ChangeYearEvent extends CalendarEvent {
 }
 
 class ChangeChartTypeEvent extends CalendarEvent {
-  final ChartType chartType;
+  final ChartTypeCalendar chartType;
 
   const ChangeChartTypeEvent(this.chartType);
 

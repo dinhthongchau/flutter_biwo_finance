@@ -16,10 +16,10 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
     emit(NotificationLoading.fromState(state: state));
     try {
       //for 15 times
-      for (int i = 1; i <= 15; i++) {
-        NotificationModel.addNotification(event.notification);
-      }
-
+      // for (int i = 1; i <= 15; i++) {
+      //   NotificationModel.addNotification(event.notification);
+      // }
+      NotificationModel.addNotification(event.notification);
 
       final updatedNotifications = List<NotificationModel>.from(
           NotificationModel.getNotifications());

@@ -1,5 +1,3 @@
-import 'package:finance_management/presentation/bloc/calendar/calendar_event.dart';
-import 'package:finance_management/presentation/bloc/calendar/calendar_state.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -13,14 +11,14 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     CalendarInitial(
       selectedDate: DateTime.now(),
       currentMonth: DateTime.now(),
-      selectedChartType: ChartType.spends,
+      selectedChartType: ChartTypeCalendar.spends,
       showAllMonth: true,
       chartData: [],
       allTransactions: [],
     ),
   ) {
     on<LoadCalendarTransactionsEvent>(_onLoadTransactions);
-    on<SelectDateEvent>(_onSelectDate);
+    on<SelectDateCalendarEvent>(_onSelectDate);
     on<ToggleAllMonthEvent>(_onToggleAllMonth);
     on<ChangeMonthEvent>(_onChangeMonth);
     on<ChangeYearEvent>(_onChangeYear);
@@ -46,7 +44,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       );
     } catch (e, stackTrace) {
       String errorMessage = e is Exception ? e.toString() : 'Unknown error';
-      print('Stack trace: $stackTrace');
+      customPrint('Stack trace: $stackTrace');
       emit(
         CalendarError(
           selectedDate: state.selectedDate,
@@ -61,7 +59,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     }
   }
 
-  void _onSelectDate(SelectDateEvent event, Emitter<CalendarState> emit) {
+  void _onSelectDate(SelectDateCalendarEvent event, Emitter<CalendarState> emit) {
     final newState = CalendarSuccess(
       selectedDate: DateTime(state.currentMonth.year, state.currentMonth.month, event.day),
       currentMonth: state.currentMonth,
@@ -124,12 +122,12 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
   List<ChartSampleData> _generateChartData(
       CalendarState state,
       List<TransactionModel> transactions, {
-        ChartType? chartType,
+        ChartTypeCalendar? chartType,
       }) {
     final selectedChartType = chartType ?? state.selectedChartType;
     final filteredTransactions = _getFilteredTransactions(state, transactions);
 
-    if (selectedChartType == ChartType.spends) {
+    if (selectedChartType == ChartTypeCalendar.spends) {
       return _generateSpendsData(filteredTransactions);
     } else {
       return _generateCategoriesData(filteredTransactions);

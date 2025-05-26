@@ -1,10 +1,8 @@
-import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
-enum ReportType { all, income, expense, saving }
+import 'package:finance_management/presentation/shared_data.dart';
 
 class SearchScreen extends StatefulWidget {
   static const String routeName = '/search-screen';
@@ -17,146 +15,81 @@ class SearchScreen extends StatefulWidget {
 
 class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _searchController = TextEditingController();
-  CategoryModel? _selectedCategory;
-  DateTime? _selectedDate;
-  ReportType? _selectedReportType;
-
-  List<TransactionModel> _filteredTransactions = [];
-
-  List<CategoryModel> _allCategories = [];
 
   @override
   void initState() {
     super.initState();
-    _allCategories = CategoryRepository.getAllCategories();
-
-    _searchController.addListener(_applyFilters);
-  }
-
-  void _applyFilters() {
-    final state = context.read<TransactionBloc>().state;
-    if (state is TransactionSuccess) {
-      List<TransactionModel> filtered = state.allTransactions;
-
-      if (_searchController.text.isNotEmpty) {
-        filtered =
-            filtered.where((transaction) {
-              return transaction.title.toLowerCase().contains(
-                    _searchController.text.toLowerCase(),
-                  ) ||
-                  transaction.note.toLowerCase().contains(
-                    _searchController.text.toLowerCase(),
-                  ) ||
-                  transaction.idCategory.categoryType.toLowerCase().contains(
-                    _searchController.text.toLowerCase(),
-                  );
-            }).toList();
-      }
-
-      if (_selectedCategory != null) {
-        filtered =
-            filtered.where((transaction) {
-              return transaction.idCategory.id == _selectedCategory!.id;
-            }).toList();
-      }
-
-      if (_selectedDate != null) {
-        filtered =
-            filtered.where((transaction) {
-              return transaction.time.year == _selectedDate!.year &&
-                  transaction.time.month == _selectedDate!.month &&
-                  transaction.time.day == _selectedDate!.day;
-            }).toList();
-      }
-
-      if (_selectedReportType != null) {
-        filtered =
-            filtered.where((transaction) {
-              switch (_selectedReportType!) {
-                case ReportType.income:
-                  return transaction.idCategory.moneyType == MoneyType.income;
-                case ReportType.expense:
-                  return transaction.idCategory.moneyType == MoneyType.expense;
-                case ReportType.saving:
-                  return transaction.idCategory.moneyType == MoneyType.save;
-                case ReportType.all:
-                  return true;
-              }
-            }).toList();
-      }
-
-      setState(() {
-        _filteredTransactions = filtered;
-      });
-    }
+    final searchBloc = context.read<SearchBloc>();
+    searchBloc.add(const ApplyFiltersEvent());
+    _searchController.addListener(() {
+      searchBloc.add(ApplyFiltersEvent(query: _searchController.text));
+    });
   }
 
   void _selectDate() async {
-    showModalBottomSheet(
+    showDialog(
       context: context,
-      backgroundColor: AppColors.honeydew,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
-      ),
       builder: (context) {
-        return Container(
-          padding: const EdgeInsets.all(37),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const Text(
-                'Select Date',
-                style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: AppColors.fenceGreen,
+        return Dialog(
+          backgroundColor: AppColors.honeydew,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Container(
+            padding: const EdgeInsets.all(37),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  'Select Date',
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: AppColors.fenceGreen,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 20),
-              ListTile(
-                title: const Text('All Dates'),
-                onTap: () {
-                  setState(() {
-                    _selectedDate = null;
-                  });
-                  _applyFilters();
-                  Navigator.pop(context);
-                },
-              ),
-              ListTile(
-                title: const Text('Select Specific Date'),
-                onTap: () async {
-                  Navigator.pop(context);
-                  final DateTime? picked = await showDatePicker(
-                    context: context,
-                    initialDate: _selectedDate ?? DateTime.now(),
-                    firstDate: DateTime(2020),
-                    lastDate: DateTime(2030),
-                    builder: (context, child) {
-                      return Theme(
-                        data: Theme.of(context).copyWith(
-                          colorScheme: const ColorScheme.light(
-                            primary: AppColors.caribbeanGreen,
-                            onPrimary: Colors.white,
-                            surface: Colors.white,
-                            onSurface: AppColors.fenceGreen,
+                const SizedBox(height: 20),
+                ListTile(
+                  title: const Text('All Dates'),
+                  onTap: () {
+                    context.read<SearchBloc>().add(const SelectDateSearchEvent(null));
+                    Navigator.pop(context);
+                  },
+                ),
+                ListTile(
+                  title: const Text('Select Specific Date'),
+                  onTap: () async {
+                    final DateTime? picked = await showDatePicker(
+                      context: context,
+                      initialDate: context.read<SearchBloc>().state.selectedDate ?? DateTime.now(),
+                      firstDate: DateTime(2020),
+                      lastDate: DateTime(2030),
+                      builder: (context, child) {
+                        return Theme(
+                          data: Theme.of(context).copyWith(
+                            colorScheme: const ColorScheme.light(
+                              primary: AppColors.caribbeanGreen,
+                              onPrimary: Colors.white,
+                              surface: Colors.white,
+                              onSurface: AppColors.fenceGreen,
+                            ),
                           ),
-                        ),
-                        child: child!,
-                      );
-                    },
-                  );
+                          child: child!,
+                        );
+                      },
+                    );
+                    if ( context.mounted){
+                      if (picked != null) {
+                        context.read<SearchBloc>().add(SelectDateSearchEvent(picked));
+                      }
+                      Navigator.pop(context);
+                    }
 
-                  if (picked != null) {
-                    setState(() {
-                      _selectedDate = picked;
-                    });
-                    _applyFilters();
-                  }
-                },
-              ),
-            ],
+                  },
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -171,6 +104,7 @@ class _SearchScreenState extends State<SearchScreen> {
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (context) {
+        final state = context.read<SearchBloc>().state;
         return Container(
           padding: const EdgeInsets.all(37),
           child: Column(
@@ -189,26 +123,21 @@ class _SearchScreenState extends State<SearchScreen> {
               SizedBox(
                 height: 300,
                 child: ListView.builder(
-                  itemCount: _allCategories.length,
+                  itemCount: state.allCategories.length,
                   itemBuilder: (context, index) {
-                    final category = _allCategories[index];
+                    final category = state.allCategories[index];
                     if (category.moneyType.toString().split('.').last ==
-                            _selectedReportType.toString().split('.').last ||
-                        _selectedReportType == ReportType.all) {
+                        state.selectedReportType.toString().split('.').last ||
+                        state.selectedReportType == ReportTypeSearch.all) {
                       return ListTile(
                         title: Text(category.categoryType),
-
                         onTap: () {
-                          setState(() {
-                            _selectedCategory = category;
-                          });
-                          _applyFilters();
+                          context.read<SearchBloc>().add(SelectCategorySearchEvent(category));
                           Navigator.pop(context);
                         },
                       );
-                    } else {
-                      return const SizedBox.shrink();
                     }
+                    return const SizedBox.shrink();
                   },
                 ),
               ),
@@ -232,10 +161,7 @@ class _SearchScreenState extends State<SearchScreen> {
       case 'rent':
         return Assets.iconComponents.iconRent.svg(width: 24, height: 24);
       case 'entertainment':
-        return Assets.iconComponents.iconEntertainment.svg(
-          width: 24,
-          height: 24,
-        );
+        return Assets.iconComponents.iconEntertainment.svg(width: 24, height: 24);
       case 'salary':
         return Assets.iconComponents.iconSalary.svg(width: 24, height: 24);
       case 'travel':
@@ -251,19 +177,27 @@ class _SearchScreenState extends State<SearchScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocConsumer<TransactionBloc, TransactionState>(
-      listener: (context, state) {
-        if (state is TransactionSuccess) {
-          _applyFilters();
-        }
-      },
-      builder: (context, state) {
-        return Scaffold(
-          backgroundColor: AppColors.caribbeanGreen,
-          appBar: _buildHeader(context),
-          body: buildBody(state),
-        );
-      },
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider.value(value: context.read<TransactionBloc>()),
+        BlocProvider.value(value: context.read<SearchBloc>()),
+      ],
+      child: BlocConsumer<SearchBloc, SearchState>(
+        listener: (context, state) {
+          if (state is SearchError) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.errorMessage ?? 'An error occurred')),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            backgroundColor: AppColors.caribbeanGreen,
+            appBar: _buildHeader(context),
+            body: buildBody(state),
+          );
+        },
+      ),
     );
   }
 
@@ -309,7 +243,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget buildBody(TransactionState state) {
+  Widget buildBody(SearchState state) {
     return SingleChildScrollView(
       child: Column(
         children: [
@@ -328,28 +262,19 @@ class _SearchScreenState extends State<SearchScreen> {
             ),
             child: Column(
               children: [
-                _buildFilters(),
+                _buildFilters(state),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    _buildReportRadio(title: 'All', value: ReportType.all),
-                    _buildReportRadio(
-                      title: 'Income',
-                      value: ReportType.income,
-                    ),
-                    _buildReportRadio(
-                      title: 'Expense',
-                      value: ReportType.expense,
-                    ),
-                    _buildReportRadio(
-                      title: 'Saving',
-                      value: ReportType.saving,
-                    ),
+                    _buildReportRadio(title: 'All', value: ReportTypeSearch.all, state: state),
+                    _buildReportRadio(title: 'Income', value: ReportTypeSearch.income, state: state),
+                    _buildReportRadio(title: 'Expense', value: ReportTypeSearch.expense, state: state),
+                    _buildReportRadio(title: 'Saving', value: ReportTypeSearch.saving, state: state),
                   ],
                 ),
                 _buildSearchButton(),
                 _buildTransactionsList(state),
-                const SizedBox(height: 100,)
+                const SizedBox(height: 100),
               ],
             ),
           ),
@@ -376,7 +301,7 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildFilters() {
+  Widget _buildFilters(SearchState state) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 37),
       child: Column(
@@ -404,12 +329,11 @@ class _SearchScreenState extends State<SearchScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _selectedCategory?.categoryType ?? 'Select the category',
+                    state.selectedCategory?.categoryType ?? 'Select the category',
                     style: TextStyle(
-                      color:
-                          _selectedCategory != null
-                              ? AppColors.fenceGreen
-                              : AppColors.fenceGreen.withValues(alpha: 0.5),
+                      color: state.selectedCategory != null
+                          ? AppColors.fenceGreen
+                          : AppColors.fenceGreen.withValues(alpha: 0.5),
                       fontSize: 14,
                     ),
                   ),
@@ -444,8 +368,8 @@ class _SearchScreenState extends State<SearchScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    _selectedDate != null
-                        ? DateFormat('dd/MMM/yyyy').format(_selectedDate!)
+                    state.selectedDate != null
+                        ? DateFormat('dd/MMM/yyyy').format(state.selectedDate!)
                         : 'All Dates',
                     style: const TextStyle(
                       color: AppColors.fenceGreen,
@@ -473,28 +397,24 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildReportRadio({required String title, required ReportType value}) {
+  Widget _buildReportRadio({
+    required String title,
+    required ReportTypeSearch value,
+    required SearchState state,
+  }) {
     return Expanded(
       child: GestureDetector(
         onTap: () {
-          setState(() {
-            _selectedReportType = value;
-            _selectedCategory = null;
-          });
-          _applyFilters();
+          context.read<SearchBloc>().add(SelectReportTypeEvent(value));
         },
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Radio<ReportType>(
+            Radio<ReportTypeSearch>(
               value: value,
-              groupValue: _selectedReportType,
-              onChanged: (ReportType? newValue) {
-                setState(() {
-                  _selectedReportType = newValue!;
-                  _selectedCategory = null;
-                });
-                _applyFilters();
+              groupValue: state.selectedReportType,
+              onChanged: (ReportTypeSearch? newValue) {
+                context.read<SearchBloc>().add(SelectReportTypeEvent(newValue));
               },
               activeColor: AppColors.caribbeanGreen,
             ),
@@ -514,7 +434,10 @@ class _SearchScreenState extends State<SearchScreen> {
       child: SizedBox(
         width: MediaQuery.of(context).size.width * 0.5,
         child: GestureDetector(
-          onTap: _applyFilters,
+          onTap: () {
+            FocusScope.of(context).unfocus();
+            context.read<SearchBloc>().add(ApplyFiltersEvent(query: _searchController.text));
+          },
           child: Container(
             decoration: BoxDecoration(
               color: AppColors.caribbeanGreen,
@@ -539,8 +462,9 @@ class _SearchScreenState extends State<SearchScreen> {
     );
   }
 
-  Widget _buildTransactionsList(TransactionState state) {
-    if (_filteredTransactions.isEmpty) {
+  Widget _buildTransactionsList(SearchState state) {
+    final transactions = state.filteredTransactions ?? [];
+    if (transactions.isEmpty) {
       return const SizedBox(
         height: 200,
         child: Center(
@@ -563,9 +487,9 @@ class _SearchScreenState extends State<SearchScreen> {
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
       padding: const EdgeInsets.all(37),
-      itemCount: _filteredTransactions.length,
+      itemCount: transactions.length,
       itemBuilder: (context, index) {
-        final transaction = _filteredTransactions[index];
+        final transaction = transactions[index];
         return _buildTransactionItem(transaction);
       },
     );
@@ -573,12 +497,11 @@ class _SearchScreenState extends State<SearchScreen> {
 
   Widget _buildTransactionItem(TransactionModel transaction) {
     final moneyType = transaction.idCategory.moneyType;
-    final color =
-        moneyType == MoneyType.income
-            ? AppColors.caribbeanGreen
-            : moneyType == MoneyType.expense
-            ? AppColors.oceanBlue
-            : AppColors.lightBlue;
+    final color = moneyType == MoneyType.income
+        ? AppColors.caribbeanGreen
+        : moneyType == MoneyType.expense
+        ? AppColors.oceanBlue
+        : AppColors.lightBlue;
     final prefix = moneyType == MoneyType.income ? '+' : '-';
 
     return Container(

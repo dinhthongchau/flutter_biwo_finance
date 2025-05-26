@@ -1,6 +1,4 @@
-import 'package:finance_management/data/model/notification_model.dart';
 import 'package:finance_management/presentation/shared_data.dart';
-import 'package:finance_management/presentation/widgets/build_app_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';

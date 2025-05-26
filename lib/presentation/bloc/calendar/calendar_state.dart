@@ -1,11 +1,10 @@
 import 'package:equatable/equatable.dart';
 import 'package:finance_management/presentation/shared_data.dart';
-import 'package:flutter/material.dart';
 
 abstract class CalendarState extends Equatable {
   final DateTime selectedDate;
   final DateTime currentMonth;
-  final ChartType selectedChartType;
+  final ChartTypeCalendar selectedChartType;
   final bool showAllMonth;
   final List<ChartSampleData> chartData;
   final List<TransactionModel>? allTransactions;
