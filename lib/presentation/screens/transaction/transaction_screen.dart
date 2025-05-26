@@ -1,9 +1,7 @@
   import 'package:finance_management/presentation/shared_data.dart';
-import 'package:finance_management/presentation/widgets/build_app_bar.dart';
-  import 'package:flutter/material.dart';
-  import 'package:flutter_bloc/flutter_bloc.dart';
-  import 'package:flutter_svg/svg.dart';
-  import 'package:go_router/go_router.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
 
   class TransactionScreen extends StatefulWidget {
     static const String routeName = "/transaction-screen";
@@ -79,51 +77,6 @@ import 'package:finance_management/presentation/widgets/build_app_bar.dart';
               ),
             );
           },
-        ),
-      );
-    }
-
-    PreferredSizeWidget _buildHeader(BuildContext context) {
-      return PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight + 25),
-        child: Container(
-          padding: const EdgeInsets.only(left: 38, right: 36, top: 10),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const Spacer(),
-              const Text(
-                'Transaction',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.fenceGreen,
-                ),
-              ),
-              const Spacer(),
-              GestureDetector(
-                onTap: () {
-                  try {
-                    context.push("/home-screen/notifications-screen");
-                  } catch (e) {
-                    debugPrint('Error navigating to notifications: $e');
-                  }
-                },
-                child: Container(
-                  padding: const EdgeInsets.all(8),
-                  decoration: const BoxDecoration(
-                    color: AppColors.honeydew,
-                    shape: BoxShape.circle,
-                  ),
-                  child: SvgPicture.asset(
-                    Assets.functionalIcon.vector.path,
-                    height: 19,
-                    width: 15,
-                  ),
-                ),
-              ),
-            ],
-          ),
         ),
       );
     }

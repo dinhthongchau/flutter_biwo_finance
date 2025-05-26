@@ -1,8 +1,6 @@
 import 'package:equatable/equatable.dart';
-import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/data/model/transaction_model.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 
-enum ListFilterType { daily, weekly, monthly, all }
 
 abstract class TransactionEvent extends Equatable {
   const TransactionEvent();
@@ -48,7 +46,7 @@ class AddTransactionEvent extends TransactionEvent {
 }
 
 class FilterTransactionsByTimeframeEvent extends TransactionEvent {
-  final ListFilterType filterType;
+  final ListTransactionFilter filterType;
 
   const FilterTransactionsByTimeframeEvent(this.filterType);
 

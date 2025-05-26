@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:finance_management/data/model/transaction_model.dart';
-import 'package:finance_management/data/model/category_model.dart'; // Import MoneyType
-
+import 'package:finance_management/presentation/shared_data.dart';
 abstract class TransactionState extends Equatable {
   final List<TransactionModel> allTransactions;
   final String selectedMonth;

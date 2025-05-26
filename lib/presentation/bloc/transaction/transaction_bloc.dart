@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'package:finance_management/data/model/transaction_model.dart';
-import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/data/repositories/transaction_repository.dart';
-import 'package:finance_management/presentation/bloc/transaction/transaction_event.dart';
-import 'package:finance_management/presentation/bloc/transaction/transaction_state.dart';
+
+import 'package:collection/collection.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:collection/collection.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
 
@@ -26,7 +23,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ];
 
   TransactionBloc(this._transactionRepository)
-    : super(   const TransactionInitial(
+      : super(   const TransactionInitial(
     allTransactions: [],
     financialsForSummary: {
       'totalBalance': 0,
@@ -174,9 +171,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   // }
 
   Map<String, int> _calculateCumulativeFinancials(
-    List<TransactionModel> allTransactions,
-    String selectedMonth,
-  ) {
+      List<TransactionModel> allTransactions,
+      String selectedMonth,
+      ) {
     int cumulativeBalance = 0;
     int monthlyIncome = 0;
     int monthlyExpense = 0;
@@ -437,9 +434,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onSelectMonthEvent(
-    SelectMonthEvent event,
-    Emitter<TransactionState> emit,
-  ) {
+      SelectMonthEvent event,
+      Emitter<TransactionState> emit,
+      ) {
     final financials = _calculateCumulativeFinancials(
       state.allTransactions,
       event.selectedMonth,
@@ -457,9 +454,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onSelectFilterTypeEvent(
-    SelectFilterTypeEvent event,
-    Emitter<TransactionState> emit,
-  ) {
+      SelectFilterTypeEvent event,
+      Emitter<TransactionState> emit,
+      ) {
     emit(
       TransactionSuccess(
         allTransactions: state.allTransactions,
@@ -485,14 +482,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Map<String, int> calculateFinancialsForMoneyType(
-    List<TransactionModel> allTransactions,
-    MoneyType type,
-  ) {
+      List<TransactionModel> allTransactions,
+      MoneyType type,
+      ) {
     int totalAmount = 0;
     int netChange = 0;
 
     final transactionsOfType =
-        allTransactions.where((t) => t.idCategory.moneyType == type).toList();
+    allTransactions.where((t) => t.idCategory.moneyType == type).toList();
 
     for (final t in transactionsOfType) {
       totalAmount += t.amount;
@@ -509,9 +506,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Future<void> _onAddTransaction(
-    AddTransactionEvent event,
-    Emitter<TransactionState> emit,
-  ) async {
+      AddTransactionEvent event,
+      Emitter<TransactionState> emit,
+      ) async {
     emit(TransactionLoading.fromState(state: state));
     try {
       final existingTransaction = state.allTransactions
@@ -557,9 +554,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onFilterTransactionsByTimeframe(
-    FilterTransactionsByTimeframeEvent event,
-    Emitter<TransactionState> emit,
-  ) {
+      FilterTransactionsByTimeframeEvent event,
+      Emitter<TransactionState> emit,
+      ) {
     emit(
       TransactionSuccess(
         allTransactions: state.allTransactions,
@@ -571,15 +568,15 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     );
   }
 
-  MoneyType? _mapFilterTypeToListFilterType(ListFilterType filterType) {
+  MoneyType? _mapFilterTypeToListFilterType(ListTransactionFilter filterType) {
     switch (filterType) {
-      case ListFilterType.daily:
+      case ListTransactionFilter.daily:
         return null;
-      case ListFilterType.weekly:
+      case ListTransactionFilter.weekly:
         return null;
-      case ListFilterType.monthly:
+      case ListTransactionFilter.monthly:
         return null;
-      case ListFilterType.all:
+      case ListTransactionFilter.all:
         return null;
     }
   }
@@ -600,8 +597,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int foodExpense = 0;
     for (var transaction in state.allTransactions) {
       if (transaction.time.isAfter(
-            startOfLastWeek.subtract(const Duration(microseconds: 1)),
-          ) &&
+        startOfLastWeek.subtract(const Duration(microseconds: 1)),
+      ) &&
           transaction.time.isBefore(
             endOfLastWeek.add(const Duration(days: 1)),
           )) {
@@ -630,8 +627,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int revenue = 0;
     for (var transaction in state.allTransactions) {
       if (transaction.time.isAfter(
-            startOfLastWeek.subtract(const Duration(microseconds: 1)),
-          ) &&
+        startOfLastWeek.subtract(const Duration(microseconds: 1)),
+      ) &&
           transaction.time.isBefore(
             endOfLastWeek.add(const Duration(days: 1)),
           )) {

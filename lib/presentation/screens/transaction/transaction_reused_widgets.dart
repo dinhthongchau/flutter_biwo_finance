@@ -1,4 +1,3 @@
-import 'package:finance_management/data/model/notification_model.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -205,9 +204,7 @@ Future<void> _showEditTransactionDialog(
                   ),
                 ),
                 onChanged: (value) {
-                  try {
                     editedDate = DateTime.parse(value);
-                  } catch (e) {}
                 },
               ),
               const SizedBox(height: 12),
@@ -255,7 +252,7 @@ Future<void> _showEditTransactionDialog(
               );
 
               final notificationModel = NotificationModel(
-                iconPath: Assets.iconComponents.group359.path,
+                iconPath: Assets.iconComponents.check.path,
                 title: 'Transaction Edited',
                 subtitle: 'Edited $editedTitle',
                 time: DateFormat('HH:mm - MMMM dd').format(DateTime.now()),

@@ -1,9 +1,5 @@
-import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/data/model/transaction_model.dart';
-import 'package:finance_management/data/model/user_model.dart';
-import 'package:finance_management/data/repositories/category_repository.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
-
 class TransactionRepository {
   final List<TransactionModel> transactionData = [];
   bool _isInitialized = false;
