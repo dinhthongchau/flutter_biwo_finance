@@ -1,11 +1,8 @@
 // lib/presentation/widgets/notification_bell_icon.dart
-import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:flutter_bloc/flutter_bloc.dart'; // Assuming NotificationBloc is here
 import 'package:finance_management/presentation/shared_data.dart'; // Assuming AppColors is here
-import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart'; // Adjust path if needed
-import 'package:finance_management/presentation/bloc/notification/notification_state.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart'; // Assuming NotificationBloc is here
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart'; // Adjust path if needed
 
 Widget notificationBellIcon({

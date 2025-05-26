@@ -1,5 +1,3 @@
-import 'package:finance_management/presentation/bloc/category/category_bloc.dart';
-import 'package:finance_management/presentation/screens/categories/category_detail/category_detail_save_screen.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -433,13 +431,13 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                       ),
                       child: TextField(
                         onChanged: (value) => updatedName = value,
-                        decoration: InputDecoration(
+                        decoration: const InputDecoration(
                           hintText: 'Category Name',
                           border: InputBorder.none,
-                          hintStyle: const TextStyle(
+                          hintStyle: TextStyle(
                             color: AppColors.caribbeanGreen,
                           ),
-                          contentPadding: const EdgeInsets.symmetric(
+                          contentPadding: EdgeInsets.symmetric(
                             vertical: 14,
                           ),
                         ),
@@ -459,13 +457,13 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
                         ),
                         child: TextField(
                           onChanged: (value) => updatedGoalSave = value,
-                          decoration: InputDecoration(
+                          decoration: const InputDecoration(
                             hintText: 'Goal Save Amount',
                             border: InputBorder.none,
-                            hintStyle: const TextStyle(
+                            hintStyle: TextStyle(
                               color: AppColors.caribbeanGreen,
                             ),
-                            contentPadding: const EdgeInsets.symmetric(
+                            contentPadding: EdgeInsets.symmetric(
                               vertical: 14,
                             ),
                           ),
@@ -844,8 +842,9 @@ class _CategoryListScreenState extends State<CategoryListScreen> {
             newCategoryName!,
             goalSave: goalSave,
           );
-          context.read<CategoryBloc>().add(AddCategory(newCategory));
+
           if (context.mounted) {
+            context.read<CategoryBloc>().add(AddCategory(newCategory));
             DialogUtils.isSuccessDialog(context, 'Added $newCategoryName');
           }
         }

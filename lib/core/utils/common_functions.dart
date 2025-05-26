@@ -1,12 +1,9 @@
-import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/gen/assets.gen.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-
 enum AppEnvironment { dev, prod }
 
 AppEnvironment currentEnvironment = AppEnvironment.dev;
@@ -151,8 +148,8 @@ class DialogUtils {
     );
   }
 
-  static void isSuccessDialog(BuildContext context, String successMessage) {
-    showDialog(
+  static Future<void> isSuccessDialog(BuildContext context, String successMessage) async {
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -177,7 +174,7 @@ class DialogUtils {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
               child: const Text('OK'),
             ),
@@ -189,15 +186,15 @@ class DialogUtils {
     );
   }
 
-  static void isConfirmDialog(
+  static Future<void> isConfirmDialog(
     BuildContext context, {
     required String title,
     required String message,
     required VoidCallback onConfirm,
     String confirmText = 'Confirm',
     String cancelText = 'Cancel',
-  }) {
-    showDialog(
+  }) async {
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(

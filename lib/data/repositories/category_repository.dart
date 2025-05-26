@@ -1,5 +1,4 @@
-import 'package:finance_management/data/model/category_model.dart';
-
+import 'package:finance_management/presentation/shared_data.dart';
 class CategoryRepository {
   static final List<CategoryModel> _allCategories = [
     CategoryModel(1, MoneyType.expense, "Food"),

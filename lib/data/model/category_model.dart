@@ -1,6 +1,6 @@
 
+import 'package:finance_management/core/enum/enums.dart';
 
-enum MoneyType { expense, income, save }
 class CategoryModel {
   final int id;
   final MoneyType moneyType;

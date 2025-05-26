@@ -1,10 +1,8 @@
 import 'dart:async';
-
 import 'package:equatable/equatable.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/presentation/shared_data.dart';
 
 part 'category_event.dart';
 part 'category_state.dart';

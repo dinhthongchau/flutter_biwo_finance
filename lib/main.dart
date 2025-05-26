@@ -1,16 +1,6 @@
-import 'package:finance_management/data/model/user_model.dart';
 import 'package:finance_management/data/model/user_model_adapter.dart';
-import 'package:finance_management/data/repositories/category_repository.dart';
-import 'package:finance_management/data/repositories/transaction_repository.dart';
-import 'package:finance_management/presentation/bloc/bloc_observe.dart';
-import 'package:finance_management/presentation/bloc/calendar/calendar_bloc.dart';
-import 'package:finance_management/presentation/bloc/calendar/calendar_event.dart';
-import 'package:finance_management/presentation/bloc/category/category_bloc.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
-import 'package:finance_management/presentation/bloc/transaction/transaction_bloc.dart';
-import 'package:finance_management/presentation/bloc/transaction/transaction_event.dart';
 import 'package:finance_management/presentation/routes.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -27,7 +17,7 @@ void main() async {
 
   Hive.registerAdapter(UserModelAdapter());
   await Hive.openBox<UserModel>('users');
-  Bloc.observer = MyBlocObserver();
+  Bloc.observer = const MyBlocObserver();
   runApp(const MyApp());
 }
 class MyApp extends StatelessWidget {
@@ -50,6 +40,18 @@ class MyApp extends StatelessWidget {
           BlocProvider(
             create: (context) => CalendarBloc(TransactionRepository())..add(const LoadCalendarTransactionsEvent()),
           ),
+          BlocProvider<AnalysisBloc>(
+            create: (context) => AnalysisBloc(TransactionRepository()),
+          ),
+          BlocProvider<SearchBloc>(
+            create: (context) => SearchBloc(context.read<TransactionBloc>()),
+          ),
+          BlocProvider<HomeBloc>(
+            create: (context) => HomeBloc(),
+          ),
+          // BlocProvider<AddTransactionBloc>(
+          //   create: (context) => AddTransactionBloc(),
+          // ),
         ],
         child: MaterialApp.router(
           theme: ThemeData(
