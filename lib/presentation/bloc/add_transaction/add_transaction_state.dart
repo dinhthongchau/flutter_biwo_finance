@@ -7,14 +7,13 @@ abstract class AddTransactionState extends Equatable {
   final MoneyType moneyType;
   final CategoryModel? selectedCategory;
   final List<CategoryModel> availableCategories;
-  final String? errorMessage;
+
 
   const AddTransactionState({
     required this.selectedDate,
     required this.moneyType,
     this.selectedCategory,
     required this.availableCategories,
-    this.errorMessage,
   });
 
   @override
@@ -23,7 +22,6 @@ abstract class AddTransactionState extends Equatable {
     moneyType,
     selectedCategory,
     availableCategories,
-    errorMessage,
   ];
 }
 
@@ -63,11 +61,12 @@ class AddTransactionSuccess extends AddTransactionState {
 }
 
 class AddTransactionError extends AddTransactionState {
+  final String? errorMessage;
   const AddTransactionError({
     required super.selectedDate,
     required super.moneyType,
     super.selectedCategory,
     required super.availableCategories,
-    required super.errorMessage,
+    required this.errorMessage,
   });
 }

@@ -19,3 +19,23 @@ class HomeState extends Equatable {
 class HomeInitial extends HomeState {
   const HomeInitial({required super.selectedTimeFilter});
 }
+class HomeLoading extends HomeState {
+  const HomeLoading({required super.selectedTimeFilter});
+
+  HomeLoading.fromState({required HomeState state})
+      : super(selectedTimeFilter: state.selectedTimeFilter);
+}
+
+class HomeSuccess extends HomeState {
+  const HomeSuccess({required super.selectedTimeFilter});
+}
+
+class HomeError extends HomeState {
+  final String? errorMessage;
+  const HomeError({
+    required super.selectedTimeFilter,
+    required this.errorMessage,
+  });
+  @override
+  List<Object?> get props => [selectedTimeFilter, errorMessage];
+}

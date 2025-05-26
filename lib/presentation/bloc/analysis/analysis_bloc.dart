@@ -5,7 +5,12 @@ import 'package:finance_management/presentation/shared_data.dart';
 class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   final TransactionRepository _transactionRepository;
 
-  AnalysisBloc(this._transactionRepository) : super(const AnalysisInitial()) {
+  AnalysisBloc(this._transactionRepository) : super(AnalysisInitial(
+    allTransactions: const [],
+    currentChartData: const [],
+    selectedTimeFilter: TimeFilterAnalysis.daily,
+    currentDate: DateTime.now(),
+  )) {
     on<LoadAnalysisDataEvent>(_onLoadAnalysisData);
     on<ChangeTimeFilterEvent>(_onChangeTimeFilter);
   }

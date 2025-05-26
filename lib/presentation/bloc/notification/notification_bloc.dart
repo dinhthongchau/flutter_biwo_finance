@@ -5,7 +5,10 @@ import 'package:finance_management/presentation/bloc/notification/notification_s
 import 'package:flutter/material.dart';
 
 class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
-  NotificationBloc() : super(const NotificationInitial()) {
+  NotificationBloc() : super(const NotificationInitial(
+    notifications: [],
+    notificationCount: 0,
+  )) {
     on<AddNotification>(_onAddNotification);
     on<ClearNotifications>(_onClearNotifications);
     on<LoadNotifications>(_onLoadNotifications);

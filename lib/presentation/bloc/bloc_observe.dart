@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 enum LogType { create, event, change, transition, error, close, debug }
@@ -38,7 +39,7 @@ void customPrintBloc(String message, {LogType type = LogType.debug}) {
   }
 
   const String resetColor = '\x1B[0m';
-  customPrintBloc('$colorCode$icon $message$resetColor');
+  debugPrint('$colorCode$icon $message$resetColor');
 }
 
 class MyBlocObserver extends BlocObserver {

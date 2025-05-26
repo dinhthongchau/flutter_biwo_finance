@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+
 enum AppEnvironment { dev, prod }
 
 AppEnvironment currentEnvironment = AppEnvironment.dev;
@@ -30,41 +31,55 @@ class LoadingUtils {
     _hideOverlay();
     _overlayEntry = OverlayEntry(
       builder:
-          (context) => const Stack(
+          (context) =>
+          Stack(
             children: [
-              Opacity(
+              const Opacity(
                 opacity: 0.5,
                 child: ModalBarrier(dismissible: false, color: Colors.black),
               ),
-              Center(child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SpinKitSpinningLines(
-                    color: AppColors.caribbeanGreen, 
-                    size: 40.0, 
-                    lineWidth: 3.0, 
-                    
-                  ),
-                  SizedBox(height: 15),
-                  // Scaffold(
-                  //   body: Text(
-                  //     "Loading...",
-                  //     style: TextStyle(color: AppColors.caribbeanGreen, fontWeight: FontWeight.bold),
-                  //   ),
-                  // ),
-                ],
-              ),),
+              Center(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    buildSpinKitSpinningLines(),
+                    const SizedBox(height: 15),
+                    // Scaffold(
+                    //   body: Text(
+                    //     "Loading...",
+                    //     style: TextStyle(color: AppColors.caribbeanGreen, fontWeight: FontWeight.bold),
+                    //   ),
+                    // ),
+                  ],
+                ),
+              ),
             ],
           ),
     );
     Overlay.of(context).insert(_overlayEntry!);
   }
 
+
   static void _hideOverlay() {
     _overlayEntry?.remove();
     _overlayEntry = null;
   }
+  static Widget buildSpinKitSpinningLines() {
+    return const SpinKitSpinningLines(
+      color: AppColors.caribbeanGreen,
+      size: 40.0,
+      lineWidth: 3.0,
+    );
+  }
+  static Widget buildSpinKitSpinningLinesWhite() {
+    return const SpinKitSpinningLines(
+      color: AppColors.honeydew,
+      size: 40.0,
+      lineWidth: 3.0,
+    );
+  }
 }
+
 
 class DialogUtils {
   static void isErrorDialog(BuildContext context, String? errorMessage) {
@@ -115,7 +130,9 @@ class DialogUtils {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
           title: Row(
             children: [
               const Icon(Icons.warning_rounded, color: AppColors.redColor),
@@ -123,24 +140,37 @@ class DialogUtils {
               Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
-          content: Text(content, style: const TextStyle(color: AppColors.fenceGreen)),
+          content: Text(
+            content,
+            style: const TextStyle(color: AppColors.fenceGreen),
+          ),
           actions: <Widget>[
             TextButton(
               onPressed: () => context.pop(false),
               style: TextButton.styleFrom(
                 foregroundColor: AppColors.fenceGreen,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              child: Text(cancelText, style: const TextStyle(fontWeight: FontWeight.w500)),
+              child: Text(
+                cancelText,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
             ),
             ElevatedButton(
               onPressed: () => context.pop(true),
               style: ElevatedButton.styleFrom(
                 backgroundColor: AppColors.redColor,
                 foregroundColor: Colors.white,
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
               ),
-              child: Text(confirmText, style: const TextStyle(fontWeight: FontWeight.bold)),
+              child: Text(
+                confirmText,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
             ),
           ],
         );
@@ -148,7 +178,8 @@ class DialogUtils {
     );
   }
 
-  static Future<void> isSuccessDialog(BuildContext context, String successMessage) async {
+  static Future<void> isSuccessDialog(BuildContext context,
+      String successMessage,) async {
     await showDialog(
       context: context,
       builder: (context) {
@@ -186,8 +217,7 @@ class DialogUtils {
     );
   }
 
-  static Future<void> isConfirmDialog(
-    BuildContext context, {
+  static Future<void> isConfirmDialog(BuildContext context, {
     required String title,
     required String message,
     required VoidCallback onConfirm,
@@ -244,20 +274,24 @@ class DialogUtils {
     );
   }
 }
+
 class NumberFormatUtils {
-  static String formatAmount( num amount) {
-    final numberFormat = NumberFormat.currency(locale: 'en_US', symbol: '\$', decimalDigits: 0);
+  static String formatAmount(num amount) {
+    final numberFormat = NumberFormat.currency(
+      locale: 'en_US',
+      symbol: '\$',
+      decimalDigits: 0,
+    );
     return numberFormat.format(amount.abs());
   }
+
   static String formatCurrency(int amount) {
     return '\$${NumberFormat('#,###', 'en_US').format(amount.abs())}';
   }
 }
 
 class SnackbarUtils {
-
-  static void showNoticeSnackbar(
-      BuildContext context,
+  static void showNoticeSnackbar(BuildContext context,
       String message,
       bool isError, {
         int durationSeconds = 3,
@@ -304,17 +338,19 @@ class SnackbarUtils {
             textColor: Colors.white,
             onPressed: () {},
           ),
-          behavior: SnackBarBehavior.floating, // Đã sửa thành fixed
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+          behavior: SnackBarBehavior.floating,
+          // Đã sửa thành fixed
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
           margin: const EdgeInsets.all(10), // Thêm const
         ),
       );
   }
-
 }
 
 class CategoryIconUtils {
-  static String getCategoryIconPath(String categoryType, MoneyType moneyType) {
+  static String getCategoriesIconPath(String categoryType, MoneyType moneyType) {
     if (moneyType == MoneyType.income) {
       switch (categoryType) {
         case 'Salary':

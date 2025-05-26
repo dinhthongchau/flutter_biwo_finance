@@ -7,7 +7,7 @@ abstract class SearchState extends Equatable {
   final DateTime? selectedDate;
   final ReportTypeSearch? selectedReportType;
   final List<CategoryModel> allCategories;
-  final String? errorMessage;
+
 
   const SearchState({
     this.filteredTransactions,
@@ -15,7 +15,6 @@ abstract class SearchState extends Equatable {
     this.selectedDate,
     this.selectedReportType,
     required this.allCategories,
-    this.errorMessage,
   });
 
   @override
@@ -25,7 +24,6 @@ abstract class SearchState extends Equatable {
     selectedDate,
     selectedReportType,
     allCategories,
-    errorMessage,
   ];
 }
 
@@ -69,12 +67,13 @@ class SearchSuccess extends SearchState {
 }
 
 class SearchError extends SearchState {
+  final String? errorMessage;
   const SearchError({
     super.filteredTransactions,
     super.selectedCategory,
     super.selectedDate,
     super.selectedReportType,
     required super.allCategories,
-    required String super.errorMessage,
+    required this.errorMessage,
   });
 }

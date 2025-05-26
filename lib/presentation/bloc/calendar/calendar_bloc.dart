@@ -119,7 +119,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     emit(newState);
   }
 
-  List<ChartSampleData> _generateChartData(
+  List<PieChartData> _generateChartData(
       CalendarState state,
       List<TransactionModel> transactions, {
         ChartTypeCalendar? chartType,
@@ -152,7 +152,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     }
   }
 
-  List<ChartSampleData> _generateSpendsData(List<TransactionModel> transactions) {
+  List<PieChartData> _generateSpendsData(List<TransactionModel> transactions) {
     final expenseTransactions = transactions
         .where((t) => t.idCategory.moneyType == MoneyType.expense)
         .toList();
@@ -162,7 +162,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     return _createOptimizedChartData(categoryTotals, totalExpenses, _getExpenseColors());
   }
 
-  List<ChartSampleData> _generateCategoriesData(List<TransactionModel> transactions) {
+  List<PieChartData> _generateCategoriesData(List<TransactionModel> transactions) {
     final categoryTotals = _calculateCategoryTotals(transactions);
     final totalAmount = categoryTotals.values.fold(0.0, (sum, value) => sum + value);
     return _createOptimizedChartData(categoryTotals, totalAmount, _getCategoryColors());
@@ -177,21 +177,21 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     return categoryTotals;
   }
 
-  List<ChartSampleData> _createOptimizedChartData(
+  List<PieChartData> _createOptimizedChartData(
       Map<String, double> categoryTotals,
       double total,
       List<Color> colors,
       ) {
     if (categoryTotals.isEmpty) {
       return [
-        ChartSampleData(x: 'No Data', y: 100, color: AppColors.lightBlue),
+        PieChartData(x: 'No Data', y: 100, color: AppColors.lightBlue),
       ];
     }
 
     final sortedEntries = categoryTotals.entries.toList()
       ..sort((a, b) => b.value.compareTo(a.value));
 
-    final chartData = <ChartSampleData>[];
+    final chartData = <PieChartData>[];
     int colorIndex = 0;
 
     for (int i = 0; i < sortedEntries.length && i < maxCategories - 1; i++) {
@@ -200,7 +200,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
 
       if (percentage > 2.0) {
         chartData.add(
-          ChartSampleData(
+          PieChartData(
             x: entry.key,
             y: percentage,
             color: colors[colorIndex % colors.length],
@@ -227,7 +227,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
       if (othersTotal > 0) {
         double othersPercentage = total > 0 ? (othersTotal / total) * 100 : 0;
         chartData.add(
-          ChartSampleData(
+          PieChartData(
             x: 'Others',
             y: othersPercentage,
             color: colors[colorIndex % colors.length],
@@ -237,7 +237,7 @@ class CalendarBloc extends Bloc<CalendarEvent, CalendarState> {
     }
 
     return chartData.isEmpty
-        ? [ChartSampleData(x: 'No Data', y: 100, color: AppColors.lightBlue)]
+        ? [PieChartData(x: 'No Data', y: 100, color: AppColors.lightBlue)]
         : chartData;
   }
 

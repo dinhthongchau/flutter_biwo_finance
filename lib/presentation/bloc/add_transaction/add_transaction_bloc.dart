@@ -1,10 +1,5 @@
 import 'package:collection/collection.dart';
-import 'package:finance_management/core/enum/enums.dart';
-import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/data/repositories/category_repository.dart';
-import 'package:finance_management/presentation/bloc/add_transaction/add_transaction_event.dart';
-import 'package:finance_management/presentation/bloc/add_transaction/add_transaction_state.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 

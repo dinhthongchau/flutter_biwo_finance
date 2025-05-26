@@ -4,16 +4,15 @@ import 'package:finance_management/data/model/notification_model.dart';
 abstract class NotificationState extends Equatable {
   final List<NotificationModel>? notifications;
   final int? notificationCount;
-  final String? errorMessage;
+
 
   const NotificationState({
     this.notifications,
     this.notificationCount,
-    this.errorMessage,
   });
 
   @override
-  List<Object?> get props => [notifications, notificationCount, errorMessage];
+  List<Object?> get props => [notifications, notificationCount];
 }
 
 class NotificationInitial extends NotificationState {
@@ -35,9 +34,10 @@ class NotificationSuccess extends NotificationState {
 }
 
 class NotificationError extends NotificationState {
+  final String? errorMessage;
   const NotificationError({
     super.notifications,
     super.notificationCount,
-    required String super.errorMessage,
+    required this.errorMessage,
   });
 }

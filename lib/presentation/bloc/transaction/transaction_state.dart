@@ -6,7 +6,7 @@ abstract class TransactionState extends Equatable {
   final List<String> availableMonths;
   final MoneyType? currentListFilterType;
   final Map<String, int> financialsForSummary; // totalBalance, income, expense, save
-  final String? errorMessage;
+
 
   const TransactionState({
     this.allTransactions = const [],
@@ -19,7 +19,6 @@ abstract class TransactionState extends Equatable {
       'expense': 0,
       'save': 0,
     },
-    this.errorMessage,
   });
 
   @override
@@ -29,7 +28,6 @@ abstract class TransactionState extends Equatable {
     availableMonths,
     currentListFilterType,
     financialsForSummary,
-    errorMessage,
   ];
 
   TransactionState copyWith({
@@ -136,13 +134,14 @@ class TransactionSuccess extends TransactionState {
 }
 
 class TransactionError extends TransactionState {
+  final String? errorMessage;
   const TransactionError({
     super.allTransactions,
     super.selectedMonth,
     super.availableMonths,
     super.currentListFilterType,
     super.financialsForSummary,
-    required String super.errorMessage,
+    required this.errorMessage,
   });
 
   @override

@@ -6,14 +6,13 @@ abstract class AnalysisState extends Equatable {
   final List<BaseAnalysis>? currentChartData;
   final TimeFilterAnalysis? selectedTimeFilter;
   final DateTime? currentDate;
-  final String? errorMessage;
+
 
   const AnalysisState({
     this.allTransactions,
     this.currentChartData,
     this.selectedTimeFilter,
     this.currentDate,
-    this.errorMessage,
   });
 
   @override
@@ -22,7 +21,6 @@ abstract class AnalysisState extends Equatable {
     currentChartData,
     selectedTimeFilter,
     currentDate,
-    errorMessage,
   ];
 }
 
@@ -62,11 +60,12 @@ class AnalysisSuccess extends AnalysisState {
 }
 
 class AnalysisError extends AnalysisState {
+  final String? errorMessage;
   const AnalysisError({
     super.allTransactions,
     super.currentChartData,
     super.selectedTimeFilter,
     super.currentDate,
-    required String super.errorMessage,
+    required this.errorMessage,
   });
 }

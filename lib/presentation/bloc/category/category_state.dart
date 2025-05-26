@@ -2,19 +2,18 @@ part of 'category_bloc.dart';
 
 abstract class CategoryState extends Equatable {
   final List<CategoryModel> categories;
-  final String? errorMessage;
+
 
   const CategoryState({
     this.categories = const [],
-    this.errorMessage,
   });
 
   @override
-  List<Object?> get props => [categories, errorMessage];
+  List<Object?> get props => [categories];
 }
 
 class CategoryInitial extends CategoryState {
-  const CategoryInitial() : super(categories: const []);
+   const CategoryInitial({required super.categories});
 }
 
 class CategoryLoading extends CategoryState {
@@ -29,5 +28,6 @@ class CategorySuccess extends CategoryState {
 }
 
 class CategoryError extends CategoryState {
-  const CategoryError({required super.errorMessage, super.categories});
+  final String? errorMessage;
+  const CategoryError({required this.errorMessage, super.categories});
 }

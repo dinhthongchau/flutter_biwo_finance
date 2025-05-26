@@ -6,9 +6,9 @@ abstract class CalendarState extends Equatable {
   final DateTime currentMonth;
   final ChartTypeCalendar selectedChartType;
   final bool showAllMonth;
-  final List<ChartSampleData> chartData;
+  final List<PieChartData> chartData;
   final List<TransactionModel>? allTransactions;
-  final String? errorMessage;
+
 
   const CalendarState({
     required this.selectedDate,
@@ -17,7 +17,6 @@ abstract class CalendarState extends Equatable {
     required this.showAllMonth,
     required this.chartData,
     this.allTransactions,
-    this.errorMessage,
   });
 
   @override
@@ -28,7 +27,6 @@ abstract class CalendarState extends Equatable {
     showAllMonth,
     chartData,
     allTransactions,
-    errorMessage,
   ];
 }
 
@@ -76,6 +74,7 @@ class CalendarSuccess extends CalendarState {
 }
 
 class CalendarError extends CalendarState {
+  final String? errorMessage;
   const CalendarError({
     required super.selectedDate,
     required super.currentMonth,
@@ -83,6 +82,6 @@ class CalendarError extends CalendarState {
     required super.showAllMonth,
     required super.chartData,
     super.allTransactions,
-    required String super.errorMessage,
+    required this.errorMessage,
   });
 }

@@ -10,7 +10,9 @@ part 'category_state.dart';
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepository categoryRepository;
 
-  CategoryBloc(this.categoryRepository) : super(const CategoryInitial()) {
+  CategoryBloc(this.categoryRepository) : super( const CategoryInitial(
+    categories: [],
+  )) {
     on<LoadCategories>(_onLoadCategories);
     on<UpdateCategory>(_onUpdateCategory);
     on<DeleteCategory>(_onDeleteCategory);

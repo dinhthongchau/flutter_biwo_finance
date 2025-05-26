@@ -1,10 +1,9 @@
-import 'package:finance_management/gen/assets.gen.dart';
 import 'package:finance_management/presentation/screens/home/home_screen.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "/login-screen";
