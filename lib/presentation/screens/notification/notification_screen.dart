@@ -3,83 +3,82 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
-import 'dart:convert';
+
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:finance_management/data/services/firebase_chat_service.dart';
+import 'package:finance_management/data/model/chat/chat_room_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class NotificationScreen extends StatelessWidget {
   static const String routeName = '/notifications';
 
-  final String notificationDataJson = '''
-[
-  {
-    "section": "Today",
-    "items": [
-      {
-        "iconPath": "assets/FunctionalIcon/Vector.svg",
-        "title": "Reminder!",
-        "subtitle": "Set up your automatic savings to meet your savings goal...",
-        "time": "17:00 - April 24",
-        "iconColor": "AppColors.caribbeanGreen"
-      },
-      {
-        "iconPath": "assets/FunctionalIcon/Vector-28.svg",
-        "title": "New Update",
-        "subtitle": "Set up your automatic savings to meet your savings goal...",
-        "time": "17:00 - April 24",
-        "iconColor": "AppColors.caribbeanGreen"
-      }
-    ]
-  },
-  {
-    "section": "Yesterday",
-    "items": [
-      {
-        "iconPath": "assets/FunctionalIcon/Vector-25.svg",
-        "title": "Transactions",
-        "subtitle": "A new transaction has been registered\\nGroceries | Pantry | -\$100.00",
-        "time": "17:00 - April 24",
-        "iconColor": "AppColors.caribbeanGreen"
-      },
-      {
-        "iconPath": "assets/FunctionalIcon/Vector.svg",
-        "title": "Reminder!",
-        "subtitle": "Set up your automatic savings to meet your savings goal...",
-        "time": "17:00 - April 24",
-        "iconColor": "AppColors.caribbeanGreen"
-      }
-    ]
-  },
-  {
-    "section": "This Week",
-    "items": [
-      {
-        "iconPath": "assets/FunctionalIcon/Vector-26.svg",
-        "title": "Expense Record",
-        "subtitle": "We recommend that you be more attentive to your finances",
-        "time": "17:00 - April 24",
-        "iconColor": "AppColors.caribbeanGreen"
-      },
-      {
-        "iconPath": "assets/FunctionalIcon/Vector-25.svg",
-        "title": "Transactions",
-        "subtitle": "A new transaction has been registered\\nFood | Dinner | -\$70.40",
-        "time": "17:00 - April 24",
-        "iconColor": "AppColors.caribbeanGreen"
-      }
-    ]
-  }
-]
-''';
-
   const NotificationScreen({super.key});
+
+  Future<List<ChatRoomModel>> _filterRoomsWithMessages(
+    List<ChatRoomModel> rooms,
+  ) async {
+    List<ChatRoomModel> result = [];
+    for (final room in rooms) {
+      final messagesSnapshot =
+          await FirebaseFirestore.instance
+              .collection('chats')
+              .doc(room.id)
+              .collection('messages')
+              .limit(1)
+              .get();
+      if (messagesSnapshot.docs.isNotEmpty) {
+        result.add(room);
+      }
+    }
+    return result;
+  }
 
   @override
   Widget build(BuildContext context) {
-    final List<dynamic> notificationData = jsonDecode(notificationDataJson);
-
+    final user = FirebaseAuth.instance.currentUser;
+    final userId = user?.uid;
+    if (userId == null) {
+      return const Scaffold(body: Center(child: Text('Not logged in')));
+    }
     return Scaffold(
-      backgroundColor: AppColors.caribbeanGreen,
-      appBar: _buildAppBar(context),
-      body: _buildBody(notificationData),
+      appBar: AppBar(title: const Text('Notifications')),
+      body: StreamBuilder<List<ChatRoomModel>>(
+        stream: FirebaseChatService().chatRoomsForUserStream(userId),
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) {
+            return const Center(child: CircularProgressIndicator());
+          }
+          final chatRooms = snapshot.data!;
+          return FutureBuilder<List<ChatRoomModel>>(
+            future: _filterRoomsWithMessages(chatRooms),
+            builder: (context, filteredSnapshot) {
+              if (!filteredSnapshot.hasData) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              final filteredRooms = filteredSnapshot.data!;
+              if (filteredRooms.isEmpty) {
+                return const Center(child: Text('No chat notifications.'));
+              }
+              return ListView.builder(
+                itemCount: filteredRooms.length,
+                itemBuilder: (context, i) {
+                  final room = filteredRooms[i];
+                  return ListTile(
+                    title: Text('Chat with: ${room.helperId ?? 'No helper'}'),
+                    subtitle: Text(room.lastMessage),
+                    trailing: const Icon(Icons.chat_bubble_outline),
+                    onTap: () {
+                      context.go(
+                        '/profile-online-support-helper-center?chatRoomId=${room.id}',
+                      );
+                    },
+                  );
+                },
+              );
+            },
+          );
+        },
+      ),
     );
   }
 
@@ -90,10 +89,7 @@ class NotificationScreen extends StatelessWidget {
         backgroundColor: AppColors.caribbeanGreen,
         elevation: 0,
         leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppColors.honeydew,
-          ),
+          icon: const Icon(Icons.arrow_back, color: AppColors.honeydew),
           onPressed: () {
             context.pop();
           },
@@ -119,7 +115,7 @@ class NotificationScreen extends StatelessWidget {
                 shape: BoxShape.circle,
               ),
               child: SvgPicture.asset(
-              //  'assets/FunctionalIcon/Vector.svg',
+                //  'assets/FunctionalIcon/Vector.svg',
                 Assets.functionalIcon.vector.path,
                 height: 19,
                 width: 15,
@@ -146,19 +142,22 @@ class NotificationScreen extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 37, vertical: 24),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
-            children: notificationData.map((sectionData) {
-              final String sectionTitle = sectionData['section'];
-              final List<dynamic> items = sectionData['items'];
+            children:
+                notificationData.map((sectionData) {
+                  final String sectionTitle = sectionData['section'];
+                  final List<dynamic> items = sectionData['items'];
 
-              return Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  _buildSectionHeader(sectionTitle),
-                  ...items.map((item) => _buildNotificationItem(item)).toList(),
-                  const SizedBox(height: 24),
-                ],
-              );
-            }).toList(),
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildSectionHeader(sectionTitle),
+                      ...items
+                          .map((item) => _buildNotificationItem(item))
+                          .toList(),
+                      const SizedBox(height: 24),
+                    ],
+                  );
+                }).toList(),
           ),
         ),
       ),
@@ -197,14 +196,16 @@ class NotificationScreen extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: iconColor.withOpacity(0.1),
+                color: iconColor.withValues(
+                  alpha: (0.1 * 255).round().toDouble(),
+                ),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: SvgPicture.asset(
                 iconPath,
                 height: 24,
                 width: 24,
-                color: iconColor,
+                colorFilter: ColorFilter.mode(iconColor, BlendMode.srcIn),
               ),
             ),
           ),

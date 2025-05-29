@@ -1,4 +1,4 @@
-import 'package:finance_management/presentation/screens/login/login_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
@@ -34,25 +34,32 @@ class _PasswordChangedSplashScreenState
           children: [
             TweenAnimationBuilder<double>(
               tween: Tween(begin: 0.0, end: 1.0),
-              duration: const Duration(milliseconds: 900),
-              curve: Curves.elasticOut,
+              duration: const Duration(milliseconds: 5000),
+              curve: Curves.easeOutCubic,
               builder: (context, value, child) {
-                return Opacity(
-                  opacity: value,
-                  child: Transform.scale(
-                    scale: value,
-                    child: Container(
-                      width: 120,
-                      height: 120,
-                      decoration: BoxDecoration(
-                        color: Colors.white.withValues(
-                          alpha: (0.08 * 255).round().toDouble(),
-                        ),
-                        shape: BoxShape.circle,
-                        border: Border.all(color: Colors.white, width: 5),
+                final double scale = value;
+                final double iconOpacity = (value - 0.3).clamp(0.0, 1.0);
+                return Transform.scale(
+                  scale: scale,
+                  child: Container(
+                    width: 120,
+                    height: 120,
+                    decoration: BoxDecoration(
+                      color: Colors.white.withValues(
+                        alpha: (0.08 * 255).round().toDouble(),
                       ),
-                      child: const Center(
-                        child: Icon(Icons.check, color: Colors.white, size: 64),
+
+                      shape: BoxShape.circle,
+                      border: Border.all(color: Colors.white, width: 5),
+                    ),
+                    child: Center(
+                      child: Opacity(
+                        opacity: iconOpacity,
+                        child: const Icon(
+                          Icons.check,
+                          color: AppColors.caribbeanGreen,
+                          size: 64,
+                        ),
                       ),
                     ),
                   ),
@@ -60,13 +67,27 @@ class _PasswordChangedSplashScreenState
               },
             ),
             const SizedBox(height: 32),
-            const Text(
-              'Password Has Been\nChanged Successfully',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
+            TweenAnimationBuilder<double>(
+              tween: Tween(begin: 0.0, end: 1.0),
+              duration: const Duration(milliseconds: 1200),
+              curve: Curves.easeOutCubic,
+              builder: (context, value, child) {
+                return Opacity(
+                  opacity: value,
+                  child: Transform.translate(
+                    offset: Offset(0, 30 * (1 - value)),
+                    child: child,
+                  ),
+                );
+              },
+              child: const Text(
+                'Password Has Been\nChanged Successfully',
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 20,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ),
             const SizedBox(height: 32),

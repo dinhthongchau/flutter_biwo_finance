@@ -1,4 +1,4 @@
-import 'package:finance_management/presentation/screens/forget_password/new_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/forget_password/new_password_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/services.dart';
@@ -223,10 +223,11 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                   milliseconds:
                                                                       800,
                                                                 ),
-                                                            tween: Tween<double>(
-                                                              begin: 0,
-                                                              end: 1,
-                                                            ),
+                                                            tween:
+                                                                Tween<double>(
+                                                                  begin: 0,
+                                                                  end: 1,
+                                                                ),
                                                             builder: (
                                                               context,
                                                               double value,
@@ -243,7 +244,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                     color: AppColors
                                                                         .caribbeanGreen
                                                                         .withAlpha(
-                                                                          (0.2 * 255)
+                                                                          (0.2 *
+                                                                                  255)
                                                                               .round(),
                                                                         ),
                                                                     shape:
@@ -289,10 +291,11 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                   milliseconds:
                                                                       800,
                                                                 ),
-                                                            tween: Tween<double>(
-                                                              begin: 0,
-                                                              end: 1,
-                                                            ),
+                                                            tween:
+                                                                Tween<double>(
+                                                                  begin: 0,
+                                                                  end: 1,
+                                                                ),
                                                             builder: (
                                                               context,
                                                               double value,
@@ -303,7 +306,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                 child: const Text(
                                                                   'Correct Pin!!!',
                                                                   style: TextStyle(
-                                                                    fontSize: 24,
+                                                                    fontSize:
+                                                                        24,
                                                                     fontWeight:
                                                                         FontWeight
                                                                             .bold,
@@ -349,7 +353,10 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                 // ).go(
                                                                 //   '/new-password-screen',
                                                                 // );
-                                                                context.go(NewPasswordScreen.routeName);
+                                                                context.go(
+                                                                  NewPasswordScreen
+                                                                      .routeName,
+                                                                );
                                                               },
                                                               child: const Text(
                                                                 'OK',

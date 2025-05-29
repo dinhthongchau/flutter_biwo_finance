@@ -1,21 +1,37 @@
 import 'package:finance_management/gen/assets.gen.dart';
 import 'package:finance_management/presentation/screens/analysis/analysis_screen.dart';
 import 'package:finance_management/presentation/screens/categories/categories_screen.dart';
-import 'package:finance_management/presentation/screens/forget_password/forget_password_screen.dart';
-import 'package:finance_management/presentation/screens/forget_password/new_password_screen.dart';
-import 'package:finance_management/presentation/screens/forget_password/password_changed_splash_screen.dart';
-import 'package:finance_management/presentation/screens/forget_password/security_pin_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/forget_password/forget_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/forget_password/new_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/forget_password/password_changed_splash_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/forget_password/security_pin_screen.dart';
 import 'package:finance_management/presentation/screens/home/home_screen.dart';
-import 'package:finance_management/presentation/screens/login/login_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
 import 'package:finance_management/presentation/screens/notification/notification_screen.dart';
 import 'package:finance_management/presentation/screens/onboarding/splash_screen.dart';
-import 'package:finance_management/presentation/screens/profile/profile_screen.dart';
-import 'package:finance_management/presentation/screens/sign_up/sign_up_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/sign_up/sign_up_screen.dart';
 import 'package:finance_management/presentation/screens/transaction/transaction_screen.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:go_router/go_router.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_edit_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_change_pin_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_term_and_condition.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_notification_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_delete_account_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_help_faqs_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_center_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -26,7 +42,7 @@ final _shellNavigatorKey = GlobalKey<NavigatorState>(debugLabel: 'shell');
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: HomeScreen.routeName,
+  initialLocation: SplashScreen.routeName,
   routes: [
     GoRoute(
       path: SplashScreen.routeName,
@@ -65,13 +81,18 @@ final router = GoRouter(
     ),
     ShellRoute(
       navigatorKey: _shellNavigatorKey,
-      builder: (context, state, child) => BottomNavigationBarScaffold(child: child),
+      builder:
+          (context, state, child) => BottomNavigationBarScaffold(child: child),
       routes: [
         GoRoute(
           path: HomeScreen.routeName,
-          pageBuilder: (context, state) => const NoTransitionPage(
-            child: HomeScreen(label: 'Home', detailsPath: '/home-screen/notifications'),
-          ),
+          pageBuilder:
+              (context, state) => const NoTransitionPage(
+                child: HomeScreen(
+                  label: 'Home',
+                  detailsPath: '/home-screen/notifications',
+                ),
+              ),
           routes: [
             GoRoute(
               path: NotificationScreen.routeName,
@@ -81,19 +102,98 @@ final router = GoRouter(
         ),
         GoRoute(
           path: AnalysisScreen.routeName,
-          pageBuilder: (context, state) => const NoTransitionPage(child: AnalysisScreen()),
+          pageBuilder:
+              (context, state) =>
+                  const NoTransitionPage(child: AnalysisScreen()),
         ),
         GoRoute(
           path: TransactionScreen.routeName,
-          pageBuilder: (context, state) => const NoTransitionPage(child: TransactionScreen()),
+          pageBuilder:
+              (context, state) =>
+                  const NoTransitionPage(child: TransactionScreen()),
         ),
         GoRoute(
           path: CategoriesScreen.routeName,
-          pageBuilder: (context, state) => const NoTransitionPage(child: CategoriesScreen()),
+          pageBuilder:
+              (context, state) =>
+                  const NoTransitionPage(child: CategoriesScreen()),
         ),
         GoRoute(
           path: ProfileScreen.routeName,
-          pageBuilder: (context, state) => const NoTransitionPage(child: ProfileScreen()),
+          pageBuilder: (context, state) {
+            final userState = context.read<UserBloc>().state;
+            if (userState is UserLoaded) {
+              return NoTransitionPage(
+                child: ProfileScreen(userId: userState.user.id),
+              );
+            }
+            // Nếu chưa đăng nhập, có thể chuyển về login hoặc show loading
+            return const NoTransitionPage(child: ProfileScreen(userId: '0'));
+          },
+        ),
+        GoRoute(
+          path: '/profile-edit-screen',
+          builder: (context, state) {
+            final userId =
+                int.tryParse(state.uri.queryParameters['userId'] ?? '0') ?? 0;
+            return ProfileEditScreen(userId: userId);
+          },
+        ),
+        GoRoute(
+          path: '/profile-security-screen',
+          builder: (context, state) => const ProfileSecurityScreen(),
+        ),
+        GoRoute(
+          path: '/profile-security-change-pin',
+          builder: (context, state) => const ProfileSecurityChangePinScreen(),
+        ),
+        GoRoute(
+          path: '/profile-term-and-condition',
+          builder: (context, state) => const ProfileTermAndConditionScreen(),
+        ),
+        GoRoute(
+          path: '/profile-setting-screen',
+          builder: (context, state) => const ProfileSettingScreen(),
+        ),
+        GoRoute(
+          path: '/profile-setting-notification',
+          builder: (context, state) => const ProfileSettingNotificationScreen(),
+        ),
+        GoRoute(
+          path: '/profile-setting-password',
+          builder: (context, state) => const ProfileSettingPasswordScreen(),
+        ),
+        GoRoute(
+          path: '/profile-setting-delete-account',
+          builder:
+              (context, state) => const ProfileSettingDeleteAccountScreen(),
+        ),
+        GoRoute(
+          path: '/profile-splash',
+          builder: (context, state) => const ProfileSplashScreen(),
+        ),
+        GoRoute(
+          path: '/profile-help-faqs',
+          builder: (context, state) => const ProfileHelpFaqsScreen(),
+        ),
+        GoRoute(
+          path: '/profile-online-support-ai',
+          builder: (context, state) => const ProfileOnlineSupportAiScreen(),
+        ),
+        GoRoute(
+          path: '/profile-online-support-ai-lobby',
+          builder:
+              (context, state) => const ProfileOnlineSupportAiLobbyScreen(),
+        ),
+        GoRoute(
+          path: '/profile-online-support-helper',
+          builder: (context, state) => const ProfileOnlineSupportHelperScreen(),
+        ),
+        GoRoute(
+          path: '/profile-online-support-helper-center',
+          builder:
+              (context, state) =>
+                  const ProfileOnlineSupportHelperCenterScreen(),
         ),
       ],
     ),
@@ -105,9 +205,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp.router(
-      routerConfig: router,
-    );
+    return MaterialApp.router(routerConfig: router);
   }
 }
 
@@ -116,10 +214,12 @@ class BottomNavigationBarScaffold extends StatefulWidget {
   final Widget child;
 
   @override
-  State<BottomNavigationBarScaffold> createState() => BottomNavigationBarScaffoldState();
+  State<BottomNavigationBarScaffold> createState() =>
+      BottomNavigationBarScaffoldState();
 }
 
-class BottomNavigationBarScaffoldState extends State<BottomNavigationBarScaffold> {
+class BottomNavigationBarScaffoldState
+    extends State<BottomNavigationBarScaffold> {
   final _routes = [
     HomeScreen.routeName,
     AnalysisScreen.routeName,
@@ -134,7 +234,7 @@ class BottomNavigationBarScaffoldState extends State<BottomNavigationBarScaffold
     super.didChangeDependencies();
     final location = GoRouterState.of(context).matchedLocation;
     final index = _routes.indexWhere(
-          (route) => location == route || location.startsWith('$route/'),
+      (route) => location == route || location.startsWith('$route/'),
     );
     if (index != -1 && index != _selectedIndex) {
       setState(() {
@@ -186,11 +286,11 @@ class BottomNavigationBarScaffoldState extends State<BottomNavigationBarScaffold
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
           children: [
-            _buildNavItem(0,   Assets.bottomNavigationIcon.homeSvg.path),
-            _buildNavItem(1,   Assets.bottomNavigationIcon.analysisSvg.path),
-            _buildNavItem(2,   Assets.bottomNavigationIcon.transactions.path),
-            _buildNavItem(3,   Assets.bottomNavigationIcon.categorySvg.path),
-            _buildNavItem(4,   Assets.bottomNavigationIcon.profileSvg.path),
+            _buildNavItem(0, Assets.bottomNavigationIcon.homeSvg.path),
+            _buildNavItem(1, Assets.bottomNavigationIcon.analysisSvg.path),
+            _buildNavItem(2, Assets.bottomNavigationIcon.transactions.path),
+            _buildNavItem(3, Assets.bottomNavigationIcon.categorySvg.path),
+            _buildNavItem(4, Assets.bottomNavigationIcon.profileSvg.path),
           ],
         ),
       ),
@@ -208,9 +308,10 @@ class BottomNavigationBarScaffoldState extends State<BottomNavigationBarScaffold
           bottom: 12,
         ),
         decoration: BoxDecoration(
-          color: _selectedIndex == index
-              ? AppColors.caribbeanGreen
-              : Colors.transparent,
+          color:
+              _selectedIndex == index
+                  ? AppColors.caribbeanGreen
+                  : Colors.transparent,
           borderRadius: BorderRadius.circular(22),
         ),
         child: SvgPicture.asset(
@@ -222,4 +323,3 @@ class BottomNavigationBarScaffoldState extends State<BottomNavigationBarScaffold
     );
   }
 }
-

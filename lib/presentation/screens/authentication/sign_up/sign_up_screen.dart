@@ -1,10 +1,14 @@
-import 'package:finance_management/data/model/user_model.dart';
-import 'package:finance_management/presentation/screens/login/login_screen.dart';
+import 'package:finance_management/data/model/user/user_model.dart';
+import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
+import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:finance_management/presentation/widgets/widget/text_styles.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hive/hive.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = "/signUp-screen";
@@ -28,6 +32,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _confirmPasswordController =
       TextEditingController();
   late Box<UserModel> _userBox;
+  bool _isHelper = false;
 
   @override
   void initState() {
@@ -47,7 +52,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _confirmPasswordController.text = 'password';
 
     final user = UserModel(
-      id: 12345678,
+      id: '12345678',
       fullName: _fullNameController.text,
       email: _emailController.text,
       mobile: _mobileController.text,
@@ -157,95 +162,91 @@ class _SignUpScreenState extends State<SignUpScreen> {
         return;
       }
 
-      // final userId = DateTime.now().millisecondsSinceEpoch;
-      final userId = _userBox.length + 1;
-      final user = UserModel(
-        id: userId,
-        fullName: _fullNameController.text,
-        email: _emailController.text,
-        mobile: _mobileController.text,
-        dob: _dobController.text,
-        password: _passwordController.text,
-      );
+      try {
+        // Đăng ký với Firebase Auth
+        final credential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            );
 
-      await _userBox.put(userId, user);
+        // Lưu thông tin user lên Firestore
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(credential.user!.uid)
+            .set({
+              'fullName': _fullNameController.text,
+              'email': _emailController.text,
+              'mobile': _mobileController.text,
+              'dob': _dobController.text,
+              'helper': _isHelper,
+              'createdAt': FieldValue.serverTimestamp(),
+            });
 
-      if (mounted) {
-        showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(24),
-              ),
-              contentPadding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-              content: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  const Icon(
-                    Icons.check_circle_rounded,
-                    color: AppColors.caribbeanGreen,
-                    size: 64,
+        if (mounted) {
+          showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Registration Successful'),
+                  content: const Text(
+                    'You can now login with your credentials.',
                   ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Sign Up Successful!',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.caribbeanGreen,
-                    ),
-                  ),
-                  const SizedBox(height: 12),
-                  const Text(
-                    'Your account has been created. You can now log in and start using the app!',
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: AppColors.blackHeader,
-                    ),
-                  ),
-                  const SizedBox(height: 24),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColors.caribbeanGreen,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(18),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 12),
-                        elevation: 0,
-                      ),
+                  actions: [
+                    TextButton(
                       onPressed: () {
+                        Navigator.of(context).pop();
                         context.go(LoginScreen.routeName);
                       },
-                      child: const Text(
-                        'OK',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
+                      child: const Text('OK'),
                     ),
-                  ),
-                ],
-              ),
-            );
-          },
+                  ],
+                ),
+          );
+        }
+      } on FirebaseAuthException catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Registration failed:  0${e.message}')),
         );
       }
     }
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppColors.caribbeanGreen,
-      body: SingleChildScrollView(
-        child: Column(children: [buildHeader(), buildBody()]),
+    return BlocListener<UserBloc, UserState>(
+      listener: (context, state) {
+        if (state is UserError) {
+          ScaffoldMessenger.of(
+            context,
+          ).showSnackBar(SnackBar(content: Text(state.message)));
+        } else if (state is UserLoaded) {
+          showDialog(
+            context: context,
+            builder:
+                (context) => AlertDialog(
+                  title: const Text('Registration Successful'),
+                  content: const Text(
+                    'You can now login with your credentials.',
+                  ),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                        context.go(LoginScreen.routeName);
+                      },
+                      child: const Text('OK'),
+                    ),
+                  ],
+                ),
+          );
+        }
+      },
+      child: Scaffold(
+        backgroundColor: AppColors.caribbeanGreen,
+        body: SingleChildScrollView(
+          child: Column(children: [buildHeader(), buildBody()]),
+        ),
       ),
     );
   }
@@ -259,7 +260,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
           topRight: Radius.circular(40),
         ),
       ),
-
       child: Form(
         key: _formKey,
         child: Column(
@@ -330,7 +330,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   }
                   return null; // No error
                 },
-
                 decoration: InputDecoration(
                   hintText: 'example@example.com',
                   filled: true,
@@ -348,7 +347,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
             Container(
               padding: const EdgeInsets.only(left: 55),
               child: const Text(
@@ -387,7 +385,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
             Container(
               padding: const EdgeInsets.only(left: 55),
               child: const Text(
@@ -427,7 +424,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
             Container(
               padding: const EdgeInsets.only(left: 55),
               child: const Text(
@@ -482,7 +478,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
             Container(
               padding: const EdgeInsets.only(left: 55),
               child: const Text(
@@ -537,7 +532,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
             Container(
               padding: const EdgeInsets.only(top: 19, bottom: 13),
               child: Center(
@@ -571,9 +565,15 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
+            CheckboxListTile(
+              value: _isHelper,
+              onChanged: (val) => setState(() => _isHelper = val ?? false),
+              title: const Text('Đăng ký làm helper'),
+            ),
             GestureDetector(
-              onTap: _submitForm,
+              onTap: () {
+                _submitForm();
+              },
               child: Center(
                 child: Container(
                   decoration: BoxDecoration(
@@ -604,10 +604,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
                 ),
               ),
             ),
-
             Container(
               alignment: Alignment.center,
-
               padding: const EdgeInsets.only(top: 11),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.center,

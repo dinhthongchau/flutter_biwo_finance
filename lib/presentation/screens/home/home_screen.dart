@@ -3,7 +3,6 @@ import 'package:finance_management/presentation/routes.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:go_router/go_router.dart';
 
 class HomeScreen extends StatelessWidget {
   static const String routeName = '/home-screen';
@@ -556,7 +555,7 @@ class HomeScreen extends StatelessWidget {
           iconPath,
           width: 24,
           height: 24,
-          color: Colors.white,
+          colorFilter: const ColorFilter.mode(Colors.white, BlendMode.srcIn),
         ),
       ),
     );

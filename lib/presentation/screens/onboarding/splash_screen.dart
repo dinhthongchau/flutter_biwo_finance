@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'dart:async';
-import 'package:finance_management/presentation/screens/login/login_screen.dart';
-import 'package:finance_management/presentation/screens/sign_up/sign_up_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/sign_up/sign_up_screen.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -32,7 +32,7 @@ class _SplashScreenState extends State<SplashScreen>
     super.initState();
     _animController = AnimationController(
       vsync: this,
-      duration: const Duration(seconds: 4),
+      duration: const Duration(seconds: 2),
     );
     _fadeAnim = Tween<double>(begin: 0, end: 1).animate(
       CurvedAnimation(parent: _animController, curve: Curves.easeInOut),
@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: _animController, curve: Curves.easeOutBack),
     );
     _animController.forward();
-    _startAutoNext(0, const Duration(seconds: 4));
+    _startAutoNext(0, const Duration(seconds: 2));
   }
 
   void _startAutoNext(int page, Duration duration) {
