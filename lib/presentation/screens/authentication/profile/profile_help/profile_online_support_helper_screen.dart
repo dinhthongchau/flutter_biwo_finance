@@ -101,10 +101,21 @@ class _ProfileOnlineSupportHelperScreenState
                                 );
                               }
                               if (context.mounted) {
-                                context.go('/profile-online-support-helper-chat', extra: {
-                                  'chatRoom': chat,
-                                  'helperId': _helperId!,
-                                });
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (_) =>
+                                        ProfileOnlineSupportHelperChatScreen(
+                                          chatRoom: chat,
+                                          helperId: _helperId!,
+                                        ),
+                                  ),
+                                );
+                                // context.go('/profile-online-support-helper-chat', extra: {
+                                //   'chatRoom': chat,
+                                //   'helperId': _helperId!,
+                                // });
 
                               }
                             },

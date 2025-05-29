@@ -87,7 +87,15 @@ class _ProfileOnlineSupportAiLobbyScreenState
                         (chat) => ChatCard(
                           chat: chat,
                           onTap: () {
-                            context.go('/profile-online-support-ai', extra: chat);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder:
+                                    (_) => ProfileOnlineSupportAiScreen(
+                                  chatHistory: chat,
+                                ),
+                              ),
+                            );
 
                           },
                         ),

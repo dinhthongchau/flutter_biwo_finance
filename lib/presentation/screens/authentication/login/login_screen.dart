@@ -31,8 +31,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState()  {
     super.initState();
-    _emailController.text='dt@gmail.com';
-    _passwordController.text='dt@gmail.com1';
+    _emailController.text='nkhiet@gmail.com';
+    _passwordController.text='nkhiet@gmail.com';
   }
   @override
   void dispose() {

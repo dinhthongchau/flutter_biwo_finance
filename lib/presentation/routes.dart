@@ -112,22 +112,19 @@ final router = GoRouter(
       path: '/profile-help-faqs',
       builder: (context, state) => const ProfileHelpFaqsScreen(),
     ),
-    GoRoute(
-      path: '/profile-online-support-helper-chat',
-      builder: (context, state) {
-        final data = state.extra as Map<String, dynamic>;
-        return ProfileOnlineSupportHelperChatScreen(
-          chatRoom: data['chatRoom'],
-          helperId: data['helperId'],
-        );
-      },
-    ),
+    // GoRoute(
+    //   path: '/profile-online-support-helper-chat',
+    //   builder: (context, state) {
+    //     final data = state.extra as Map<String, dynamic>;
+    //     return ProfileOnlineSupportHelperChatScreen(
+    //       chatRoom: data['chatRoom'],
+    //       helperId: data['helperId'],
+    //     );
+    //   },
+    // ),
     GoRoute(
       path: '/profile-online-support-ai',
-      builder: (context, state) {
-        final chat = state.extra as ChatHistory;
-        return ProfileOnlineSupportAiScreen(chatHistory: chat);
-      },
+      builder: (context, state) => const ProfileOnlineSupportAiScreen(),
     ),
     GoRoute(
       path: '/profile-online-support-ai-lobby',
