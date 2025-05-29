@@ -16,28 +16,22 @@ class _SearchScreenState extends State<SearchScreen> with SearchScreenMixin {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider.value(value: context.read<TransactionBloc>()),
-        BlocProvider.value(value: context.read<SearchBloc>()),
-      ],
-      child: BlocConsumer<SearchBloc, SearchState>(
-        listener: (context, state) {
-          if (state is SearchError) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                  content: Text(state.errorMessage ?? 'An error occurred')),
-            );
-          }
-        },
-        builder: (context, state) {
-          return Scaffold(
-            backgroundColor: AppColors.caribbeanGreen,
-            appBar: buildHeaderNotification(context),
-            body: buildBody(state),
+    return BlocConsumer<SearchBloc, SearchState>(
+      listener: (context, state) {
+        if (state is SearchError) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(state.errorMessage ?? 'An error occurred')),
           );
-        },
-      ),
+        }
+      },
+      builder: (context, state) {
+        return Scaffold(
+          backgroundColor: AppColors.caribbeanGreen,
+          appBar: buildHeaderNotification(context),
+          body: buildBody(state),
+        );
+      },
     );
   }
 }

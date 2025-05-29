@@ -15,7 +15,7 @@ class TransactionRepository {
       return transactionData;
     } catch (e) {
       debugPrint('OrderDataService ERROR: Lỗi khi lấy dữ liệu mẫu: $e');
-      return [];
+      throw Exception('Failed to load transactions: $e');
     }
   }
 

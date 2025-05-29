@@ -204,7 +204,11 @@ Future<void> _showEditTransactionDialog(
                   ),
                 ),
                 onChanged: (value) {
+                  try {
                     editedDate = DateTime.parse(value);
+                  } catch (e) {
+                    SnackbarUtils.showNoticeSnackbar(context, 'Invalid date format', true);
+                  }
                 },
               ),
               const SizedBox(height: 12),

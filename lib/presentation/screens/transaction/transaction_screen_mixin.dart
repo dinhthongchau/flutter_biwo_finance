@@ -306,7 +306,15 @@ mixin TransactionScreenMixin {
             context.read<TransactionBloc>().add(SelectMonthEvent(month));
           },
           itemBuilder:
-              (context) =>
+              (context) =>availableMonths.isEmpty
+                  ? [
+                const PopupMenuItem(
+                  value: 'No Data',
+                  enabled: false,
+                  child: Text('No months available'),
+                )
+              ]
+                  :
               availableMonths.map((month) {
                 return PopupMenuItem(
                   value: month,

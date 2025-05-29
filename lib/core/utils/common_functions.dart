@@ -97,7 +97,7 @@ class DialogUtils {
               Text('Error', style: TextStyle(fontWeight: FontWeight.bold)),
             ],
           ),
-          content: Text(errorMessage!, style: const TextStyle(fontSize: 16)),
+          content: Text(errorMessage ?? 'An error occurred of isErrorDialog' , style: const TextStyle(fontSize: 16)),
           actions: [
             TextButton(
               style: TextButton.styleFrom(

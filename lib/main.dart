@@ -49,9 +49,6 @@ class AppProviders extends StatelessWidget {
         BlocProvider<HomeBloc>(
           create: (context) => HomeBloc(),
         ),
-        // BlocProvider<AddTransactionBloc>(
-        //   create: (context) => AddTransactionBloc(),
-        // ),
       ],
       child: const AppMaterial(),
     );

@@ -52,7 +52,7 @@ class MonthlyAnalysis extends BaseAnalysis {
   ) : super(income, expense);
 
   @override
-  String get xValue => DateFormat('MMM').format(DateTime(2025, monthNumber));
+  String get xValue => DateFormat('MMM').format(DateTime(startDate.year, monthNumber));
 }
 
 class YearAnalysis extends BaseAnalysis {
