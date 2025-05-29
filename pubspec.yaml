@@ -33,7 +33,6 @@ flutter:
   assets:
       - assets/IconComponents/
       - assets/FunctionalIcon/
-      - assets/IconComponents/
       - assets/BottomNavigationIcon/
     #assets:
 flutter_gen:
