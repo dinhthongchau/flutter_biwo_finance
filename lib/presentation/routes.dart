@@ -4,6 +4,22 @@ import 'package:finance_management/presentation/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart'; //tesst
 import 'package:finance_management/presentation/shared_data.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_edit_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_change_pin_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_term_and_condition.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_notification_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_delete_account_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_help_faqs_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_center_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(
@@ -62,6 +78,70 @@ final router = GoRouter(
       builder: (context, state) => const PasswordChangedSplashScreen(),
     ),
     GoRoute(
+      path: '/profile-edit-screen',
+      builder: (context, state) {
+        final userId =
+            int.tryParse(state.uri.queryParameters['userId'] ?? '0') ?? 0;
+        return ProfileEditScreen(userId: userId);
+      },
+    ),
+    GoRoute(
+      path: '/profile-security-screen',
+      builder: (context, state) => const ProfileSecurityScreen(),
+    ),
+    GoRoute(
+      path: '/profile-security-change-pin',
+      builder: (context, state) => const ProfileSecurityChangePinScreen(),
+    ),
+    GoRoute(
+      path: '/profile-term-and-condition',
+      builder: (context, state) => const ProfileTermAndConditionScreen(),
+    ),
+    GoRoute(
+      path: '/profile-setting-screen',
+      builder: (context, state) => const ProfileSettingScreen(),
+    ),
+    GoRoute(
+      path: '/profile-setting-notification',
+      builder: (context, state) => const ProfileSettingNotificationScreen(),
+    ),
+    GoRoute(
+      path: '/profile-setting-password',
+      builder: (context, state) => const ProfileSettingPasswordScreen(),
+    ),
+    GoRoute(
+      path: '/profile-setting-delete-account',
+      builder:
+          (context, state) => const ProfileSettingDeleteAccountScreen(),
+    ),
+    GoRoute(
+      path: '/profile-splash',
+      builder: (context, state) => const ProfileSplashScreen(),
+    ),
+    GoRoute(
+      path: '/profile-help-faqs',
+      builder: (context, state) => const ProfileHelpFaqsScreen(),
+    ),
+    GoRoute(
+      path: '/profile-online-support-ai',
+      builder: (context, state) => const ProfileOnlineSupportAiScreen(),
+    ),
+    GoRoute(
+      path: '/profile-online-support-ai-lobby',
+      builder:
+          (context, state) => const ProfileOnlineSupportAiLobbyScreen(),
+    ),
+    GoRoute(
+      path: '/profile-online-support-helper',
+      builder: (context, state) => const ProfileOnlineSupportHelperScreen(),
+    ),
+    GoRoute(
+      path: '/profile-online-support-helper-center',
+      builder:
+          (context, state) =>
+      const ProfileOnlineSupportHelperCenterScreen(),
+    ),
+    GoRoute(
       path: CategoryDetailScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) {
@@ -118,12 +198,12 @@ final router = GoRouter(
               path: HomeScreen.routeName,
               pageBuilder:
                   (context, state) => const NoTransitionPage(
-                    child: HomeScreen(
-                      label: 'Home',
-                      notificationsScreenPath:
-                          '/home-screen/notifications-screen',
-                    ),
-                  ),
+                child: HomeScreen(
+                  label: 'Home',
+                  notificationsScreenPath:
+                  '/home-screen/notifications-screen',
+                ),
+              ),
               routes: [
                 GoRoute(
                   path: NotificationScreen.routeName,
@@ -140,23 +220,23 @@ final router = GoRouter(
               path: AnalysisScreen.routeName,
               pageBuilder:
                   (context, state) => const NoTransitionPage(
-                    child: AnalysisScreen(
-                      searchScreenPath: '/analysis-screen/search-screen',
-                      calendarScreenPath: '/analysis-screen/calendar-screen',
-                    ),
-                  ),
+                child: AnalysisScreen(
+                  searchScreenPath: '/analysis-screen/search-screen',
+                  calendarScreenPath: '/analysis-screen/calendar-screen',
+                ),
+              ),
               routes: [
                 GoRoute(
                   path: SearchScreen.routeName,
                   pageBuilder:
                       (context, state) =>
-                          const NoTransitionPage(child: SearchScreen()),
+                  const NoTransitionPage(child: SearchScreen()),
                 ),
                 GoRoute(
                   path: CalendarScreen.routeName,
                   pageBuilder:
                       (context, state) =>
-                          const NoTransitionPage(child: CalendarScreen()),
+                  const NoTransitionPage(child: CalendarScreen()),
                 ),
               ],
             ),
@@ -169,7 +249,7 @@ final router = GoRouter(
               path: TransactionScreen.routeName,
               pageBuilder:
                   (context, state) =>
-                      const NoTransitionPage(child: TransactionScreen()),
+              const NoTransitionPage(child: TransactionScreen()),
             ),
           ],
         ),
@@ -180,11 +260,11 @@ final router = GoRouter(
               path: CategoriesScreen.routeName,
               pageBuilder:
                   (context, state) => const NoTransitionPage(
-                    child: CategoriesScreen(
-                      categoriesScreenPath:
-                          '/categories-screen/category-list-screen',
-                    ),
-                  ),
+                child: CategoriesScreen(
+                  categoriesScreenPath:
+                  '/categories-screen/category-list-screen',
+                ),
+              ),
               routes: [
                 GoRoute(
                   path: CategoryListScreen.routeName,
@@ -204,9 +284,16 @@ final router = GoRouter(
           routes: [
             GoRoute(
               path: ProfileScreen.routeName,
-              pageBuilder:
-                  (context, state) =>
-                      const NoTransitionPage(child: ProfileScreen()),
+              pageBuilder: (context, state) {
+                final userState = context.read<UserBloc>().state;
+                if (userState is UserLoaded) {
+                  return NoTransitionPage(
+                    child: ProfileScreen(userId: userState.user.id),
+                  );
+                }
+                // Nếu chưa đăng nhập, có thể chuyển về login hoặc show loading
+                return const NoTransitionPage(child: ProfileScreen(userId: '0'));
+              },
             ),
           ],
         ),
