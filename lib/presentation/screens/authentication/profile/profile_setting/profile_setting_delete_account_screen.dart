@@ -131,7 +131,7 @@ class _ProfileSettingDeleteAccountScreenState
                       ),
                       padding: const EdgeInsets.symmetric(vertical: 14),
                     ),
-                    onPressed: () => Navigator.of(context).pop(),
+                    onPressed: () => context.pop(),
                     child: const Text('Cancel'),
                   ),
                 ),

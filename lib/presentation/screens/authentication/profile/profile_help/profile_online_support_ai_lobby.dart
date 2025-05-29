@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_screen.dart';
-import 'package:finance_management/data/model/online_ai/chat_history_model.dart';
-import 'package:finance_management/data/model/online_ai/chat_history_storage.dart';
+import 'package:finance_management/data/model/chat_history/chat_history_model.dart';
+import 'package:finance_management/data/model/chat_history/chat_history_storage.dart';
 import 'package:go_router/go_router.dart';
 
 class ProfileOnlineSupportAiLobbyScreen extends StatefulWidget {
@@ -87,15 +87,8 @@ class _ProfileOnlineSupportAiLobbyScreenState
                         (chat) => ChatCard(
                           chat: chat,
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => ProfileOnlineSupportAiScreen(
-                                      chatHistory: chat,
-                                    ),
-                              ),
-                            );
+                            context.go('/profile-online-support-ai', extra: chat);
+
                           },
                         ),
                       ),
@@ -117,15 +110,8 @@ class _ProfileOnlineSupportAiLobbyScreenState
                         (chat) => ChatCard(
                           chat: chat,
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (_) => ProfileOnlineSupportAiScreen(
-                                      chatHistory: chat,
-                                    ),
-                              ),
-                            );
+                            context.go('/profile-online-support-ai', extra: chat);
+
                           },
                         ),
                       ),
@@ -146,12 +132,8 @@ class _ProfileOnlineSupportAiLobbyScreenState
                       ),
                     ),
                     onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const ProfileOnlineSupportAiScreen(),
-                        ),
-                      );
+                      context.go('/profile-online-support-ai');
+
                     },
                     child: const Text(
                       'Start Another Chat',

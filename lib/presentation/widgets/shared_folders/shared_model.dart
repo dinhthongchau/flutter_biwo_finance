@@ -12,9 +12,11 @@ export 'package:finance_management/presentation/screens/categories/categories_ho
 export 'package:finance_management/presentation/screens/categories/category_detail/category_detail_screen.dart';
 export 'package:finance_management/presentation/screens/categories/category_list/category_list_screen.dart';
 export 'package:finance_management/presentation/screens/categories/category_list/category_list_screen_mixin.dart';
+
 export 'package:finance_management/presentation/screens/notification/notification_screen.dart';
 export 'package:finance_management/presentation/screens/notification/notification_screen_mixin.dart';
 export 'package:finance_management/presentation/screens/onboarding/splash_screen.dart';
+
 export 'package:finance_management/presentation/screens/transaction/transaction_screen.dart';
 export 'package:finance_management/presentation/screens/transaction/transaction_screen_mixin.dart';
 export 'package:finance_management/presentation/widgets/bottom_navigation_bar_scaffold.dart'; // export BottomNavigationBarScaffold
@@ -36,13 +38,15 @@ export 'package:finance_management/presentation/bloc/notification/notification_s
 export 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
 export 'package:finance_management/presentation/screens/categories/category_detail/category_detail_save_screen.dart';
 export 'package:finance_management/core/enum/enums.dart';
-export 'package:finance_management/presentation/widgets/build_app_bar.dart';
+export  'package:finance_management/presentation/widgets/build_app_bar.dart';
 export 'package:finance_management/presentation/bloc/calendar/calendar_bloc.dart';
 export 'package:finance_management/presentation/bloc/calendar/calendar_event.dart';
 export 'package:finance_management/presentation/bloc/calendar/calendar_state.dart';
 export 'package:finance_management/data/model/notification_model.dart';
 export 'package:finance_management/data/model/analysis_model.dart';
-export 'package:finance_management/presentation/bloc/category/category_bloc.dart';
+ export 'package:finance_management/presentation/bloc/category/category_bloc.dart';
+// export 'package:finance_management/presentation/bloc/category/category_state.dart';
+// export 'package:finance_management/presentation/bloc/category/category_event.dart';
 export 'package:finance_management/presentation/bloc/analysis/analysis_bloc.dart';
 export 'package:finance_management/presentation/bloc/analysis/analysis_event.dart';
 export 'package:finance_management/presentation/bloc/analysis/analysis_state.dart';
@@ -57,33 +61,33 @@ export 'package:finance_management/presentation/bloc/home/home_state.dart';
 export 'package:finance_management/presentation/bloc/home/home_event.dart';
 export 'package:finance_management/presentation/bloc/bloc_observe.dart';
 export 'package:finance_management/presentation/screens/home/home_screen_mixin.dart';
-export 'package:finance_management/presentation/widgets/widget/get_icons.dart';
-export 'package:finance_management/data/model/chat_history/chat_history_model.dart';
-export 'package:finance_management/presentation/bloc/user/user_bloc.dart';
+export  'package:finance_management/presentation/widgets/widget/get_icons.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_edit_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_change_pin_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_term_and_condition.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_notification_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_password_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_delete_account_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_help_faqs_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_screen.dart';
+export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_center_screen.dart';
+export  'package:finance_management/presentation/bloc/user/user_bloc.dart';
+
+export  'package:finance_management/data/model/chat_history/chat_history_model.dart';
+export  'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_chat_screen.dart';
+export  'package:finance_management/presentation/screens/home/home_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/forget_password/forget_password_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/forget_password/new_password_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/forget_password/password_changed_splash_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/forget_password/security_pin_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_help_faqs_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_center_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_chat_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_edit_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_change_pin_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_term_and_condition.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_delete_account_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_notification_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_password_screen.dart';
-export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/sign_up/sign_up_screen.dart';
-export 'package:finance_management/presentation/screens/home/home_screen.dart';
-
 /*
 Tách theo tính năng/feature, không gom tất cả vào 1 file:
 

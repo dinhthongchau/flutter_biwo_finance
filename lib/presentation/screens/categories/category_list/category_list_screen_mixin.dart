@@ -19,7 +19,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: AppColors.fenceGreen),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => context.pop(),
       ),
       title: Text(
         _getScreenTitle((widget as CategoryListScreen).moneyType),
@@ -469,7 +469,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                           context.read<CategoryBloc>().add(
                             UpdateCategory(updatedCategory),
                           );
-                          Navigator.pop(context);
+                          context.pop();
                           DialogUtils.isSuccessDialog(
                             context,
                             'Updated $updatedName',
@@ -501,7 +501,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                         context.read<CategoryBloc>().add(
                           DeleteCategory(category.id),
                         );
-                        Navigator.pop(context);
+                        context.pop();
                         DialogUtils.isSuccessDialog(
                           context,
                           'Deleted ${category.categoryType}',
@@ -528,7 +528,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                     ),
                     const SizedBox(height: 12),
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => context.pop(),
                       child: Container(
                         width: double.infinity * 0.8,
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -707,7 +707,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                             );
                             return;
                           }
-                          Navigator.pop(context, {
+                          context.pop({
                             'name': inputName,
                             'goalSave':
                             inputGoalSave != null
@@ -737,7 +737,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                     ),
                     const SizedBox(height: 12),
                     GestureDetector(
-                      onTap: () => Navigator.pop(context),
+                      onTap: () => context.pop(),
                       child: Container(
                         width: double.infinity * 0.8,
                         padding: const EdgeInsets.symmetric(vertical: 16),

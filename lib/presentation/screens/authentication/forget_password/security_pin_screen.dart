@@ -344,15 +344,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                 elevation: 0,
                                                               ),
                                                               onPressed: () {
-                                                                Navigator.of(
-                                                                  context,
-                                                                ).pop();
-                                                                // GoRouter.of(
-                                                                //   rootNavigatorKey
-                                                                //       .currentContext!,
-                                                                // ).go(
-                                                                //   '/new-password-screen',
-                                                                // );
+                                                                //context.pop();
                                                                 context.go(
                                                                   NewPasswordScreen
                                                                       .routeName,
@@ -451,7 +443,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                         ),
                         GestureDetector(
                           onTap: () {
-                            Navigator.of(context).pushNamed('/signUp-screen');
+                            context.go('/signUp-screen');
                           },
                           child: const Text(
                             'Sign Up',

@@ -108,7 +108,7 @@ class DialogUtils {
                 ),
               ),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
               child: const Text('OK'),
             ),

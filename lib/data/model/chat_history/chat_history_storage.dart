@@ -1,5 +1,5 @@
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:finance_management/data/model/online_ai/chat_history_model.dart';
+import 'package:finance_management/data/model/chat_history/chat_history_model.dart';
 
 class ChatHistoryStorage {
   static const String _key = 'chat_history';

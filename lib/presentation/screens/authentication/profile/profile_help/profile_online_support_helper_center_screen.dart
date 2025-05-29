@@ -149,9 +149,10 @@ class _ProfileOnlineSupportHelperCenterScreenState
                       lastMsg.text,
                       chatRoomId: _chatRoomId,
                     );
-                    context.read<NotificationBloc>().add(
-                      NotificationReceived(),
-                    );
+                    //!TODO later
+                    // context.read<NotificationBloc>().add(
+                    //   NotificationReceived(),
+                    // );
                   }
                 }
                 return ListView.builder(

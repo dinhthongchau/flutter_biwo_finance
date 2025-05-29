@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:http/http.dart' as http;
-import 'package:finance_management/data/model/online_ai/chat_history_model.dart';
-import 'package:finance_management/data/model/online_ai/chat_history_storage.dart';
+import 'package:finance_management/data/model/chat_history/chat_history_model.dart';
+import 'package:finance_management/data/model/chat_history/chat_history_storage.dart';
 
 import 'package:go_router/go_router.dart';
 import 'dart:async';
@@ -271,13 +271,9 @@ class _ProfileOnlineSupportAiScreenState
                                         widget.chatHistory!,
                                       );
 
-                                      if (mounted) {
-                                        Navigator.of(
-                                          context,
-                                        ).pop(); // Đóng dialog
-                                        context.go(
-                                          '/profile-online-support-ai-lobby',
-                                        );
+                                      if (context.mounted) {
+                                        context.pop();
+                                        context.go('/profile-online-support-ai-lobby');
                                       }
                                     },
                                     child: const Text(
@@ -307,7 +303,7 @@ class _ProfileOnlineSupportAiScreenState
                                       ),
                                     ),
                                     onPressed:
-                                        () => Navigator.of(context).pop(),
+                                        () => context.pop(),
                                     child: const Text(
                                       'Cancel',
                                       style: TextStyle(fontSize: 16),

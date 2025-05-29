@@ -1,13 +1,12 @@
 import 'package:finance_management/presentation/routes.dart';
 import 'package:finance_management/presentation/shared_data.dart';
+import 'package:finance_management/presentation/widgets/cubit/theme/theme_cubit.dart';
+import 'package:finance_management/utils/notification_helper.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
-import 'package:finance_management/presentation/widgets/cubit/theme/theme_cubit.dart';
-import 'package:finance_management/utils/notification_helper.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   await Firebase.initializeApp();
@@ -25,7 +24,7 @@ void main() async {
   await Firebase.initializeApp();
   await NotificationHelper.init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-  Bloc.observer = MyBlocObserver();
+  Bloc.observer = const MyBlocObserver();
   runApp(const MyApp());
 }
 
@@ -67,7 +66,7 @@ class AppProviders extends StatelessWidget {
         ),
         BlocProvider<HomeBloc>(
           create: (context) => HomeBloc(),
-        )
+        ),
         BlocProvider(create: (_) => UserBloc()),
         BlocProvider(create: (_) => ThemeCubit()),
         //BlocProvider(create: (_) => NotificationBloc()),

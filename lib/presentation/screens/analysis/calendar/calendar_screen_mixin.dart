@@ -200,7 +200,7 @@ mixin CalendarScreenMixin {
                 return InkWell(
                   onTap: () {
                     context.read<CalendarBloc>().add(ChangeMonthEvent(month));
-                    Navigator.pop(context);
+                    context.pop();
                   },
                   child: Padding(
                     padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -223,7 +223,7 @@ mixin CalendarScreenMixin {
               style: TextButton.styleFrom(foregroundColor: AppColors.lightBlue),
               child: const Text('Cancel'),
               onPressed: () {
-                Navigator.of(context).pop();
+                context.pop();
               },
             ),
           ],
@@ -253,7 +253,7 @@ mixin CalendarScreenMixin {
                   ),
                   onTap: () {
                     context.read<CalendarBloc>().add(ChangeYearEvent(year));
-                    Navigator.pop(context);
+                    context.pop();
                   },
                 );
               },

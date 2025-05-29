@@ -26,7 +26,14 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _isFacebookHovered = false;
   bool _isGoogleHovered = false;
+  //init state
 
+  @override
+  void initState()  {
+    super.initState();
+    _emailController.text='dt@gmail.com';
+    _passwordController.text='dt@gmail.com1';
+  }
   @override
   void dispose() {
     _emailController.dispose();

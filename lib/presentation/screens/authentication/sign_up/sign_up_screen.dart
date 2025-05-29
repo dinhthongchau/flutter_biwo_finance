@@ -110,7 +110,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                       elevation: 0,
                     ),
                     onPressed: () {
-                      Navigator.of(context).pop();
+                      context.pop();
                     },
                     child: const Text(
                       'OK',
@@ -195,7 +195,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        context.pop();
                         context.go(LoginScreen.routeName);
                       },
                       child: const Text('OK'),
@@ -232,7 +232,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
                   actions: [
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pop();
+                        context.pop();
                         context.go(LoginScreen.routeName);
                       },
                       child: const Text('OK'),

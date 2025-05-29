@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -78,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                         onPressed: () {
-                          Navigator.of(context).pop();
+                          context.pop();
                           context.go('/login-screen');
                         },
                         child: const Text(
@@ -105,7 +106,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        onPressed: () => Navigator.of(context).pop(),
+                        onPressed: () => context.pop(),
                         child: const Text(
                           'Cancel',
                           style: TextStyle(fontSize: 16),
@@ -282,26 +283,28 @@ class ProfileAppBar extends StatelessWidget {
                         ),
                       ),
                       onPressed: () {
-                        context.read<NotificationBloc>().add(
-                          NotificationRead(),
-                        );
+                        //!TODO later
+                        // context.read<NotificationBloc>().add(
+                        //   NotificationRead(),
+                        // );
                         // Điều hướng sang màn hình notification để chọn phòng chat
                         context.go('/home-screen/notifications');
                       },
                     ),
-                    if (state.hasNewMessage)
-                      Positioned(
-                        right: 10,
-                        top: 10,
-                        child: Container(
-                          width: 12,
-                          height: 12,
-                          decoration: const BoxDecoration(
-                            color: Colors.red,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      ),
+                    //!TODO later
+                    // if (state.hasNewMessage)
+                    //   Positioned(
+                    //     right: 10,
+                    //     top: 10,
+                    //     child: Container(
+                    //       width: 12,
+                    //       height: 12,
+                    //       decoration: const BoxDecoration(
+                    //         color: Colors.red,
+                    //         shape: BoxShape.circle,
+                    //       ),
+                    //     ),
+                    //   ),
                   ],
                 );
               },
@@ -363,7 +366,8 @@ class ProfileMenuList extends StatelessWidget {
           'Edit Profile',
           AppColors.lightBlue,
           () {
-            context.push('/profile-edit-screen?userId=$userId');
+            //context.push('/profile-edit-screen?userId=$userId');
+            context.push('${ProfileEditScreen.routeName}?userId=$userId');
           },
         ),
         _buildMenuItem(

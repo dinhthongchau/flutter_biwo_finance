@@ -1,25 +1,8 @@
 
-
-import 'package:finance_management/presentation/screens/home/home_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart'; //tesst
+import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_edit_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_change_pin_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_term_and_condition.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_notification_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_password_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_delete_account_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_help_faqs_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_center_screen.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorHomeKey = GlobalKey<NavigatorState>(
@@ -40,8 +23,15 @@ final _shellNavigatorProfileKey = GlobalKey<NavigatorState>(
 
 final router = GoRouter(
   navigatorKey: _rootNavigatorKey,
-  initialLocation: HomeScreen.routeName,
+  initialLocation: LoginScreen.routeName,
   routes: [
+    GoRoute(
+      path: '/',
+      parentNavigatorKey: _rootNavigatorKey,
+      builder: (context, state) => const HomeScreen(  label: 'Home',
+        notificationsScreenPath:
+        '/home-screen/notifications-screen',),
+    ),
     GoRoute(
       path: SplashScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
@@ -63,7 +53,7 @@ final router = GoRouter(
       builder: (context, state) => const ForgetPasswordScreen(),
     ),
     GoRoute(
-      path: '/security-pin-screen',
+      path: SecurityPinScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const SecurityPinScreen(),
     ),
@@ -78,7 +68,7 @@ final router = GoRouter(
       builder: (context, state) => const PasswordChangedSplashScreen(),
     ),
     GoRoute(
-      path: '/profile-edit-screen',
+      path: ProfileEditScreen.routeName,
       builder: (context, state) {
         final userId =
             int.tryParse(state.uri.queryParameters['userId'] ?? '0') ?? 0;
@@ -123,8 +113,21 @@ final router = GoRouter(
       builder: (context, state) => const ProfileHelpFaqsScreen(),
     ),
     GoRoute(
+      path: '/profile-online-support-helper-chat',
+      builder: (context, state) {
+        final data = state.extra as Map<String, dynamic>;
+        return ProfileOnlineSupportHelperChatScreen(
+          chatRoom: data['chatRoom'],
+          helperId: data['helperId'],
+        );
+      },
+    ),
+    GoRoute(
       path: '/profile-online-support-ai',
-      builder: (context, state) => const ProfileOnlineSupportAiScreen(),
+      builder: (context, state) {
+        final chat = state.extra as ChatHistory;
+        return ProfileOnlineSupportAiScreen(chatHistory: chat);
+      },
     ),
     GoRoute(
       path: '/profile-online-support-ai-lobby',

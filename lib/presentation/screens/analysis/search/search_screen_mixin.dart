@@ -44,7 +44,7 @@ mixin SearchScreenMixin<T extends StatefulWidget> on State<T> {
                   title: const Text('All Dates'),
                   onTap: () {
                     context.read<SearchBloc>().add(const SelectDateSearchEvent(null));
-                    Navigator.pop(context);
+                    context.pop();
                   },
                 ),
                 ListTile(
@@ -73,7 +73,7 @@ mixin SearchScreenMixin<T extends StatefulWidget> on State<T> {
                       if (picked != null) {
                         context.read<SearchBloc>().add(SelectDateSearchEvent(picked));
                       }
-                      Navigator.pop(context);
+                      context.pop();
                     }
 
                   },
@@ -123,7 +123,7 @@ mixin SearchScreenMixin<T extends StatefulWidget> on State<T> {
                         title: Text(category.categoryType),
                         onTap: () {
                           context.read<SearchBloc>().add(SelectCategorySearchEvent(category));
-                          Navigator.pop(context);
+                          context.pop();
                         },
                       );
                     }

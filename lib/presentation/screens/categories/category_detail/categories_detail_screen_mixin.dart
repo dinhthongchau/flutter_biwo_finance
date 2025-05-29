@@ -180,7 +180,7 @@ mixin CategoriesDetailScreenMixin {
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: AppColors.fenceGreen),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => context.pop(),
       ),
       title: Text(
         _getScreenTitle(category),
@@ -340,7 +340,7 @@ mixin CategoriesDetailScreenMixin {
       elevation: 0,
       leading: IconButton(
         icon: const Icon(Icons.arrow_back, color: AppColors.fenceGreen),
-        onPressed: () => Navigator.pop(context),
+        onPressed: () => context.pop(),
       ),
       title: Text(
         _getScreenTitle(category),
