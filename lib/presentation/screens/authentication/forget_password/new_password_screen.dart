@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:finance_management/presentation/shared_data.dart';

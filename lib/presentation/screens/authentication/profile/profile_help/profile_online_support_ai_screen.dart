@@ -370,8 +370,7 @@ class _TabSelector extends StatelessWidget {
     required this.selectedTab,
     required this.onTabChanged,
     this.showHelpCenter = false,
-    Key? key,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -453,11 +452,11 @@ class TypeWriterText extends StatefulWidget {
   final Duration speed;
 
   const TypeWriterText({
-    Key? key,
+    super.key,
     required this.text,
     this.style,
     this.speed = const Duration(milliseconds: 50),
-  }) : super(key: key);
+  });
 
   @override
   State<TypeWriterText> createState() => _TypeWriterTextState();
@@ -507,8 +506,8 @@ class ChatBubble extends StatelessWidget {
     required this.text,
     required this.isBot,
     this.time,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -598,8 +597,8 @@ class ChatInputBar extends StatelessWidget {
     required this.controller,
     required this.isSending,
     required this.onSend,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

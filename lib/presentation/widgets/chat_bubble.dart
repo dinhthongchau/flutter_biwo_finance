@@ -8,8 +8,8 @@ class ChatBubble extends StatelessWidget {
     required this.text,
     required this.isSender,
     this.time,
-    Key? key,
-  }) : super(key: key);
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {

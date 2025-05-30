@@ -1,14 +1,10 @@
 import 'dart:io';
-import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
 import 'package:finance_management/presentation/shared_data.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_state.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
 // TODO: import bottom navigation bar widget nếu có
 
 class ProfileScreen extends StatefulWidget {
@@ -122,7 +118,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
   void onLogout() async {
     // Save data for current user before logging out
-    final email = FirebaseAuth.instance.currentUser?.email;
     // if (email != null) {
     //   await TransactionRepository().saveDataForUser(email);
     // }

@@ -54,7 +54,7 @@ class _ProfileSettingDeleteAccountScreenState
 
       setState(() => _errorText = null);
       _showConfirmDialog();
-    } on FirebaseAuthException catch (e) {
+    } on FirebaseAuthException {
       setState(() => _errorText = 'Invalid password');
     }
   }

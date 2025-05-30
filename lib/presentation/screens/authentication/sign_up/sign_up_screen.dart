@@ -1,14 +1,12 @@
-import 'package:finance_management/data/model/user/user_model.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
 import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:finance_management/presentation/widgets/widget/text_styles.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hive/hive.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class SignUpScreen extends StatefulWidget {
   static const String routeName = "/signUp-screen";
@@ -31,7 +29,6 @@ class _SignUpScreenState extends State<SignUpScreen> {
   final TextEditingController _passwordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
       TextEditingController();
-  late Box<UserModel> _userBox;
   bool _isHelper = false;
 
   @override
@@ -44,110 +41,9 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _dobController.text = '01/01/2002';
     _passwordController.text = 'password';
     _confirmPasswordController.text='password';
-    _openBoxAndTest();
+
   }
 
-  //just test and OK, 2005 will build again
-  Future<void> _openBoxAndTest() async {
-    _userBox = await Hive.openBox<UserModel>('users');
-
-    _fullNameController.text = 'Test User';
-    _emailController.text = 'test@example.com';
-    _mobileController.text = '1234567890';
-    _dobController.text = '01/01/2000';
-    _passwordController.text = 'password';
-    _confirmPasswordController.text = 'password';
-
-    final user = UserModel(
-      id: '12345678',
-      fullName: _fullNameController.text,
-      email: _emailController.text,
-      mobile: _mobileController.text,
-      dob: _dobController.text,
-      password: _passwordController.text,
-    );
-
-    await _userBox.put(user.id, user);
-    //show dialog ok  with infomation
-    if (mounted) {
-      showDialog(
-        context: context,
-        builder: (context) {
-          return AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(24),
-            ),
-            contentPadding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                const Icon(
-                  Icons.check_circle_rounded,
-                  color: AppColors.caribbeanGreen,
-                  size: 64,
-                ),
-                const SizedBox(height: 16),
-                const Text(
-                  'Test Data, Ok rồi đó',
-                  style: TextStyle(
-                    fontSize: 22,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.caribbeanGreen,
-                  ),
-                ),
-                const SizedBox(height: 12),
-                Text(
-                  'Full Name: ${user.fullName}\nEmail: ${user.email}\nMobile: ${user.mobile}\nDoB: ${user.dob}\nPassword: ${user.password}',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(
-                    fontSize: 15,
-                    color: AppColors.blackHeader,
-                  ),
-                ),
-                const SizedBox(height: 24),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.caribbeanGreen,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(18),
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      elevation: 0,
-                    ),
-                    onPressed: () {
-                      context.pop();
-                    },
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        },
-      );
-    }
-
-    final retrievedUser = _userBox.get(user.id);
-    if (retrievedUser != null) {
-      debugPrint('--- Test Data ---');
-      debugPrint('Full Name: ${retrievedUser.fullName}');
-      debugPrint('Email: ${retrievedUser.email}');
-      debugPrint('Mobile: ${retrievedUser.mobile}');
-      debugPrint('DoB: ${retrievedUser.dob}');
-      debugPrint('Password: ${retrievedUser.password}');
-    } else {
-      debugPrint('User not found in Hive');
-    }
-  }
 
   @override
   void dispose() {
@@ -170,14 +66,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       try {
-        // Đăng ký với Firebase Auth
+
         final credential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
 
-        // Lưu thông tin user lên Firestore
+
         await FirebaseFirestore.instance
             .collection('users')
             .doc(credential.user!.uid)

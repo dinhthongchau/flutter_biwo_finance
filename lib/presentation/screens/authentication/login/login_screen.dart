@@ -1,19 +1,12 @@
-import 'package:finance_management/gen/assets.gen.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
-import 'package:url_launcher/url_launcher.dart' as url_launcher;
-import 'package:go_router/go_router.dart';
-import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
-import 'package:finance_management/presentation/screens/home/home_screen.dart';
-import 'package:finance_management/core/utils/common_functions.dart';
-
-import 'package:finance_management/presentation/screens/authentication/forget_password/forget_password_screen.dart';
-import 'package:finance_management/presentation/screens/authentication/sign_up/sign_up_screen.dart';
+import 'package:finance_management/presentation/shared_data.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
+import 'package:url_launcher/url_launcher.dart' as url_launcher;
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "/login-screen";
@@ -224,7 +217,7 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
             if (_isLoading)
               Container(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withValues(alpha: 0.3),
                 child: Center(child: LoadingUtils.buildSpinKitSpinningLines()),
               ),
           ],

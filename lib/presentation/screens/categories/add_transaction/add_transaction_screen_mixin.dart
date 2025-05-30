@@ -1,11 +1,10 @@
-import 'package:finance_management/data/model/user/user_model.dart';
 import 'package:finance_management/data/repository/user/user_repository.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:finance_management/presentation/shared_data.dart';
 
 mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
   final _formKey = GlobalKey<FormState>();
