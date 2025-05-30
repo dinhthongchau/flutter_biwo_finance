@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:finance_management/data/repository/user/user_repository.dart';
 import 'package:finance_management/presentation/shared_data.dart';
+import 'package:intl/intl.dart';
 
 class TransactionRepository {
   final Map<String, List<TransactionModel>> _userTransactions = {};
@@ -149,18 +150,18 @@ class TransactionRepository {
     final email = _getCurrentUserIdentifier();
     if (!_initializedUsers.contains(email)) {
       await _loadDataForUser(email);
-      if (!_initializedUsers.contains(email)) {
-        if (email == 'nkhiet3@gmail.com') {
-          await generateMockData(email);
-          _initializedUsers.add(email);
-          for (var t in _userTransactions[email]!) {
-            await _saveTransactionToFirestore(email, t);
-          }
-        } else {
-          _initializedUsers.add(email);
-          _userTransactions[email] = [];
-        }
-      }
+      // if (!_initializedUsers.contains(email)) {
+      //   if (email == 'test@gmail.com') {
+      //     await generateMockData(email);
+      //     _initializedUsers.add(email);
+      //     for (var t in _userTransactions[email]!) {
+      //       await _saveTransactionToFirestore(email, t);
+      //     }
+      //   } else {
+      //     _initializedUsers.add(email);
+      //     _userTransactions[email] = [];
+      //   }
+      // }
     }
     return _userTransactions[email] ?? [];
   }
@@ -213,59 +214,111 @@ class TransactionRepository {
       throw Exception('User not found in database');
     }
 
-    _log('Generating full mock data for $userEmail');
+    _log('Generating mock data for $userEmail');
     final List<TransactionModel> userTransactions = [];
     _userTransactions[userEmail] = userTransactions;
     final categories = CategoryRepository.getAllCategories();
-
-    final startDate = DateTime(2023, 1, 1); // Start from Jan 1, 2023
-    final endDate = DateTime.now(); // Until today
-
     final random = Random();
 
-    for (DateTime date = startDate;
-    date.isBefore(endDate);
-    date = date.add(const Duration(days: 1))) {
-      final transactionsPerDay = 2 + random.nextInt(2); // 2-3 transactions/day
+    // Hàm tạo giao dịch lương hàng tháng
+    void addMonthlySalary(DateTime date, int salary) {
+      final incomeCategories = categories.where((c) => c.moneyType == MoneyType.income).toList();
+      final category = incomeCategories.isNotEmpty
+          ? incomeCategories[random.nextInt(incomeCategories.length)]
+          : categories.firstWhere((c) => c.moneyType == MoneyType.income);
 
-      for (int i = 0; i < transactionsPerDay; i++) {
-        // Random time on that day
-        final time = DateTime(
-          date.year,
-          date.month,
-          date.day,
-          random.nextInt(23),
-          random.nextInt(59),
-        );
+      final tx = TransactionModel(
+        user,
+        date.millisecondsSinceEpoch,
+        date,
+        salary,
+        category,
+        'Monthly Salary',
+        'Salary for ${DateFormat('MMMM yyyy').format(date)}',
+      );
+      userTransactions.add(tx);
+    }
 
-        // Randomly assign transaction type
-        final moneyType = MoneyType.values[random.nextInt(3)];
+    // Hàm tạo giao dịch chi tiêu hoặc tiết kiệm
+    void addTransaction(DateTime date, MoneyType moneyType, int amountRangeStart, int amountRangeEnd) {
+      final availableCategories = categories.where((c) => c.moneyType == moneyType).toList();
+      if (availableCategories.isEmpty) return;
 
-        // Get matching category
-        final availableCategories = categories
-            .where((c) => c.moneyType == moneyType)
-            .toList();
-        final category = availableCategories[random.nextInt(availableCategories.length)];
+      final category = availableCategories[random.nextInt(availableCategories.length)];
+      final time = DateTime(
+        date.year,
+        date.month,
+        date.day,
+        random.nextInt(24),
+        random.nextInt(60),
+      );
+      final amount = amountRangeStart + random.nextInt(amountRangeEnd - amountRangeStart + 1);
 
-        final amount = 5000 + random.nextInt(15000); // Amount: 5k - 20k
-        final title = '${category.categoryType} on ${date.toIso8601String().split("T")[0]}';
-        final note = 'Auto-generated transaction #${userTransactions.length + 1}';
+      final tx = TransactionModel(
+        user,
+        time.millisecondsSinceEpoch,
+        time,
+        amount,
+        category,
+        '${category.categoryType} on ${DateFormat('yyyy-MM-dd').format(time)}',
+        'Auto-generated transaction #${userTransactions.length + 1}',
+      );
+      userTransactions.add(tx);
+    }
 
-        final tx = TransactionModel(
-          user,
-          time.millisecondsSinceEpoch,
-          time,
-          amount as int,
-          category,
-          title,
-          note,
-        );
+    // 2023: 35 giao dịch (1 lương/tháng + ~23 chi tiêu + ~11 tiết kiệm)
+    for (int month = 1; month <= 12; month++) {
+      // Thêm lương 300 USD vào ngày 1 mỗi tháng
+      addMonthlySalary(DateTime(2023, month, 1), 300);
 
-        userTransactions.add(tx);
+      // Thêm ~23 chi tiêu (2-3 giao dịch/tháng, ngẫu nhiên)
+      int transactions2023 = random.nextInt(3) + 2; // 2-4 giao dịch/tháng
+      for (int i = 0; i < transactions2023; i++) {
+        final day = random.nextInt(28) + 1; // Ngày ngẫu nhiên từ 1-28
+        addTransaction(DateTime(2023, month, day), MoneyType.expense, 10, 100);
+      }
+
+      // Thêm ~11 tiết kiệm (1 giao dịch/tháng cho 11 tháng)
+      if (month <= 11) {
+        final day = random.nextInt(28) + 1;
+        addTransaction(DateTime(2023, month, day), MoneyType.save, 20, 50);
       }
     }
 
-    _log('✅ Generated ${userTransactions.length} transactions from Jan 2023 to now for $userEmail');
+    // 2024: 45 giao dịch (1 lương/tháng + ~33 chi tiêu + ~12 tiết kiệm)
+    for (int month = 1; month <= 12; month++) {
+      // Thêm lương 400 USD vào ngày 1 mỗi tháng
+      addMonthlySalary(DateTime(2024, month, 1), 400);
+
+      // Thêm ~33 chi tiêu (2-4 giao dịch/tháng, ngẫu nhiên)
+      int transactions2024 = random.nextInt(3) + 2; // 2-4 giao dịch/tháng
+      for (int i = 0; i < transactions2024; i++) {
+        final day = random.nextInt(28) + 1;
+        addTransaction(DateTime(2024, month, day), MoneyType.expense, 10, 100);
+      }
+
+      // Thêm ~12 tiết kiệm (1 giao dịch/tháng)
+      final day = random.nextInt(28) + 1;
+      addTransaction(DateTime(2024, month, day), MoneyType.save, 20, 50);
+    }
+
+    // 2025: Từ đầu năm đến hiện tại (1-3 giao dịch/ngày + 1 lương/tháng)
+    final now = DateTime.now();
+    for (DateTime date = DateTime(2025, 1, 1); date.isBefore(now); date = date.add(const Duration(days: 1))) {
+      // Thêm lương 500 USD vào ngày 1 mỗi tháng
+      if (date.day == 1) {
+        addMonthlySalary(date, 500);
+      }
+
+      // Thêm 1-3 giao dịch chi tiêu hoặc tiết kiệm mỗi ngày
+      final transactionsPerDay = 1 + random.nextInt(3);
+      for (int i = 0; i < transactionsPerDay; i++) {
+        final moneyType = random.nextBool() ? MoneyType.expense : MoneyType.save;
+        addTransaction(date, moneyType, moneyType == MoneyType.expense ? 10 : 20, moneyType == MoneyType.expense ? 100 : 50);
+      }
+    }
+
+    _log('✅ Generated ${userTransactions.length} transactions for $userEmail: ~35 for 2023, ~45 for 2024, daily for 2025');
   }
 
 }

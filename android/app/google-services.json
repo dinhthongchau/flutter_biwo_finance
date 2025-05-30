@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "799166378211",
-    "project_id": "helpcenter-33755",
-    "storage_bucket": "helpcenter-33755.firebasestorage.app"
+    "project_number": "526297323248",
+    "project_id": "finance-management-firebase",
+    "storage_bucket": "finance-management-firebase.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:799166378211:android:536eb23473b4e3f7dd95d6",
+        "mobilesdk_app_id": "1:526297323248:android:c0586c4009530132419435",
         "android_client_info": {
           "package_name": "com.example.finance_management"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyC5K4p649-vkiYZ8CTvav0_kcU_D5BEFVE"
+          "current_key": "AIzaSyAWnG79ZnQaTsmf1Chr2RxVe6n-S0bg0nQ"
         }
       ],
       "services": {

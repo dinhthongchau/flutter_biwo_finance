@@ -293,20 +293,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     LoadTransactionsEvent event,
     Emitter<TransactionState> emit,
   ) async {
-    emit(
-      const TransactionInitial(
-        allTransactions: [],
-        selectedMonth: 'All',
-        availableMonths: ['All'],
-        currentListFilterType: null,
-        financialsForSummary: {
-          'totalBalance': 0,
-          'income': 0,
-          'expense': 0,
-          'save': 0,
-        },
-      ),
-    );
+    // emit(
+    //   const TransactionInitial(
+    //     allTransactions: [],
+    //     selectedMonth: 'All',
+    //     availableMonths: ['All'],
+    //     currentListFilterType: null,
+    //     financialsForSummary: {
+    //       'totalBalance': 0,
+    //       'income': 0,
+    //       'expense': 0,
+    //       'save': 0,
+    //     },
+    //   ),
+    // );
     emit(TransactionLoading.fromState(state: state));
     try {
       //await Future.delayed(const Duration(seconds: 2));

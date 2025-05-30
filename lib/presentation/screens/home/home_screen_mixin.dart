@@ -416,7 +416,7 @@ mixin HomeScreenMixin {
         return BlocBuilder<HomeBloc, HomeState>(
           builder: (context, homeState) {
             if (homeState is HomeLoading) {
-              return  Center(child:  LoadingUtils.buildSpinKitSpinningLines());
+              return Center(child: LoadingUtils.buildSpinKitSpinningLines());
             }
             if (homeState is HomeError) {
               return Center(child: Text('Error: ${homeState.errorMessage ?? "Unknown error"}'));
@@ -424,12 +424,8 @@ mixin HomeScreenMixin {
             if (transactionState.allTransactions.isEmpty) {
               return const Center(child: Text('No transactions available.'));
             }
-            if (transactionState.allTransactions.isEmpty) {
-              return const Center(child: Text('No transactions available.'));
-            }
 
-            List<TransactionModel> transactions =
-                transactionState.allTransactions;
+            List<TransactionModel> transactions = transactionState.allTransactions;
 
             switch (homeState.selectedTimeFilter) {
               case TimeFilterHome.daily:
@@ -451,62 +447,46 @@ mixin HomeScreenMixin {
             }
 
             Map<String, List<TransactionModel>> groupedTransactions = {};
-            if (transactions.isNotEmpty) {
-              for (var transaction in transactions) {
-                String dateKey = '';
-                if (homeState.selectedTimeFilter == TimeFilterHome.daily) {
-                  dateKey = DateFormat(
-                    'EEEE, d MMMM, y',
-                  ).format(transaction.time);
-                } else if (homeState.selectedTimeFilter ==
-                    TimeFilterHome.weekly) {
-                  int day = transaction.time.day;
-                  String monthYear = DateFormat(
-                    'MMMM, y',
-                  ).format(transaction.time);
-                  if (day >= 1 && day <= 7) {
-                    dateKey = 'Week 1, $monthYear';
-                  } else if (day >= 8 && day <= 15) {
-                    dateKey = 'Week 2, $monthYear';
-                  } else if (day >= 16 && day <= 22) {
-                    dateKey = 'Week 3, $monthYear';
-                  } else {
-                    dateKey = 'Week 4, $monthYear';
-                  }
+            for (var transaction in transactions) {
+              String dateKey = '';
+              if (homeState.selectedTimeFilter == TimeFilterHome.daily) {
+                dateKey = DateFormat('EEEE, d MMMM, y').format(transaction.time);
+              } else if (homeState.selectedTimeFilter == TimeFilterHome.weekly) {
+                int day = transaction.time.day;
+                String monthYear = DateFormat('MMMM, y').format(transaction.time);
+                if (day >= 1 && day <= 7) {
+                  dateKey = 'Week 1, $monthYear';
+                } else if (day >= 8 && day <= 15) {
+                  dateKey = 'Week 2, $monthYear';
+                } else if (day >= 16 && day <= 22) {
+                  dateKey = 'Week 3, $monthYear';
                 } else {
-                  dateKey = DateFormat('MMMM, y').format(transaction.time);
+                  dateKey = 'Week 4, $monthYear';
                 }
-
-                if (!groupedTransactions.containsKey(dateKey)) {
-                  groupedTransactions[dateKey] = [];
-                }
-                groupedTransactions[dateKey]!.add(transaction);
+              } else {
+                dateKey = DateFormat('MMMM, y').format(transaction.time);
               }
+              groupedTransactions.putIfAbsent(dateKey, () => []).add(transaction);
             }
 
             List<String> sortedDateKeys = groupedTransactions.keys.toList();
             sortedDateKeys.sort((a, b) {
               DateTime dateA;
               DateTime dateB;
-
               if (homeState.selectedTimeFilter == TimeFilterHome.daily) {
                 dateA = DateFormat('EEEE, d MMMM, y').parse(a);
                 dateB = DateFormat('EEEE, d MMMM, y').parse(b);
-              } else if (homeState.selectedTimeFilter ==
-                  TimeFilterHome.weekly) {
+              } else if (homeState.selectedTimeFilter == TimeFilterHome.weekly) {
                 RegExp regExp = RegExp(r'Week (\d+), (\w+) (\d{4})');
                 Match? matchA = regExp.firstMatch(a);
                 Match? matchB = regExp.firstMatch(b);
-
                 if (matchA != null && matchB != null) {
                   int weekNumA = int.parse(matchA.group(1)!);
                   String monthNameA = matchA.group(2)!;
                   int yearA = int.parse(matchA.group(3)!);
-
                   int weekNumB = int.parse(matchB.group(1)!);
                   String monthNameB = matchB.group(2)!;
                   int yearB = int.parse(matchB.group(3)!);
-
                   DateTime tempDateA = DateTime(
                     yearA,
                     DateFormat('MMMM').parse(monthNameA).month,
@@ -517,7 +497,6 @@ mixin HomeScreenMixin {
                     DateFormat('MMMM').parse(monthNameB).month,
                     (weekNumB - 1) * 7 + 1,
                   );
-
                   return tempDateB.compareTo(tempDateA);
                 }
                 return 0;
@@ -528,65 +507,62 @@ mixin HomeScreenMixin {
               return dateB.compareTo(dateA);
             });
 
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                if (transactions.isEmpty ||
-                    transactionState is TransactionLoading)
-                  const Center(child: Text('No transactions for this period.'))
-                else
-                  ...sortedDateKeys.map((dateHeader) {
-                    List<TransactionModel> dailyTransactions =
-                    groupedTransactions[dateHeader]!;
-                    return Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 8.0),
-                          child: Text(
-                            dateHeader,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: AppColors.blackHeader,
-                            ),
-                          ),
+            return ListView.builder(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: transactions.isEmpty || transactionState is TransactionLoading
+                  ? 1
+                  : sortedDateKeys.length,
+              itemBuilder: (context, index) {
+                if (transactions.isEmpty || transactionState is TransactionLoading) {
+                  return const Center(child: Text('No transactions for this period.'));
+                }
+
+                final dateHeader = sortedDateKeys[index];
+                final dailyTransactions = groupedTransactions[dateHeader]!;
+
+                return Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      child: Text(
+                        dateHeader,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: AppColors.blackHeader,
                         ),
-                        ...dailyTransactions.map((transaction) {
-                          final isIncome =
-                              transaction.idCategory.moneyType ==
-                                  MoneyType.income;
-                          return Padding(
-                            padding: const EdgeInsets.only(bottom: 16),
-                            child: buildTransactionItem(
-                              context: context,
-                              transactionId: transaction.id,
-                              title: transaction.title,
-                              iconPath:
-                              isIncome
-                                  ? Assets.iconComponents.salaryWhite.path
-                                  : getExpenseIcon(
-                                transaction.idCategory.categoryType,
-                              ),
-                              date: _formatDate(
-                                transaction.time,
-                                homeState.selectedTimeFilter,
-                              ),
-                              label: transaction.idCategory.categoryType,
-                              amount:
-                              '${isIncome ? '' : '-'}${transaction.amount}',
-                              backgroundColor:
-                              isIncome
-                                  ? AppColors.lightBlue
-                                  : AppColors.vividBlue,
-                              showDividers: true,
-                            ),
-                          );
-                        }),
-                      ],
-                    );
-                  }),
-              ],
+                      ),
+                    ),
+                    ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: dailyTransactions.length,
+                      itemBuilder: (context, transactionIndex) {
+                        final transaction = dailyTransactions[transactionIndex];
+                        final isIncome = transaction.idCategory.moneyType == MoneyType.income;
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 16),
+                          child: buildTransactionItem(
+                            context: context,
+                            transactionId: transaction.id,
+                            title: transaction.title,
+                            iconPath: isIncome
+                                ? Assets.iconComponents.salaryWhite.path
+                                : getExpenseIcon(transaction.idCategory.categoryType),
+                            date: _formatDate(transaction.time, homeState.selectedTimeFilter),
+                            label: transaction.idCategory.categoryType,
+                            amount: '${isIncome ? '' : '-'}${transaction.amount}',
+                            backgroundColor: isIncome ? AppColors.lightBlue : AppColors.vividBlue,
+                            showDividers: true,
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                );
+              },
             );
           },
         );

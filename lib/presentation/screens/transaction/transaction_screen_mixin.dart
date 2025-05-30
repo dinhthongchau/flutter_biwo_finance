@@ -400,23 +400,19 @@ mixin TransactionScreenMixin {
         t.time.month,
         t.time.year,
       );
-      if (!groupedTransactions.containsKey(monthYear)) {
-        groupedTransactions[monthYear] = [];
-      }
-      groupedTransactions[monthYear]!.add(t);
+      groupedTransactions.putIfAbsent(monthYear, () => []).add(t);
     }
 
-    final sortedMonthYears =
-    groupedTransactions.keys.toList()..sort((a, b) {
-      final aParts = a.split(' ');
-      final bParts = b.split(' ');
-
-      final aMonthIndex = TransactionBloc.monthNames.indexOf(aParts[0]) + 1;
-      final bMonthIndex = TransactionBloc.monthNames.indexOf(bParts[0]) + 1;
-      final aDate = DateTime(int.parse(aParts[1]), aMonthIndex);
-      final bDate = DateTime(int.parse(bParts[1]), bMonthIndex);
-      return bDate.compareTo(aDate);
-    });
+    final sortedMonthYears = groupedTransactions.keys.toList()
+      ..sort((a, b) {
+        final aParts = a.split(' ');
+        final bParts = b.split(' ');
+        final aMonthIndex = TransactionBloc.monthNames.indexOf(aParts[0]) + 1;
+        final bMonthIndex = TransactionBloc.monthNames.indexOf(bParts[0]) + 1;
+        final aDate = DateTime(int.parse(aParts[1]), aMonthIndex);
+        final bDate = DateTime(int.parse(bParts[1]), bMonthIndex);
+        return bDate.compareTo(aDate);
+      });
 
     return Column(
       children: [
@@ -424,56 +420,58 @@ mixin TransactionScreenMixin {
           padding: const EdgeInsets.only(top: 10.0),
           child: _buildMonthSelector(selectedMonth, availableMonths, context),
         ),
+        ListView.builder(
+          shrinkWrap: true,
+          physics: const NeverScrollableScrollPhysics(),
+          itemCount: sortedMonthYears.length,
+          itemBuilder: (context, index) {
+            final monthYear = sortedMonthYears[index];
+            final transactionsForMonth = groupedTransactions[monthYear]!;
 
-        ...sortedMonthYears.map((monthYear) {
-          final transactionsForMonth = groupedTransactions[monthYear]!;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0),
-                child: Text(
-                  monthYear,
-                  style: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    color: AppColors.fenceGreen,
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                  child: Text(
+                    monthYear,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.fenceGreen,
+                    ),
                   ),
                 ),
-              ),
-              Column(
-                children:
-                transactionsForMonth.map((transaction) {
-                  final isIncome =
-                      transaction.idCategory.moneyType == MoneyType.income;
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 16),
-                    child: buildTransactionItem(
-                      context: context,
-                      transactionId: transaction.id,
-                      title: transaction.title,
-                      iconPath:
-                      isIncome
-                          ? Assets.iconComponents.salaryWhite.path
-                          : getExpenseIcon(
-                        transaction.idCategory.categoryType,
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: transactionsForMonth.length,
+                  itemBuilder: (context, transactionIndex) {
+                    final transaction = transactionsForMonth[transactionIndex];
+                    final isIncome = transaction.idCategory.moneyType == MoneyType.income;
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 16),
+                      child: buildTransactionItem(
+                        context: context,
+                        transactionId: transaction.id,
+                        title: transaction.title,
+                        iconPath: isIncome
+                            ? Assets.iconComponents.salaryWhite.path
+                            : getExpenseIcon(transaction.idCategory.categoryType),
+                        date:
+                        '${transaction.time.day.toString().padLeft(2, '0')} - ${transaction.time.hour.toString().padLeft(2, '0')}:${transaction.time.minute.toString().padLeft(2, '0')}',
+                        label: transaction.idCategory.categoryType,
+                        amount: '${isIncome ? '' : '-'}${transaction.amount}',
+                        backgroundColor: isIncome ? AppColors.lightBlue : AppColors.vividBlue,
+                        showDividers: true,
                       ),
-                      date:
-                      '${transaction.time.day.toString().padLeft(2, '0')} - ${transaction.time.hour.toString().padLeft(2, '0')}:${transaction.time.minute.toString().padLeft(2, '0')}',
-                      label: transaction.idCategory.categoryType,
-                      amount: '${isIncome ? '' : '-'}${transaction.amount}',
-                      backgroundColor:
-                      isIncome
-                          ? AppColors.lightBlue
-                          : AppColors.vividBlue,
-                      showDividers: true,
-                    ),
-                  );
-                }).toList(),
-              ),
-            ],
-          );
-        }),
+                    );
+                  },
+                ),
+              ],
+            );
+          },
+        ),
       ],
     );
   }
