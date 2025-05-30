@@ -9,6 +9,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
   StreamSubscription? _authSubscription;
+  String? _currentUserId;
+  Timer? _debounceTimer;
 
   static const List<String> monthNames = [
     'January',
@@ -53,7 +55,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
       User? user,
     ) {
-      if (user != null) {
+      if (user != null && user.uid != _currentUserId) {
         add(UserChangedEvent(user.uid));
       }
     });
@@ -62,14 +64,32 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   @override
   Future<void> close() {
     _authSubscription?.cancel();
+    _debounceTimer?.cancel();
     return super.close();
   }
 
   void _onUserChanged(UserChangedEvent event, Emitter<TransactionState> emit) {
-    debugPrint(
-      '🔄 TransactionBloc: User changed to ${event.userId}, forcing reload',
-    );
-    add(const LoadTransactionsEvent(month: 'All'));
+    // Skip if it's the same user and we're already loading
+    if (_currentUserId == event.userId && state is TransactionLoading) {
+      debugPrint(
+        '🔄 TransactionBloc: Skipping duplicate reload for ${event.userId}',
+      );
+      return;
+    }
+
+    // Cancel previous debounce timer if any
+    _debounceTimer?.cancel();
+
+    // Update current user ID
+    _currentUserId = event.userId;
+
+    // Debounce the reload to prevent multiple rapid reloads
+    _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+      debugPrint(
+        '🔄 TransactionBloc: User changed to ${event.userId}, forcing reload',
+      );
+      add(const LoadTransactionsEvent(month: 'All'));
+    });
   }
 
   Future<void> _onDeleteTransaction(

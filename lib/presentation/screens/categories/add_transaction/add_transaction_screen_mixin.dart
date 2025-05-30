@@ -16,7 +16,7 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    _amountController.text = '6969';
+    _amountController.text = '69';
     _titleController.text = '--Title Test--';
     _messageController.text = '--Message Test--';
   }
@@ -50,6 +50,7 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
           _messageController.text,
         );
         context.read<TransactionBloc>().add(AddTransactionEvent(newTransaction));
+        context.pop();
       }).catchError((e) {
         DialogUtils.isErrorDialog(context, 'Error fetching user: $e');
       });

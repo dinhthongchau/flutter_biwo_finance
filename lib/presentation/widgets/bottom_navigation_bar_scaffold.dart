@@ -10,22 +10,23 @@ class BottomNavigationBarScaffold extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   void _onItemTapped(int index, BuildContext context) {
-    if (index == 0) {
-      navigationShell.goBranch(
-        index,
-        initialLocation: index == navigationShell.currentIndex,
-      );
+    // Only go to branch if it's not the current index or force navigation to the same tab
+    navigationShell.goBranch(
+      index,
+      initialLocation: index == navigationShell.currentIndex,
+    );
 
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        context.read<TransactionBloc>().add(
-          const LoadTransactionsEvent(month: "All"),
-        );
+    // Only reload transactions when explicitly navigating to the transaction tab (index 2)
+    // or when returning to home tab (index 0) and it wasn't previously selected
+    if (index == 2 && navigationShell.currentIndex != 2) {
+      // Small delay to ensure the UI is updated first
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (context.mounted) {
+          context.read<TransactionBloc>().add(
+            const LoadTransactionsEvent(month: "All"),
+          );
+        }
       });
-    } else {
-      navigationShell.goBranch(
-        index,
-        initialLocation: index == navigationShell.currentIndex,
-      );
     }
   }
 
@@ -36,18 +37,15 @@ class BottomNavigationBarScaffold extends StatelessWidget {
         if (state is TransactionLoading) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             LoadingUtils.showLoading(context, true);
-          }
-          );
+          });
         } else if (state is TransactionSuccess) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             LoadingUtils.showLoading(context, false);
-          }
-          );
+          });
         } else if (state is TransactionError) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             LoadingUtils.showLoading(context, false);
-          }
-          );
+          });
           debugPrint("Error loading all transactions: ${state.errorMessage}");
 
           ScaffoldMessenger.of(context).showSnackBar(
