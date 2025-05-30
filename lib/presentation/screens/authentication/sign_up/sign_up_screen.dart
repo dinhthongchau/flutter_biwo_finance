@@ -37,6 +37,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
   @override
   void initState() {
     super.initState();
+    //init for all controllers
+    _fullNameController.text = 'NKhiet Test';
+    _emailController.text = 'nkhiet2@gmail.com';
+    _mobileController.text = '0889281122';
+    _dobController.text = '01012002';
+    _passwordController.text = 'nkhiet@gmail.com';
+    _confirmPasswordController.text='nkhiet@gmail.com';
     _openBoxAndTest();
   }
 

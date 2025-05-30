@@ -9,6 +9,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
+import 'package:finance_management/presentation/bloc/transaction/transaction_bloc.dart';
+import 'package:finance_management/presentation/bloc/transaction/transaction_event.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "/login-screen";
@@ -29,11 +31,12 @@ class _LoginScreenState extends State<LoginScreen> {
   //init state
 
   @override
-  void initState()  {
+  void initState() {
     super.initState();
-    _emailController.text='nkhiet@gmail.com';
-    _passwordController.text='nkhiet@gmail.com';
+    _emailController.text = 'nkhiet@gmail.com';
+    _passwordController.text = 'nkhiet@gmail.com';
   }
+
   @override
   void dispose() {
     _emailController.dispose();
@@ -91,6 +94,11 @@ class _LoginScreenState extends State<LoginScreen> {
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
         } else if (state is UserLoaded) {
+          // Force reload transactions for the new user
+          context.read<TransactionBloc>().add(
+            const LoadTransactionsEvent(month: 'All'),
+          );
+
           if (state.user.helper) {
             context.go('/profile-online-support-helper');
           } else {

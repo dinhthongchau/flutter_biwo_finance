@@ -1,5 +1,5 @@
 import 'package:finance_management/data/model/category_model.dart';
-import 'package:finance_management/data/model/user_model.dart';
+import 'package:finance_management/data/model/user/user_model.dart';
 
 class TransactionModel {
   final UserModel idUser;

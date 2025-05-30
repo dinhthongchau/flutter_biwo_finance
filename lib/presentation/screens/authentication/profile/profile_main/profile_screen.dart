@@ -9,6 +9,8 @@ import 'package:image_picker/image_picker.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_state.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:finance_management/data/repositories/transaction_repository.dart';
 // TODO: import bottom navigation bar widget nếu có
 
 class ProfileScreen extends StatefulWidget {
@@ -80,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         ),
                         onPressed: () {
                           context.pop();
-                          context.go('/login-screen');
+                          onLogout();
                         },
                         child: const Text(
                           'Yes, End Session',
@@ -119,6 +121,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ),
     );
+  }
+
+  void onLogout() async {
+    // Save data for current user before logging out
+    final email = FirebaseAuth.instance.currentUser?.email;
+    if (email != null) {
+      await TransactionRepository().saveDataForUser(email);
+    }
+
+    // Then proceed with the logout
+    await FirebaseAuth.instance.signOut();
+    if (!mounted) return;
+    context.go('/login-screen');
   }
 
   @override

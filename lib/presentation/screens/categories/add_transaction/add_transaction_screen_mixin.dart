@@ -1,3 +1,6 @@
+import 'package:finance_management/data/model/user/user_model.dart';
+import 'package:finance_management/data/repository/user/user_repository.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
@@ -27,26 +30,29 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
   }
   void _onSaveTransaction(BuildContext context, AddTransactionState state) {
     if (_formKey.currentState!.validate() && state.selectedCategory != null) {
-      final user = UserModel(
-        id: 1,
-        fullName: "John Doe",
-        email: "john@example.com",
-        mobile: "1234567890",
-        dob: "1990-01-01",
-        password: "password123",
-      );
-
-      final newTransaction = TransactionModel(
-        user,
-        DateTime.now().millisecondsSinceEpoch,
-        state.selectedDate,
-        int.parse(_amountController.text),
-        state.selectedCategory!,
-        _titleController.text,
-        _messageController.text,
-      );
-
-      context.read<TransactionBloc>().add(AddTransactionEvent(newTransaction));
+      final userId = FirebaseAuth.instance.currentUser?.uid;
+      if (userId == null) {
+        DialogUtils.isErrorDialog(context, 'No authenticated user found. Please log in.');
+        return;
+      }
+      UserRepository().getUserById(userId).then((user) {
+        if (user == null) {
+          DialogUtils.isErrorDialog(context, 'User not found in Firestore.');
+          return;
+        }
+        final newTransaction = TransactionModel(
+          user,
+          DateTime.now().millisecondsSinceEpoch,
+          state.selectedDate,
+          int.parse(_amountController.text),
+          state.selectedCategory!,
+          _titleController.text,
+          _messageController.text,
+        );
+        context.read<TransactionBloc>().add(AddTransactionEvent(newTransaction));
+      }).catchError((e) {
+        DialogUtils.isErrorDialog(context, 'Error fetching user: $e');
+      });
     } else if (state.selectedCategory == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please select a category.')),

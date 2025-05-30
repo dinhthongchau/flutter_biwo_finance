@@ -4,8 +4,11 @@ import 'package:collection/collection.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
 class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   final TransactionRepository _transactionRepository;
+  StreamSubscription? _authSubscription;
 
   static const List<String> monthNames = [
     'January',
@@ -23,19 +26,20 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   ];
 
   TransactionBloc(this._transactionRepository)
-      : super(   const TransactionInitial(
-    allTransactions: [],
-    financialsForSummary: {
-      'totalBalance': 0,
-      'income': 0,
-      'expense': 0,
-      'save': 0,
-    },
-    selectedMonth: '',
-    availableMonths: [],
-    currentListFilterType: null,
-  ),
-  ) {
+    : super(
+        const TransactionInitial(
+          allTransactions: [],
+          financialsForSummary: {
+            'totalBalance': 0,
+            'income': 0,
+            'expense': 0,
+            'save': 0,
+          },
+          selectedMonth: '',
+          availableMonths: [],
+          currentListFilterType: null,
+        ),
+      ) {
     on<LoadTransactionsEvent>(_onLoadTransactions);
     on<SelectMonthEvent>(_onSelectMonthEvent);
     on<SelectFilterTypeEvent>(_onSelectFilterTypeEvent);
@@ -43,17 +47,42 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     on<FilterTransactionsByTimeframeEvent>(_onFilterTransactionsByTimeframe);
     on<DeleteTransactionEvent>(_onDeleteTransaction);
     on<EditTransactionEvent>(_onEditTransaction);
+    on<UserChangedEvent>(_onUserChanged);
+
+    // Listen to Firebase Auth state changes
+    _authSubscription = FirebaseAuth.instance.authStateChanges().listen((
+      User? user,
+    ) {
+      if (user != null) {
+        add(UserChangedEvent(user.uid));
+      }
+    });
   }
+
+  @override
+  Future<void> close() {
+    _authSubscription?.cancel();
+    return super.close();
+  }
+
+  void _onUserChanged(UserChangedEvent event, Emitter<TransactionState> emit) {
+    debugPrint(
+      '🔄 TransactionBloc: User changed to ${event.userId}, forcing reload',
+    );
+    add(const LoadTransactionsEvent(month: 'All'));
+  }
+
   Future<void> _onDeleteTransaction(
-      DeleteTransactionEvent event,
-      Emitter<TransactionState> emit,
-      ) async {
+    DeleteTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
     emit(TransactionLoading.fromState(state: state));
 
     try {
       await _transactionRepository.deleteTransaction(event.transactionId);
-      final updatedTransactions = List<TransactionModel>.from(state.allTransactions)
-        ..removeWhere((transaction) => transaction.id == event.transactionId);
+      final updatedTransactions = List<TransactionModel>.from(
+        state.allTransactions,
+      )..removeWhere((transaction) => transaction.id == event.transactionId);
 
       // Recalculate financials and potentially availableMonths
       final financials = _calculateCumulativeFinancials(
@@ -72,11 +101,11 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       // }
       // final financials = _calculateCumulativeFinancials(updatedTransactions, newSelectedMonth);
 
-
       emit(
         TransactionSuccess(
           allTransactions: updatedTransactions,
-          selectedMonth: state.selectedMonth, // Or newSelectedMonth if recalculating
+          selectedMonth:
+              state.selectedMonth, // Or newSelectedMonth if recalculating
           availableMonths: state.availableMonths, // Or newAvailableMonths
           currentListFilterType: state.currentListFilterType,
           financialsForSummary: financials,
@@ -102,14 +131,16 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
   }
+
   String getMonthName(int month, int year) {
     return '${monthNames[month - 1]} $year';
   }
+
   List<TransactionModel> getTransactionsForDisplay(
-      List<TransactionModel> allTransactions,
-      String selectedMonth,
-      MoneyType? filterType,
-      ) {
+    List<TransactionModel> allTransactions,
+    String selectedMonth,
+    MoneyType? filterType,
+  ) {
     List<TransactionModel> monthlyFiltered = [];
 
     if (selectedMonth == 'All') {
@@ -120,11 +151,13 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       final year = int.tryParse(parts[1]);
       final selectedMonthIndex = monthNames.indexOf(monthName) + 1;
 
-      monthlyFiltered = allTransactions
-          .where(
-            (t) => t.time.month == selectedMonthIndex && t.time.year == year,
-      )
-          .toList();
+      monthlyFiltered =
+          allTransactions
+              .where(
+                (t) =>
+                    t.time.month == selectedMonthIndex && t.time.year == year,
+              )
+              .toList();
     }
 
     if (filterType != null) {
@@ -171,9 +204,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   // }
 
   Map<String, int> _calculateCumulativeFinancials(
-      List<TransactionModel> allTransactions,
-      String selectedMonth,
-      ) {
+    List<TransactionModel> allTransactions,
+    String selectedMonth,
+  ) {
     int cumulativeBalance = 0;
     int monthlyIncome = 0;
     int monthlyExpense = 0;
@@ -255,44 +288,52 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       'monthlyNetBalance': monthlyNetBalance,
     };
   }
+
   Future<void> _onLoadTransactions(
-      LoadTransactionsEvent event,
-      Emitter<TransactionState> emit,
-      ) async {
-    emit(const TransactionInitial(
-      allTransactions: [],
-      selectedMonth: 'All',
-      availableMonths: ['All'],
-      currentListFilterType: null,
-      financialsForSummary: {
-        'totalBalance': 0,
-        'income': 0,
-        'expense': 0,
-        'save': 0,
-      },
-    ));
+    LoadTransactionsEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(
+      const TransactionInitial(
+        allTransactions: [],
+        selectedMonth: 'All',
+        availableMonths: ['All'],
+        currentListFilterType: null,
+        financialsForSummary: {
+          'totalBalance': 0,
+          'income': 0,
+          'expense': 0,
+          'save': 0,
+        },
+      ),
+    );
     emit(TransactionLoading.fromState(state: state));
     try {
       //await Future.delayed(const Duration(seconds: 2));
       final updatedTransactions =
-      await _transactionRepository.getTransactionsAPI();
+          await _transactionRepository.getTransactionsAPI();
 
       final months =
-      updatedTransactions
-          .map((t) => DateTime(t.time.year, t.time.month))
-          .toSet()
-          .toList()
-        ..sort((a, b) => b.compareTo(a));
+          updatedTransactions
+              .map((t) => DateTime(t.time.year, t.time.month))
+              .toSet()
+              .toList()
+            ..sort((a, b) => b.compareTo(a));
 
-      final availableMonths = ['All'] + months.map((date) => getMonthName(date.month, date.year)).toList();
+      final availableMonths =
+          ['All'] +
+          months.map((date) => getMonthName(date.month, date.year)).toList();
 
-      String initialSelectedMonth = event.month ?? 'All'; // Use event.month if provided, otherwise 'All'
+      String initialSelectedMonth =
+          event.month ?? 'All'; // Use event.month if provided, otherwise 'All'
       if (!availableMonths.contains(initialSelectedMonth)) {
-        initialSelectedMonth = availableMonths.isNotEmpty ? availableMonths.first : 'All';
+        initialSelectedMonth =
+            availableMonths.isNotEmpty ? availableMonths.first : 'All';
       }
 
       final initialFinancials = _calculateCumulativeFinancials(
-          updatedTransactions, initialSelectedMonth
+        updatedTransactions,
+        initialSelectedMonth,
       );
 
       emit(
@@ -324,6 +365,7 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
       );
     }
   }
+
   // Future<void> _onLoadTransactions(
   //   LoadTransactionsEvent event,
   //   Emitter<TransactionState> emit,
@@ -390,20 +432,19 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   //
   // }
   Future<void> _onEditTransaction(
-      EditTransactionEvent event,
-      Emitter<TransactionState> emit,
-      ) async {
+    EditTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
     emit(TransactionLoading.fromState(state: state));
     try {
-      await _transactionRepository.updateTransaction(
-        event.updatedTransaction,
-      );
-      final updatedTransactions = state.allTransactions.map((transaction) {
-        if (transaction.id == event.updatedTransaction.id) {
-          return event.updatedTransaction;
-        }
-        return transaction;
-      }).toList();
+      await _transactionRepository.updateTransaction(event.updatedTransaction);
+      final updatedTransactions =
+          state.allTransactions.map((transaction) {
+            if (transaction.id == event.updatedTransaction.id) {
+              return event.updatedTransaction;
+            }
+            return transaction;
+          }).toList();
       final financials = _calculateCumulativeFinancials(
         updatedTransactions,
         state.selectedMonth,
@@ -434,9 +475,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onSelectMonthEvent(
-      SelectMonthEvent event,
-      Emitter<TransactionState> emit,
-      ) {
+    SelectMonthEvent event,
+    Emitter<TransactionState> emit,
+  ) {
     final financials = _calculateCumulativeFinancials(
       state.allTransactions,
       event.selectedMonth,
@@ -454,9 +495,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onSelectFilterTypeEvent(
-      SelectFilterTypeEvent event,
-      Emitter<TransactionState> emit,
-      ) {
+    SelectFilterTypeEvent event,
+    Emitter<TransactionState> emit,
+  ) {
     emit(
       TransactionSuccess(
         allTransactions: state.allTransactions,
@@ -482,14 +523,14 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Map<String, int> calculateFinancialsForMoneyType(
-      List<TransactionModel> allTransactions,
-      MoneyType type,
-      ) {
+    List<TransactionModel> allTransactions,
+    MoneyType type,
+  ) {
     int totalAmount = 0;
     int netChange = 0;
 
     final transactionsOfType =
-    allTransactions.where((t) => t.idCategory.moneyType == type).toList();
+        allTransactions.where((t) => t.idCategory.moneyType == type).toList();
 
     for (final t in transactionsOfType) {
       totalAmount += t.amount;
@@ -506,19 +547,23 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   Future<void> _onAddTransaction(
-      AddTransactionEvent event,
-      Emitter<TransactionState> emit,
-      ) async {
+    AddTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
     emit(TransactionLoading.fromState(state: state));
     try {
-      final existingTransaction = state.allTransactions
-          .firstWhereOrNull((t) => t.id == event.newTransaction.id);
+      final existingTransaction = state.allTransactions.firstWhereOrNull(
+        (t) => t.id == event.newTransaction.id,
+      );
       if (existingTransaction != null) {
-        debugPrint('Duplicate transaction with ID ${event.newTransaction.id} ignored.');
+        debugPrint(
+          'Duplicate transaction with ID ${event.newTransaction.id} ignored.',
+        );
         return; // Skip adding the duplicate
       }
       await _transactionRepository.addTransaction(event.newTransaction);
-      final updatedTransactions = await _transactionRepository.getTransactionsAPI();
+      final updatedTransactions =
+          await _transactionRepository.getTransactionsAPI();
       final financials = _calculateCumulativeFinancials(
         updatedTransactions,
         state.selectedMonth,
@@ -554,9 +599,9 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
   }
 
   void _onFilterTransactionsByTimeframe(
-      FilterTransactionsByTimeframeEvent event,
-      Emitter<TransactionState> emit,
-      ) {
+    FilterTransactionsByTimeframeEvent event,
+    Emitter<TransactionState> emit,
+  ) {
     emit(
       TransactionSuccess(
         allTransactions: state.allTransactions,
@@ -597,8 +642,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int foodExpense = 0;
     for (var transaction in state.allTransactions) {
       if (transaction.time.isAfter(
-        startOfLastWeek.subtract(const Duration(microseconds: 1)),
-      ) &&
+            startOfLastWeek.subtract(const Duration(microseconds: 1)),
+          ) &&
           transaction.time.isBefore(
             endOfLastWeek.add(const Duration(days: 1)),
           )) {
@@ -627,8 +672,8 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     int revenue = 0;
     for (var transaction in state.allTransactions) {
       if (transaction.time.isAfter(
-        startOfLastWeek.subtract(const Duration(microseconds: 1)),
-      ) &&
+            startOfLastWeek.subtract(const Duration(microseconds: 1)),
+          ) &&
           transaction.time.isBefore(
             endOfLastWeek.add(const Duration(days: 1)),
           )) {
@@ -655,8 +700,10 @@ class TransactionBloc extends Bloc<TransactionEvent, TransactionState> {
     }
     return expense;
   }
-  Future<TransactionModel?> getTransactionById(int id) async {
-    return state.allTransactions.firstWhereOrNull((transaction) => transaction.id == id);
-  }
 
+  Future<TransactionModel?> getTransactionById(int id) async {
+    return state.allTransactions.firstWhereOrNull(
+      (transaction) => transaction.id == id,
+    );
+  }
 }

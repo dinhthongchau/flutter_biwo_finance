@@ -1,7 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 
-
 abstract class TransactionEvent extends Equatable {
   const TransactionEvent();
 
@@ -16,6 +15,15 @@ class LoadTransactionsEvent extends TransactionEvent {
 
   @override
   List<Object?> get props => [month];
+}
+
+class UserChangedEvent extends TransactionEvent {
+  final String userId;
+
+  const UserChangedEvent(this.userId);
+
+  @override
+  List<Object?> get props => [userId];
 }
 
 class SelectMonthEvent extends TransactionEvent {
@@ -53,6 +61,7 @@ class FilterTransactionsByTimeframeEvent extends TransactionEvent {
   @override
   List<Object> get props => [filterType];
 }
+
 //DeleteTransactionEvent
 class DeleteTransactionEvent extends TransactionEvent {
   final int transactionId;

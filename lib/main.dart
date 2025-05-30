@@ -19,6 +19,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     );
   }
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
@@ -45,18 +46,21 @@ class AppProviders extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TransactionBloc>(
-          create: (context) =>
-          TransactionBloc(TransactionRepository())..add(const LoadTransactionsEvent()),
+          create: (context) => TransactionBloc(TransactionRepository()),
+          lazy: false,
         ),
         BlocProvider<NotificationBloc>(
-          create: (context) => NotificationBloc()..add(const LoadNotifications()),
+          create:
+              (context) => NotificationBloc()..add(const LoadNotifications()),
         ),
         BlocProvider<CategoryBloc>(
           create: (context) => CategoryBloc(CategoryRepository()),
         ),
         BlocProvider<CalendarBloc>(
-          create: (context) =>
-          CalendarBloc(TransactionRepository())..add(const LoadCalendarTransactionsEvent()),
+          create:
+              (context) =>
+                  CalendarBloc(TransactionRepository())
+                    ..add(const LoadCalendarTransactionsEvent()),
         ),
         BlocProvider<AnalysisBloc>(
           create: (context) => AnalysisBloc(TransactionRepository()),
@@ -64,11 +68,9 @@ class AppProviders extends StatelessWidget {
         BlocProvider<SearchBloc>(
           create: (context) => SearchBloc(context.read<TransactionBloc>()),
         ),
-        BlocProvider<HomeBloc>(
-          create: (context) => HomeBloc(),
-        ),
-        BlocProvider(create: (_) => UserBloc()),
-        BlocProvider(create: (_) => ThemeCubit()),
+        BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
+        BlocProvider<UserBloc>(create: (_) => UserBloc(), lazy: false),
+        BlocProvider<ThemeCubit>(create: (_) => ThemeCubit()),
         //BlocProvider(create: (_) => NotificationBloc()),
       ],
       child: const AppMaterial(),
