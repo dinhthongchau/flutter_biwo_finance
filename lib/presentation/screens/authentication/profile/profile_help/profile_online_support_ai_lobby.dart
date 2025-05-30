@@ -92,11 +92,10 @@ class _ProfileOnlineSupportAiLobbyScreenState
                               MaterialPageRoute(
                                 builder:
                                     (_) => ProfileOnlineSupportAiScreen(
-                                  chatHistory: chat,
-                                ),
+                                      chatHistory: chat,
+                                    ),
                               ),
                             );
-
                           },
                         ),
                       ),
@@ -118,8 +117,10 @@ class _ProfileOnlineSupportAiLobbyScreenState
                         (chat) => ChatCard(
                           chat: chat,
                           onTap: () {
-                            context.go('/profile-online-support-ai', extra: chat);
-
+                            context.go(
+                              '/profile-online-support-ai',
+                              extra: chat,
+                            );
                           },
                         ),
                       ),
@@ -141,7 +142,6 @@ class _ProfileOnlineSupportAiLobbyScreenState
                     ),
                     onPressed: () {
                       context.go('/profile-online-support-ai');
-
                     },
                     child: const Text(
                       'Start Another Chat',

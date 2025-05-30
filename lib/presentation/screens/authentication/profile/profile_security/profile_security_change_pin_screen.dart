@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
 
 class ProfileSecurityChangePinScreen extends StatefulWidget {
   static const String routeName = '/profile-security-change-pin';
@@ -35,7 +36,7 @@ class _ProfileSecurityChangePinScreenState
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pin changed successfully!')),
       );
-      context.go('/profile-security-screen');
+      context.go(ProfileSecurityScreen.routeName);
     }
   }
 
@@ -60,7 +61,8 @@ class _ProfileSecurityChangePinScreenState
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => context.go('/profile-security-screen'),
+                    onPressed:
+                        () => context.go(ProfileSecurityScreen.routeName),
                   ),
                   const Text(
                     'Change Pin',

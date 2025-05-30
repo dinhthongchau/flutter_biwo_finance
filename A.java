@@ -1,0 +1,1 @@
+Tách thành widget lẻ ra hết ( prompt: kêu tham khảo  style tách của @home_screen_mi xin @notification_screen_mixin in tách file xxx này ra cho tôi( ko cần tạo file mi xin, tách trong screen này dễ bảo trì ), đảm bảo ko sửa UI, funcs, chỉ tách code) )

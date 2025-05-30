@@ -106,17 +106,16 @@ class _ProfileOnlineSupportHelperScreenState
                                   MaterialPageRoute(
                                     builder:
                                         (_) =>
-                                        ProfileOnlineSupportHelperChatScreen(
-                                          chatRoom: chat,
-                                          helperId: _helperId!,
-                                        ),
+                                            ProfileOnlineSupportHelperChatScreen(
+                                              chatRoom: chat,
+                                              helperId: _helperId!,
+                                            ),
                                   ),
                                 );
                                 // context.go('/profile-online-support-helper-chat', extra: {
                                 //   'chatRoom': chat,
                                 //   'helperId': _helperId!,
                                 // });
-
                               }
                             },
                           );

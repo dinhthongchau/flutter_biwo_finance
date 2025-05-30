@@ -1,7 +1,6 @@
-import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 
 class PasswordChangedSplashScreen extends StatefulWidget {
   const PasswordChangedSplashScreen({super.key});

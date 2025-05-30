@@ -273,7 +273,9 @@ class _ProfileOnlineSupportAiScreenState
 
                                       if (context.mounted) {
                                         context.pop();
-                                        context.go('/profile-online-support-ai-lobby');
+                                        context.go(
+                                          '/profile-online-support-ai-lobby',
+                                        );
                                       }
                                     },
                                     child: const Text(
@@ -302,8 +304,7 @@ class _ProfileOnlineSupportAiScreenState
                                         vertical: 14,
                                       ),
                                     ),
-                                    onPressed:
-                                        () => context.pop(),
+                                    onPressed: () => context.pop(),
                                     child: const Text(
                                       'Cancel',
                                       style: TextStyle(fontSize: 16),

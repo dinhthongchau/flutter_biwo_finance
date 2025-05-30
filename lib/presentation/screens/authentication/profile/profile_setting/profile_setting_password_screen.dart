@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
 
 class ProfileSettingPasswordScreen extends StatefulWidget {
   static const String routeName = '/profile-setting-password';
@@ -66,7 +68,7 @@ class _ProfileSettingPasswordScreenState
 
         if (mounted) {
           context.go(
-            '/profile-splash',
+            ProfileSplashScreen.routeName,
             extra: 'Password changed successfully!',
           );
         }
@@ -101,7 +103,7 @@ class _ProfileSettingPasswordScreenState
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => context.go('/profile-setting-screen'),
+                    onPressed: () => context.go(ProfileSettingScreen.routeName),
                   ),
                   const Text(
                     'Password Settings',
@@ -194,6 +196,7 @@ class _ProfileSettingPasswordScreenState
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,
+                              color: AppColors.blackHeader,
                             ),
                           ),
                         ),

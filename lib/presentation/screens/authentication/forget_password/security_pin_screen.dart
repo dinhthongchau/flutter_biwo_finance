@@ -1,10 +1,11 @@
 import 'package:finance_management/presentation/screens/authentication/forget_password/new_password_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
+import 'package:finance_management/presentation/shared_data.dart' as shared;
+import 'package:finance_management/gen/assets.gen.dart';
 
 class SecurityPinScreen extends StatefulWidget {
   static const String routeName = '/security-pin-screen';
@@ -48,7 +49,10 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: Colors.transparent,
-              border: Border.all(color: AppColors.caribbeanGreen, width: 3),
+              border: Border.all(
+                color: shared.AppColors.caribbeanGreen,
+                width: 3,
+              ),
               shape: BoxShape.circle,
             ),
             child:
@@ -96,7 +100,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColors.caribbeanGreen,
+      backgroundColor: shared.AppColors.caribbeanGreen,
       body: Stack(
         children: [
           const Positioned(
@@ -109,7 +113,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                 style: TextStyle(
                   fontSize: 28,
                   fontWeight: FontWeight.bold,
-                  color: AppColors.blackHeader,
+                  color: shared.AppColors.blackHeader,
                   letterSpacing: 0.5,
                 ),
               ),
@@ -122,7 +126,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
               widthFactor: 1.0,
               child: Container(
                 decoration: const BoxDecoration(
-                  color: AppColors.honeydew,
+                  color: shared.AppColors.honeydew,
                   borderRadius: BorderRadius.only(
                     topLeft: Radius.circular(40),
                     topRight: Radius.circular(40),
@@ -140,7 +144,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                               style: TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
-                                color: AppColors.blackHeader,
+                                color: shared.AppColors.blackHeader,
                               ),
                             ),
                             const SizedBox(height: 28),
@@ -173,7 +177,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                               width: 200,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.caribbeanGreen,
+                                  backgroundColor:
+                                      shared.AppColors.caribbeanGreen,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(24),
                                   ),
@@ -212,7 +217,9 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                             ),
                                                       ),
                                                       backgroundColor:
-                                                          AppColors.honeydew,
+                                                          shared
+                                                              .AppColors
+                                                              .honeydew,
                                                       content: Column(
                                                         mainAxisSize:
                                                             MainAxisSize.min,
@@ -241,7 +248,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                         16,
                                                                       ),
                                                                   decoration: BoxDecoration(
-                                                                    color: AppColors
+                                                                    color: shared
+                                                                        .AppColors
                                                                         .caribbeanGreen
                                                                         .withAlpha(
                                                                           (0.2 *
@@ -258,7 +266,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                           16,
                                                                         ),
                                                                     decoration: BoxDecoration(
-                                                                      color: AppColors
+                                                                      color: shared
+                                                                          .AppColors
                                                                           .caribbeanGreen
                                                                           .withAlpha(
                                                                             (0.3 *
@@ -273,7 +282,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                       Icons
                                                                           .check_circle,
                                                                       color:
-                                                                          AppColors
+                                                                          shared
+                                                                              .AppColors
                                                                               .caribbeanGreen,
                                                                       size: 64,
                                                                     ),
@@ -312,7 +322,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                         FontWeight
                                                                             .bold,
                                                                     color:
-                                                                        AppColors
+                                                                        shared
+                                                                            .AppColors
                                                                             .blackHeader,
                                                                   ),
                                                                 ),
@@ -328,7 +339,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                             child: ElevatedButton(
                                                               style: ElevatedButton.styleFrom(
                                                                 backgroundColor:
-                                                                    AppColors
+                                                                    shared
+                                                                        .AppColors
                                                                         .caribbeanGreen,
                                                                 shape: RoundedRectangleBorder(
                                                                   borderRadius:
@@ -358,7 +370,8 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                                                       FontWeight
                                                                           .bold,
                                                                   color:
-                                                                      AppColors
+                                                                      shared
+                                                                          .AppColors
                                                                           .blackHeader,
                                                                 ),
                                                               ),
@@ -379,7 +392,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.blackHeader,
+                                    color: shared.AppColors.blackHeader,
                                   ),
                                 ),
                               ),
@@ -389,7 +402,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                               width: 200,
                               child: ElevatedButton(
                                 style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.lightGreen,
+                                  backgroundColor: shared.AppColors.lightGreen,
                                   shape: RoundedRectangleBorder(
                                     borderRadius: BorderRadius.circular(24),
                                   ),
@@ -404,7 +417,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                                   style: TextStyle(
                                     fontSize: 18,
                                     fontWeight: FontWeight.bold,
-                                    color: AppColors.blackHeader,
+                                    color: shared.AppColors.blackHeader,
                                   ),
                                 ),
                               ),
@@ -423,12 +436,12 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         _buildSocialIcon(
-                          asset: 'assets/IconComponents/Facebook.svg',
+                          asset: Assets.iconComponents.facebook.path,
                           onTap: () => _launchURL('https://www.facebook.com'),
                         ),
                         const SizedBox(width: 24),
                         _buildSocialIcon(
-                          asset: 'assets/IconComponents/Google.svg',
+                          asset: Assets.iconComponents.google.path,
                           onTap: () => _launchURL('https://www.google.com'),
                         ),
                       ],
@@ -448,7 +461,7 @@ class _SecurityPinScreenState extends State<SecurityPinScreen> {
                           child: const Text(
                             'Sign Up',
                             style: TextStyle(
-                              color: AppColors.lightBlue,
+                              color: shared.AppColors.lightBlue,
                               fontWeight: FontWeight.bold,
                               fontSize: 13,
                             ),

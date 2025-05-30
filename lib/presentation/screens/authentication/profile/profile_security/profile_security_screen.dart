@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_change_pin_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_term_and_condition.dart';
 
 class ProfileSecurityScreen extends StatelessWidget {
   static const String routeName = '/profile-security-screen';
@@ -27,7 +30,7 @@ class ProfileSecurityScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => context.go('/profile-screen'),
+                    onPressed: () => context.go(ProfileScreen.routeName),
                   ),
                   const Text(
                     'Security',
@@ -89,7 +92,7 @@ class ProfileSecurityScreen extends StatelessWidget {
                       onTap: () {
                         GoRouter.of(
                           context,
-                        ).push('/profile-security-change-pin');
+                        ).push(ProfileSecurityChangePinScreen.routeName);
                       },
                     ),
                     _buildDivider(),
@@ -98,7 +101,7 @@ class ProfileSecurityScreen extends StatelessWidget {
                     _buildSecurityItem(
                       'Terms And Conditions',
                       onTap: () {
-                        context.go('/profile-term-and-condition');
+                        context.go(ProfileTermAndConditionScreen.routeName);
                       },
                     ),
                   ],

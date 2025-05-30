@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_security/profile_security_screen.dart';
 
 class ProfileTermAndConditionScreen extends StatefulWidget {
   static const String routeName = '/profile-term-and-condition';
@@ -170,7 +171,8 @@ class _ProfileTermAndConditionScreenState
                         ),
                         onPressed:
                             _accepted
-                                ? () => context.go('/profile-security-screen')
+                                ? () =>
+                                    context.go(ProfileSecurityScreen.routeName)
                                 : null,
                         child: const Text(
                           'Accept',

@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
-import 'package:url_launcher/url_launcher.dart' ;
+import 'package:url_launcher/url_launcher.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 
 class ForgetPasswordScreen extends StatefulWidget {
   static const String routeName = "/forget-password-screen";
@@ -209,7 +210,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                                 _isFacebookHovered ? 1.2 : 1.0,
                                               ),
                                           child: SvgPicture.asset(
-                                            'assets/IconComponents/Facebook.svg',
+                                            Assets.iconComponents.facebook.path,
                                             width: 32,
                                             height: 32,
                                           ),
@@ -241,7 +242,7 @@ class _ForgetPasswordScreenState extends State<ForgetPasswordScreen> {
                                                 _isGoogleHovered ? 1.2 : 1.0,
                                               ),
                                           child: SvgPicture.asset(
-                                            'assets/IconComponents/Google.svg',
+                                            Assets.iconComponents.google.path,
                                             width: 32,
                                             height: 32,
                                           ),

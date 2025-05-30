@@ -9,8 +9,6 @@ import 'package:image_picker/image_picker.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_state.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:finance_management/data/repositories/transaction_repository.dart';
 // TODO: import bottom navigation bar widget nếu có
 
 class ProfileScreen extends StatefulWidget {
@@ -122,7 +120,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
     );
   }
-
   void onLogout() async {
     // Save data for current user before logging out
     final email = FirebaseAuth.instance.currentUser?.email;
@@ -133,9 +130,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     // Then proceed with the logout
     await FirebaseAuth.instance.signOut();
     if (!mounted) return;
-    context.go('/login-screen');
+    context.go(LoginScreen.routeName);
   }
-
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<UserBloc, UserState>(
@@ -389,24 +385,24 @@ class ProfileMenuList extends StatelessWidget {
           Icons.shield_outlined,
           'Security',
           AppColors.lightBlue,
-          () {
-            context.push('/profile-security-screen');
+              () {
+            context.push(ProfileSecurityScreen.routeName);
           },
         ),
         _buildMenuItem(
           Icons.settings_outlined,
           'Setting',
-          AppColors.vividBlue,
-          () {
-            context.go('/profile-setting-screen');
+          AppColors.lightBlue,
+              () {
+            context.go(ProfileSettingScreen.routeName);
           },
         ),
         _buildMenuItem(
           Icons.headset_mic_outlined,
           'Help',
           AppColors.lightBlue,
-          () {
-            context.go('/profile-help-faqs');
+              () {
+            context.go(ProfileHelpFaqsScreen.routeName);
           },
         ),
         _buildMenuItem(Icons.logout, 'Logout', AppColors.lightBlue, onLogout),

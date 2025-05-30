@@ -9,8 +9,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
-import 'package:finance_management/presentation/bloc/transaction/transaction_bloc.dart';
-import 'package:finance_management/presentation/bloc/transaction/transaction_event.dart';
+import 'package:finance_management/presentation/screens/home/home_screen.dart';
+import 'package:finance_management/core/utils/common_functions.dart';
+
+import 'package:finance_management/presentation/screens/authentication/forget_password/forget_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/sign_up/sign_up_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   static const String routeName = "/login-screen";
@@ -28,13 +31,13 @@ class _LoginScreenState extends State<LoginScreen> {
   bool _obscurePassword = true;
   bool _isFacebookHovered = false;
   bool _isGoogleHovered = false;
-  //init state
+  bool _isLoading = false;
 
   @override
   void initState() {
     super.initState();
-    _emailController.text = 'test2@gmail.com';
-    _passwordController.text = 'password';
+    _emailController.text = 'nkhiet@gmail.com';
+    _passwordController.text = 'nkhiet@gmail.com';
   }
 
   @override
@@ -53,6 +56,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
+      setState(() {
+        _isLoading = true;
+      });
       try {
         final credential = await FirebaseAuth.instance
             .signInWithEmailAndPassword(
@@ -81,6 +87,9 @@ class _LoginScreenState extends State<LoginScreen> {
         ScaffoldMessenger.of(
           context,
         ).showSnackBar(SnackBar(content: Text('Login failed: ${e.message}')));
+        setState(() {
+          _isLoading = false;
+        });
       }
     }
   }
@@ -88,410 +97,481 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocListener<UserBloc, UserState>(
-      listener: (context, state) async {
-        if (state is UserError) {
+      listener: (context, state) {
+        if (state is UserLoaded) {
+          context.go(HomeScreen.routeName);
+        } else if (state is UserError) {
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(SnackBar(content: Text(state.message)));
-        } else if (state is UserLoaded) {
-          // Force reload transactions for the new user
-          context.read<TransactionBloc>().add(
-            const LoadTransactionsEvent(month: 'All'),
-          );
-
-          if (state.user.helper) {
-            context.go('/profile-online-support-helper');
-          } else {
-            context.go('/home-screen');
-          }
+          setState(() {
+            _isLoading = false;
+          });
         }
       },
       child: Scaffold(
         backgroundColor: AppColors.caribbeanGreen,
-        body: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 1 / 5,
-                  child: Container(
-                    color: AppColors.caribbeanGreen,
-                    child: const Center(
-                      child: Text(
-                        'Welcome',
-                        style: TextStyle(
-                          fontSize: 32,
-                          fontWeight: FontWeight.bold,
-                          color: AppColors.blackHeader,
+        body: Stack(
+          children: [
+            SafeArea(
+              child: Column(
+                children: [
+                  const LoginHeader(),
+                  Expanded(
+                    child: Container(
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: AppColors.honeydew,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(48),
+                          topRight: Radius.circular(48),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                SizedBox(
-                  width: MediaQuery.of(context).size.width,
-                  height: MediaQuery.of(context).size.height * 4 / 5,
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: AppColors.honeydew,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(48),
-                        topRight: Radius.circular(48),
-                      ),
-                    ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 60,
-                          vertical: 40,
-                        ),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            const SizedBox(height: 30),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 5),
-                              child: Text(
-                                'Username Or Email',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: AppColors.blackHeader,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _emailController,
-                              decoration: InputDecoration(
-                                prefixIcon: Padding(
-                                  padding: const EdgeInsets.all(10.0),
-                                  child: SvgPicture.asset(
-                                    Assets.iconComponents.iconProfile.path,
-                                    width: 24,
-                                    height: 24,
-                                  ),
-                                ),
-                                hintText: 'Example@example.com',
-                                filled: true,
-                                fillColor: AppColors.lightGreen,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 0,
-                                  horizontal: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your email';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 20),
-                            const Padding(
-                              padding: EdgeInsets.only(left: 5),
-                              child: Text(
-                                'Password',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 14,
-                                  color: AppColors.blackHeader,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            TextFormField(
-                              controller: _passwordController,
-                              obscureText: _obscurePassword,
-                              decoration: InputDecoration(
-                                prefixIcon: const Padding(
-                                  padding: EdgeInsets.all(10.0),
-                                  child: Icon(
-                                    Icons.lock_outline,
-                                    color: AppColors.lightBlue,
-                                  ),
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: SvgPicture.asset(
-                                    _obscurePassword
-                                        ? Assets.functionalIcon.vector23.path
-                                        : Assets.functionalIcon.vector24.path,
-                                    width: 12,
-                                    height: 12,
-                                    colorFilter: const ColorFilter.mode(
-                                      Color.fromARGB(255, 2, 2, 2),
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
-                                  onPressed: () {
+                      child: SingleChildScrollView(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 24,
+                            vertical: 32,
+                          ),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.center,
+                              children: [
+                                LoginFormFields(
+                                  emailController: _emailController,
+                                  passwordController: _passwordController,
+                                  obscurePassword: _obscurePassword,
+                                  onTogglePassword: () {
                                     setState(() {
                                       _obscurePassword = !_obscurePassword;
                                     });
                                   },
                                 ),
-                                hintText: 'Password',
-                                filled: true,
-                                fillColor: AppColors.lightGreen,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  vertical: 0,
-                                  horizontal: 16,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(20),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                              validator: (value) {
-                                if (value == null || value.isEmpty) {
-                                  return 'Please enter your password';
-                                }
-                                return null;
-                              },
-                            ),
-                            const SizedBox(height: 90),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 91,
-                                right: 92,
-                              ),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.caribbeanGreen,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(28),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    minimumSize: const Size(0, 45),
-                                    elevation: 0,
-                                  ),
-                                  onPressed: _submitForm,
-                                  child: const Text(
-                                    'Log In',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.blackHeader,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 20),
-                            Center(
-                              child: TextButton(
-                                onPressed: () {
-                                  context.go('/forget-password-screen');
-                                },
-                                child: const Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    color: AppColors.blackHeader,
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Padding(
-                              padding: const EdgeInsets.only(
-                                left: 91,
-                                right: 92,
-                              ),
-                              child: SizedBox(
-                                width: double.infinity,
-                                child: ElevatedButton(
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: AppColors.lightGreen,
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(28),
-                                    ),
-                                    padding: const EdgeInsets.symmetric(
-                                      vertical: 10,
-                                    ),
-                                    minimumSize: const Size(0, 45),
-                                    elevation: 0,
-                                  ),
-                                  onPressed: () {
-                                    context.go('/signUp-screen');
-                                  },
-                                  child: const Text(
-                                    'Sign Up',
-                                    style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold,
-                                      color: AppColors.blackHeader,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Container(
-                              alignment: Alignment.center,
-                              width: double.infinity,
-                              margin: const EdgeInsets.only(
-                                left: 45,
-                                right: 40,
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  RichText(
-                                    textAlign: TextAlign.center,
-                                    text: const TextSpan(
-                                      style: TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.bold,
-                                        color: AppColors.blackHeader,
-                                      ),
-                                      children: [
-                                        TextSpan(text: 'Use '),
-                                        TextSpan(
-                                          text: 'Fingerprint',
-                                          style: TextStyle(
-                                            color: AppColors.vividBlue,
-                                            fontWeight: FontWeight.bold,
-                                          ),
-                                        ),
-                                        TextSpan(text: ' To Access'),
-                                      ],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Center(
-                              child: Column(
-                                children: [
-                                  const Text(
-                                    'or sign up with',
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                const SizedBox(height: 32),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 40),
+                                  child: Column(
                                     children: [
-                                      MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        onEnter:
-                                            (_) => setState(
-                                              () => _isFacebookHovered = true,
-                                            ),
-                                        onExit:
-                                            (_) => setState(
-                                              () => _isFacebookHovered = false,
-                                            ),
-                                        child: GestureDetector(
-                                          onTap:
-                                              () => _launchURL(
-                                                'https://www.facebook.com',
-                                              ),
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 200,
-                                            ),
-                                            transform:
-                                                Matrix4.identity()..scale(
-                                                  _isFacebookHovered
-                                                      ? 1.2
-                                                      : 1.0,
-                                                ),
-                                            child: SvgPicture.asset(
-                                              Assets
-                                                  .iconComponents
-                                                  .facebook
-                                                  .path,
-                                              width: 32,
-                                              height: 32,
-                                            ),
-                                          ),
-                                        ),
+                                      LoginButton(
+                                        onPressed:
+                                            _isLoading ? null : _submitForm,
+                                        isLoading: _isLoading,
                                       ),
-                                      const SizedBox(width: 24),
-                                      MouseRegion(
-                                        cursor: SystemMouseCursors.click,
-                                        onEnter:
-                                            (_) => setState(
-                                              () => _isGoogleHovered = true,
-                                            ),
-                                        onExit:
-                                            (_) => setState(
-                                              () => _isGoogleHovered = false,
-                                            ),
-                                        child: GestureDetector(
-                                          onTap:
-                                              () => _launchURL(
-                                                'https://www.google.com',
-                                              ),
-                                          child: AnimatedContainer(
-                                            duration: const Duration(
-                                              milliseconds: 200,
-                                            ),
-                                            transform:
-                                                Matrix4.identity()..scale(
-                                                  _isGoogleHovered ? 1.2 : 1.0,
-                                                ),
-                                            child: SvgPicture.asset(
-                                              Assets.iconComponents.google.path,
-                                              width: 32,
-                                              height: 32,
-                                            ),
-                                          ),
-                                        ),
+                                      const SizedBox(height: 8),
+                                      ForgotPasswordButton(
+                                        onPressed:
+                                            _isLoading
+                                                ? null
+                                                : () {
+                                                  context.go(
+                                                    ForgetPasswordScreen
+                                                        .routeName,
+                                                  );
+                                                },
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
-                            ),
-                            const SizedBox(height: 16),
-                            Center(
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  const Text(
-                                    "Don't have an account? ",
-                                    style: TextStyle(fontSize: 12),
-                                  ),
-                                  GestureDetector(
-                                    onTap: () {
-                                      context.go('/signUp-screen');
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 15),
+                                  child: SignUpButton(
+                                    onPressed: () {
+                                      context.go(SignUpScreen.routeName);
                                     },
-                                    child: const Text(
-                                      'Sign Up',
-                                      style: TextStyle(
-                                        color: AppColors.vividBlue,
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 12,
-                                      ),
-                                    ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 20),
+                                  child: FingerprintAccess(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 20),
+                                  child: SocialLoginSection(
+                                    isFacebookHovered: _isFacebookHovered,
+                                    isGoogleHovered: _isGoogleHovered,
+                                    onFacebookHover:
+                                        (v) => setState(
+                                          () => _isFacebookHovered = v,
+                                        ),
+                                    onGoogleHover:
+                                        (v) => setState(
+                                          () => _isGoogleHovered = v,
+                                        ),
+                                    onFacebookTap:
+                                        () => _launchURL(
+                                          'https://www.facebook.com',
+                                        ),
+                                    onGoogleTap:
+                                        () => _launchURL(
+                                          'https://www.google.com',
+                                        ),
+                                  ),
+                                ),
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 20),
+                                  child: SignUpPrompt(),
+                                ),
+                              ],
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
+            ),
+            if (_isLoading)
+              Container(
+                color: Colors.black.withOpacity(0.3),
+                child: Center(child: LoadingUtils.buildSpinKitSpinningLines()),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class LoginHeader extends StatelessWidget {
+  const LoginHeader({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.only(top: 32, bottom: 16),
+      child: Text(
+        'Welcome',
+        style: TextStyle(
+          fontSize: 36,
+          fontWeight: FontWeight.bold,
+          color: AppColors.blackHeader,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+}
+
+class LoginFormFields extends StatelessWidget {
+  final TextEditingController emailController;
+  final TextEditingController passwordController;
+  final bool obscurePassword;
+  final VoidCallback onTogglePassword;
+  const LoginFormFields({
+    super.key,
+    required this.emailController,
+    required this.passwordController,
+    required this.obscurePassword,
+    required this.onTogglePassword,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          'Username Or Email',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: AppColors.blackHeader,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: emailController,
+          decoration: InputDecoration(
+            hintText: 'example@example.com',
+            filled: true,
+            fillColor: AppColors.lightGreen,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 20,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
             ),
           ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your email';
+            }
+            return null;
+          },
+        ),
+        const SizedBox(height: 24),
+        const Text(
+          'Password',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 16,
+            color: AppColors.blackHeader,
+          ),
+        ),
+        const SizedBox(height: 8),
+        TextFormField(
+          controller: passwordController,
+          obscureText: obscurePassword,
+          decoration: InputDecoration(
+            filled: true,
+            fillColor: AppColors.lightGreen,
+            contentPadding: const EdgeInsets.symmetric(
+              vertical: 0,
+              horizontal: 20,
+            ),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(24),
+              borderSide: BorderSide.none,
+            ),
+            suffixIcon: IconButton(
+              icon: SvgPicture.asset(
+                obscurePassword
+                    ? Assets.functionalIcon.vector23.path
+                    : Assets.functionalIcon.vector24.path,
+                width: 15,
+                height: 15,
+                colorFilter: const ColorFilter.mode(
+                  Color.fromARGB(255, 2, 2, 2),
+                  BlendMode.srcIn,
+                ),
+              ),
+              onPressed: onTogglePassword,
+            ),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Please enter your password';
+            }
+            return null;
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  final bool isLoading;
+
+  const LoginButton({
+    super.key,
+    required this.onPressed,
+    this.isLoading = false,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 60),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.caribbeanGreen,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            elevation: 0,
+          ),
+          onPressed: onPressed,
+          child:
+              isLoading
+                  ? const SizedBox(
+                    width: 24,
+                    height: 24,
+                    child: CircularProgressIndicator(
+                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      strokeWidth: 2,
+                    ),
+                  )
+                  : const Text(
+                    'Log In',
+                    style: TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.blackHeader,
+                    ),
+                  ),
+        ),
+      ),
+    );
+  }
+}
+
+class ForgotPasswordButton extends StatelessWidget {
+  final VoidCallback? onPressed;
+  const ForgotPasswordButton({super.key, required this.onPressed});
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: TextButton(
+        onPressed: onPressed,
+        child: const Text(
+          'Forgot Password?',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: AppColors.blackHeader,
+            fontSize: 16,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class SignUpButton extends StatelessWidget {
+  final VoidCallback onPressed;
+  const SignUpButton({super.key, required this.onPressed});
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 60),
+      child: SizedBox(
+        width: double.infinity,
+        child: ElevatedButton(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: AppColors.lightGreen,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(32),
+            ),
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            elevation: 0,
+          ),
+          onPressed: onPressed,
+          child: const Text(
+            'Sign Up',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: AppColors.blackHeader,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class FingerprintAccess extends StatelessWidget {
+  const FingerprintAccess({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: RichText(
+        text: const TextSpan(
+          style: TextStyle(fontSize: 16, color: AppColors.blackHeader),
+          children: [
+            TextSpan(text: 'Use '),
+            TextSpan(
+              text: 'Fingerprint',
+              style: TextStyle(color: Colors.blue, fontWeight: FontWeight.bold),
+            ),
+            TextSpan(text: ' To Access'),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class SocialLoginSection extends StatelessWidget {
+  final bool isFacebookHovered;
+  final bool isGoogleHovered;
+  final Function(bool) onFacebookHover;
+  final Function(bool) onGoogleHover;
+  final VoidCallback onFacebookTap;
+  final VoidCallback onGoogleTap;
+  const SocialLoginSection({
+    super.key,
+    required this.isFacebookHovered,
+    required this.isGoogleHovered,
+    required this.onFacebookHover,
+    required this.onGoogleHover,
+    required this.onFacebookTap,
+    required this.onGoogleTap,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        const Text('or sign up with', style: TextStyle(fontSize: 14)),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              onEnter: (_) => onFacebookHover(true),
+              onExit: (_) => onFacebookHover(false),
+              child: GestureDetector(
+                onTap: onFacebookTap,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  transform:
+                      Matrix4.identity()..scale(isFacebookHovered ? 1.2 : 1.0),
+                  child: SvgPicture.asset(
+                    Assets.iconComponents.facebook.path,
+                    width: 36,
+                    height: 36,
+                  ),
+                ),
+              ),
+            ),
+            const SizedBox(width: 24),
+            MouseRegion(
+              cursor: SystemMouseCursors.click,
+              onEnter: (_) => onGoogleHover(true),
+              onExit: (_) => onGoogleHover(false),
+              child: GestureDetector(
+                onTap: onGoogleTap,
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 200),
+                  transform:
+                      Matrix4.identity()..scale(isGoogleHovered ? 1.2 : 1.0),
+                  child: SvgPicture.asset(
+                    Assets.iconComponents.google.path,
+                    width: 36,
+                    height: 36,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+class SignUpPrompt extends StatelessWidget {
+  const SignUpPrompt({super.key});
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: RichText(
+        text: TextSpan(
+          style: const TextStyle(fontSize: 14, color: AppColors.blackHeader),
+          children: [
+            const TextSpan(text: "Don't have an account? "),
+            WidgetSpan(
+              child: GestureDetector(
+                onTap: () {
+                  context.go(SignUpScreen.routeName);
+                },
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    color: Colors.blue,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );
