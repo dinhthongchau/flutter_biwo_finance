@@ -126,9 +126,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
   void onLogout() async {
     // Save data for current user before logging out
     final email = FirebaseAuth.instance.currentUser?.email;
-    if (email != null) {
-      await TransactionRepository().saveDataForUser(email);
-    }
+    // if (email != null) {
+    //   await TransactionRepository().saveDataForUser(email);
+    // }
 
     // Then proceed with the logout
     await FirebaseAuth.instance.signOut();

@@ -1,327 +1,206 @@
-import 'package:finance_management/data/model/user/user_model.dart';
+import 'dart:math';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/material.dart';
 import 'package:finance_management/data/repository/user/user_repository.dart';
 import 'package:finance_management/presentation/shared_data.dart';
-import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import 'dart:convert';
 
 class TransactionRepository {
-  // Use a map to store transactions for each user
   final Map<String, List<TransactionModel>> _userTransactions = {};
   final Set<String> _initializedUsers = {};
   String? _lastUserId;
   String? _lastUserEmail;
 
-  // Debug flag
   final bool _debugMode = true;
-
-  // Private constructor for singleton
-  static final TransactionRepository _instance =
-      TransactionRepository._internal();
-
-  // Factory constructor
-  factory TransactionRepository() {
-    return _instance;
-  }
-
-  // Internal constructor
+  static final TransactionRepository _instance = TransactionRepository._internal();
+  factory TransactionRepository() => _instance;
   TransactionRepository._internal() {
-    // Load any saved data
-    _loadSavedData();
-
-    // Listen for auth state changes
     FirebaseAuth.instance.authStateChanges().listen((User? user) {
       if (user?.uid != _lastUserId) {
         _log('User changed from $_lastUserId to ${user?.uid}');
-
-        // Save data for previous user if needed
-        if (_lastUserEmail != null &&
-            _userTransactions.containsKey(_lastUserEmail)) {
-          _saveDataForUser(_lastUserEmail!);
-        }
-
         _lastUserId = user?.uid;
         _lastUserEmail = user?.email;
-
-        // Load data for new user if available
-        if (user?.email != null) {
-          _loadDataForUser(user!.email!);
-        }
+        if (user?.email != null) _loadDataForUser(user!.email!);
       }
     });
   }
 
-  // Load all saved data on startup
-  Future<void> _loadSavedData() async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userKeys = prefs.getStringList('transaction_users') ?? [];
-
-      for (final email in userKeys) {
-        await _loadDataForUser(email);
-      }
-      _log('Loaded data for ${userKeys.length} users from persistent storage');
-    } catch (e) {
-      _log('Error loading saved data: $e');
-    }
-  }
-
-  // Load data for a specific user
   Future<void> _loadDataForUser(String email) async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      final jsonData = prefs.getString('transactions_$email');
+      final authUser = FirebaseAuth.instance.currentUser;
+      if (authUser == null) return;
 
-      if (jsonData != null) {
-        final List<dynamic> decoded = jsonDecode(jsonData);
-        _log(
-          'Found saved data for user: $email (${decoded.length} transactions)',
+      final user = await UserRepository().getUserById(authUser.uid);
+      if (user == null) return;
+
+      final categories = CategoryRepository.getAllCategories();
+      final snapshot = await FirebaseFirestore.instance
+          .collection('transactions')
+          .doc('users')
+          .collection(email)
+          .doc('user_transactions')
+          .collection('items')
+          .get();
+
+      final transactions = <TransactionModel>[];
+      for (var doc in snapshot.docs) {
+        final data = doc.data();
+        final moneyType = _parseMoneyType(data['moneyType']);
+        if (moneyType == null) continue;
+
+        final category = categories.firstWhere(
+              (c) => c.moneyType == moneyType && c.categoryType == data['categoryType'],
+          orElse: () => categories.first,
         );
 
-        // We need the user object and categories to reconstruct transactions
-        final authUser = FirebaseAuth.instance.currentUser;
-        if (authUser == null) {
-          _log('Cannot load transactions: No authenticated user');
-          return;
-        }
+        transactions.add(TransactionModel(
+          user,
+          data['id'],
+          DateTime.fromMillisecondsSinceEpoch(data['time']),
+          data['amount'],
+          category,
+          data['title'],
+          data['note'],
+        ));
+      }
 
-        final user = await UserRepository().getUserById(authUser.uid);
-        if (user == null) {
-          _log('Cannot load transactions: User not found in database');
-          return;
-        }
-
-        final categories = CategoryRepository.getAllCategories();
-        final List<TransactionModel> transactions = [];
-
-        for (final item in decoded) {
-          try {
-            // Find the matching category
-            final moneyTypeStr = item['moneyType'] as String;
-            final categoryType = item['categoryType'] as String;
-
-            // Convert string moneyType back to enum
-            MoneyType? moneyType;
-            if (moneyTypeStr.contains('expense')) {
-              moneyType = MoneyType.expense;
-            } else if (moneyTypeStr.contains('income')) {
-              moneyType = MoneyType.income;
-            } else if (moneyTypeStr.contains('save')) {
-              moneyType = MoneyType.save;
-            }
-
-            if (moneyType == null) {
-              _log('Cannot parse money type: $moneyTypeStr');
-              continue;
-            }
-
-            // Find the category
-            final category = categories.firstWhere(
-              (c) => c.moneyType == moneyType && c.categoryType == categoryType,
-              orElse: () {
-                _log('Category not found: $moneyType/$categoryType');
-                return categories.first; // Fallback
-              },
-            );
-
-            // Reconstruct the transaction
-            final transaction = TransactionModel(
-              user,
-              item['id'] as int,
-              DateTime.fromMillisecondsSinceEpoch(item['time'] as int),
-              item['amount'] as int,
-              category,
-              item['title'] as String,
-              item['note'] as String,
-            );
-
-            transactions.add(transaction);
-          } catch (e) {
-            _log('Error reconstructing transaction: $e');
-          }
-        }
-
-        if (transactions.isNotEmpty) {
-          _userTransactions[email] = transactions;
-          _initializedUsers.add(email);
-          _log(
-            'Successfully loaded ${transactions.length} transactions for $email',
-          );
-        }
+      if (transactions.isNotEmpty) {
+        _userTransactions[email] = transactions;
+        _initializedUsers.add(email);
       }
     } catch (e) {
-      _log('Error loading data for user $email: $e');
+      _log('Error loading data: $e');
     }
   }
 
-  // Save data for a specific user
-  Future<void> _saveDataForUser(String email) async {
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final data = _userTransactions[email];
-
-      if (data != null) {
-        // Save a simplified version since we can't fully serialize transaction models
-        final simplified =
-            data
-                .map(
-                  (t) => {
-                    'id': t.id,
-                    'title': t.title,
-                    'amount': t.amount,
-                    'time': t.time.millisecondsSinceEpoch,
-                    'note': t.note,
-                    'categoryType': t.idCategory.categoryType,
-                    'moneyType': t.idCategory.moneyType.toString(),
-                  },
-                )
-                .toList();
-
-        final jsonData = jsonEncode(simplified);
-        await prefs.setString('transactions_$email', jsonData);
-
-        // Update the list of users with saved data
-        final userKeys = prefs.getStringList('transaction_users') ?? [];
-        if (!userKeys.contains(email)) {
-          userKeys.add(email);
-          await prefs.setStringList('transaction_users', userKeys);
-        }
-
-        _log('Saved transaction data for user: $email');
-      }
-    } catch (e) {
-      _log('Error saving data for user $email: $e');
-    }
+  Future<void> _saveTransactionToFirestore(String email, TransactionModel transaction) async {
+    await FirebaseFirestore.instance
+        .collection('transactions')
+        .doc('users')
+        .collection(email)
+        .doc('user_transactions')
+        .collection('items')
+        .doc(transaction.id.toString())
+        .set({
+      'id': transaction.id,
+      'title': transaction.title,
+      'amount': transaction.amount,
+      'time': transaction.time.millisecondsSinceEpoch,
+      'note': transaction.note,
+      'categoryType': transaction.idCategory.categoryType,
+      'moneyType': transaction.idCategory.moneyType.toString(),
+    });
   }
 
-  // Clear cache for the current user only
-  void clearUserCache(String email) {
-    _log('Clearing cache for user: $email');
-    _initializedUsers.remove(email);
-    _userTransactions.remove(email);
+  MoneyType? _parseMoneyType(String type) {
+    if (type.contains('expense')) return MoneyType.expense;
+    if (type.contains('income')) return MoneyType.income;
+    if (type.contains('save')) return MoneyType.save;
+    return null;
   }
 
-  // Clear all data for testing or logout
+  Future<void> addTransaction(TransactionModel transaction) async {
+    final email = _getCurrentUserIdentifier();
+    _userTransactions.putIfAbsent(email, () => []).add(transaction);
+    await _saveTransactionToFirestore(email, transaction);
+  }
+
+  Future<void> updateTransaction(TransactionModel transaction) async {
+    final email = _getCurrentUserIdentifier();
+    final list = _userTransactions[email];
+    if (list == null) return;
+    final index = list.indexWhere((t) => t.id == transaction.id);
+    if (index != -1) list[index] = transaction;
+    await _saveTransactionToFirestore(email, transaction);
+  }
+
+  Future<void> deleteTransaction(int id) async {
+    final email = _getCurrentUserIdentifier();
+    _userTransactions[email]?.removeWhere((t) => t.id == id);
+    await FirebaseFirestore.instance
+        .collection('transactions')
+        .doc('users')
+        .collection(email)
+        .doc('user_transactions')
+        .collection('items')
+        .doc(id.toString())
+        .delete();
+  }
+
   Future<void> clearAllData() async {
-    _log('Clearing all transaction data');
+    _log('Clearing all data');
     _userTransactions.clear();
     _initializedUsers.clear();
-
-    try {
-      final prefs = await SharedPreferences.getInstance();
-      final userKeys = prefs.getStringList('transaction_users') ?? [];
-
-      for (final email in userKeys) {
-        await prefs.remove('transactions_$email');
-      }
-
-      await prefs.remove('transaction_users');
-      _log('Cleared all saved transaction data');
-    } catch (e) {
-      _log('Error clearing saved data: $e');
-    }
-  }
-
-  // Log helper
-  void _log(String message) {
-    if (_debugMode) {
-      debugPrint('📊 TransactionRepo: $message');
-    }
-  }
-
-  // Get current user's email as identifier (more reliable than UID for testing)
-  String _getCurrentUserIdentifier() {
-    final user = FirebaseAuth.instance.currentUser;
-    final email = user?.email;
-
-    if (email != null && email.isNotEmpty) {
-      _log('Current user email: $email');
-      return email;
-    } else {
-      _log('No user email found, using fallback ID');
-      return 'guest_user';
+    final email = _getCurrentUserIdentifier();
+    final snapshot = await FirebaseFirestore.instance
+        .collection('transactions')
+        .doc('users')
+        .collection(email)
+        .doc('user_transactions')
+        .collection('items')
+        .get();
+    for (var doc in snapshot.docs) {
+      await doc.reference.delete();
     }
   }
 
   Future<List<TransactionModel>> getTransactionsAPI() async {
-    try {
-      await Future.delayed(const Duration(seconds: 1));
-
-      // Get current user identifier
-      final String userEmail = _getCurrentUserIdentifier();
-      _log('Getting transactions for user: $userEmail');
-
-      // Update last user info
-      _lastUserEmail = userEmail;
-
-      // Try to load data from storage first if not already initialized
-      if (!_initializedUsers.contains(userEmail)) {
-        // Check if we have saved data
-        final prefs = await SharedPreferences.getInstance();
-        final hasData = prefs.containsKey('transactions_$userEmail');
-
-        if (hasData) {
-          _log('Found saved data for user $userEmail - loading from storage');
-          await _loadDataForUser(userEmail);
-        }
-
-        // If still not initialized (no saved data or failed to load), generate mock data
-        if (!_initializedUsers.contains(userEmail)) {
-          if (userEmail == 'nkhiet@gmail.com') {
-            _log(
-              'No saved data found for user $userEmail - generating mock data',
-            );
-            await generateMockData(userEmail);
-            _initializedUsers.add(userEmail);
-            // Save the newly generated data
-            await _saveDataForUser(userEmail);
-          }else {
-            _log('No saved data found for user $userEmail - skipping mock data generation');
-            _initializedUsers.add(userEmail);
-            _userTransactions[userEmail] = []; // Initialize empty transaction list
+    final email = _getCurrentUserIdentifier();
+    if (!_initializedUsers.contains(email)) {
+      await _loadDataForUser(email);
+      if (!_initializedUsers.contains(email)) {
+        if (email == 'nkhiet3@gmail.com') {
+          await generateMockData(email);
+          _initializedUsers.add(email);
+          for (var t in _userTransactions[email]!) {
+            await _saveTransactionToFirestore(email, t);
           }
-
-
-
+        } else {
+          _initializedUsers.add(email);
+          _userTransactions[email] = [];
         }
-      } else {
-        _log('Using existing data for user $userEmail');
       }
-
-      // Debug info about all users
-      _log('All initialized users: ${_initializedUsers.toString()}');
-      _log(
-        'Transaction counts by user: ${_userTransactions.map((k, v) => MapEntry(k, v.length))}',
-      );
-
-      // Return the user's transactions or empty list if none
-      return _userTransactions[userEmail] ?? [];
-    } catch (e) {
-      _log('ERROR: ${e.toString()}');
-      throw Exception('Failed to load transactions: $e');
     }
+    return _userTransactions[email] ?? [];
   }
 
+  String _getCurrentUserIdentifier() {
+    final user = FirebaseAuth.instance.currentUser;
+    return user?.email ?? 'guest_user';
+  }
+
+  void _log(String message) {
+    if (_debugMode) debugPrint('📊 TransactionRepo: $message');
+  }
   CategoryModel _getCategory(
-    List<CategoryModel> categories,
-    MoneyType type,
-    String categoryName,
-  ) {
+
+      List<CategoryModel> categories,
+
+      MoneyType type,
+
+      String categoryName,
+
+      ) {
+
     return categories.firstWhere(
-      (c) => c.moneyType == type && c.categoryType == categoryName,
+
+          (c) => c.moneyType == type && c.categoryType == categoryName,
+
       orElse:
+
           () =>
-              throw Exception(
-                'Category not found: type=$type, name=$categoryName',
-              ),
+
+      throw Exception(
+
+        'Category not found: type=$type, name=$categoryName',
+
+      ),
+
     );
+
   }
-
   Future<void> generateMockData(String userEmail) async {
-    final now = DateTime.now();
-
-    // Get user from repository using Firebase Auth UID
     final authUser = FirebaseAuth.instance.currentUser;
     if (authUser == null) {
       _log('No authenticated user found for email: $userEmail');
@@ -334,176 +213,59 @@ class TransactionRepository {
       throw Exception('User not found in database');
     }
 
-    _log('Generating mock data for: ${user.fullName} (${user.email})');
-
-    // Create a new list for this user's transactions
+    _log('Generating full mock data for $userEmail');
     final List<TransactionModel> userTransactions = [];
     _userTransactions[userEmail] = userTransactions;
-
     final categories = CategoryRepository.getAllCategories();
 
-    DateTime startOfCurrentWeek = now.subtract(Duration(days: now.weekday - 1));
-    DateTime startOfLastWeek = startOfCurrentWeek.subtract(
-      const Duration(days: 7),
-    );
+    final startDate = DateTime(2023, 1, 1); // Start from Jan 1, 2023
+    final endDate = DateTime.now(); // Until today
 
-    // First transaction includes user email to easily distinguish users
-    userTransactions.add(
-      TransactionModel(
-        user,
-        startOfLastWeek
-            .add(const Duration(days: 1, hours: 10, minutes: 30))
-            .millisecondsSinceEpoch,
-        startOfLastWeek.add(const Duration(days: 1, hours: 10, minutes: 30)),
-        // Use a unique amount based on the email
-        userEmail.hashCode.abs() % 1000 + 100,
-        _getCategory(categories, MoneyType.expense, "Food"),
-        "Initial transaction for ${userEmail}",
-        "This is a unique transaction for ${userEmail}",
-      ),
-    );
+    final random = Random();
 
-    userTransactions.add(
-      TransactionModel(
-        user,
-        startOfLastWeek
-                .add(const Duration(days: 1, hours: 10, minutes: 30))
-                .millisecondsSinceEpoch +
-            1,
-        startOfLastWeek.add(const Duration(days: 1, hours: 10, minutes: 30)),
-        10000,
-        _getCategory(categories, MoneyType.income, "Salary"),
-        "Salary for ${userEmail}",
-        "Monthly income",
-      ),
-    );
+    for (DateTime date = startDate;
+    date.isBefore(endDate);
+    date = date.add(const Duration(days: 1))) {
+      final transactionsPerDay = 2 + random.nextInt(2); // 2-3 transactions/day
 
-    userTransactions.add(
-      TransactionModel(
-        user,
-        startOfLastWeek
-                .add(const Duration(days: 2, hours: 10, minutes: 30))
-                .millisecondsSinceEpoch +
-            2,
-        startOfLastWeek.add(const Duration(days: 2, hours: 10, minutes: 30)),
-        2000,
-        _getCategory(categories, MoneyType.save, "New House"),
-        "Savings for ${userEmail}",
-        "House fund",
-      ),
-    );
+      for (int i = 0; i < transactionsPerDay; i++) {
+        // Random time on that day
+        final time = DateTime(
+          date.year,
+          date.month,
+          date.day,
+          random.nextInt(23),
+          random.nextInt(59),
+        );
 
-    // Generate only a few random transactions to make differences obvious
-    for (int i = 1; i <= 5; i++) {
-      final daysAgo = i * 2;
-      final isExpense = i % 3 == 0;
-      final isSave = i % 5 == 0;
+        // Randomly assign transaction type
+        final moneyType = MoneyType.values[random.nextInt(3)];
 
-      // Create a uniquely identifiable amount for this user
-      final amount = userEmail.hashCode.abs() % 900 + 100 + (i * 10);
+        // Get matching category
+        final availableCategories = categories
+            .where((c) => c.moneyType == moneyType)
+            .toList();
+        final category = availableCategories[random.nextInt(availableCategories.length)];
 
-      final category =
-          isExpense
-              ? ["Food", "Transport", "Groceries", "Rent"][i % 4]
-              : isSave
-              ? ["Travel", "New House", "Wedding"][i % 3]
-              : ["Salary", "Other Income"][i % 2];
+        final amount = 5000 + random.nextInt(15000); // Amount: 5k - 20k
+        final title = '${category.categoryType} on ${date.toIso8601String().split("T")[0]}';
+        final note = 'Auto-generated transaction #${userTransactions.length + 1}';
 
-      final title =
-          isExpense
-              ? ["Dinner", "Lunch", "Fuel", "Rent"][i % 4]
-              : isSave
-              ? ["Vacation", "Down payment", "Fund"][i % 3]
-              : ["Monthly", "Bonus"][i % 2];
-
-      final transactionDate = now.subtract(Duration(days: daysAgo));
-
-      userTransactions.add(
-        TransactionModel(
+        final tx = TransactionModel(
           user,
-          transactionDate.millisecondsSinceEpoch + i,
-          transactionDate,
-          amount,
-          _getCategory(
-            categories,
-            isExpense
-                ? MoneyType.expense
-                : isSave
-                ? MoneyType.save
-                : MoneyType.income,
-            category,
-          ),
-          "$title for ${userEmail}",
-          "Transaction #$i specific to ${userEmail}",
-        ),
-      );
+          time.millisecondsSinceEpoch,
+          time,
+          amount as int,
+          category,
+          title,
+          note,
+        );
+
+        userTransactions.add(tx);
+      }
     }
 
-    _log('Generated ${userTransactions.length} transactions for $userEmail');
+    _log('✅ Generated ${userTransactions.length} transactions from Jan 2023 to now for $userEmail');
   }
 
-  Future<void> updateTransaction(TransactionModel updatedTransaction) async {
-    final userEmail = _getCurrentUserIdentifier();
-    final userTransactions = _userTransactions[userEmail] ?? [];
-
-    _log('Updating transaction for user: $userEmail');
-
-    final index = userTransactions.indexWhere(
-      (transaction) => transaction.id == updatedTransaction.id,
-    );
-    if (index != -1) {
-      userTransactions[index] = updatedTransaction;
-      _log('Transaction updated: ${updatedTransaction.title}');
-
-      // Save changes to persistent storage
-      await _saveDataForUser(userEmail);
-    } else {
-      _log('Transaction not found for update: ${updatedTransaction.id}');
-      throw Exception('Transaction with ID ${updatedTransaction.id} not found');
-    }
-  }
-
-  Future<void> addTransaction(TransactionModel transaction) async {
-    final userEmail = _getCurrentUserIdentifier();
-
-    _log('Adding transaction for user: $userEmail');
-
-    // Initialize the list if it doesn't exist
-    if (!_userTransactions.containsKey(userEmail)) {
-      _userTransactions[userEmail] = [];
-    }
-
-    _userTransactions[userEmail]!.add(transaction);
-    _log('Transaction added: ${transaction.title}');
-
-    // Save changes to persistent storage
-    await _saveDataForUser(userEmail);
-  }
-
-  Future<void> deleteTransaction(int transactionId) async {
-    final userEmail = _getCurrentUserIdentifier();
-    final userTransactions = _userTransactions[userEmail] ?? [];
-
-    _log('Deleting transaction for user: $userEmail, ID: $transactionId');
-
-    await Future.delayed(const Duration(milliseconds: 300));
-    userTransactions.removeWhere(
-      (transaction) => transaction.id == transactionId,
-    );
-    _log('Transaction deleted');
-
-    // Save changes to persistent storage
-    await _saveDataForUser(userEmail);
-  }
-
-  // Get the current transaction list for the user
-  List<TransactionModel> get transactionData {
-    final userEmail = _getCurrentUserIdentifier();
-    return _userTransactions[userEmail] ?? [];
-  }
-
-  // Public method to save data for a user
-  Future<void> saveDataForUser(String email) async {
-    await _saveDataForUser(email);
-  }
 }
