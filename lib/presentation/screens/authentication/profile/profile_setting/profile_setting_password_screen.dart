@@ -131,7 +131,7 @@ class _ProfileSettingPasswordScreenState
               ),
             ),
           ),
-          // Nội dung
+
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(top: 40),

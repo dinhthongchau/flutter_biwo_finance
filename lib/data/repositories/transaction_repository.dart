@@ -1,5 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finance_management/data/repository/user/user_repository.dart';
+import 'package:finance_management/data/repositories/user_repository.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';

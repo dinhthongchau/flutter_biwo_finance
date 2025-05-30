@@ -1,4 +1,4 @@
-import 'package:finance_management/gen/assets.gen.dart';
+import 'package:finance_management/data/gen/assets.gen.dart';
 
 String getExpenseIcon(String categoryType) {
   switch (categoryType) {

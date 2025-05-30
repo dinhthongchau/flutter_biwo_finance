@@ -29,7 +29,7 @@ class _ProfileSettingNotificationScreenState
       backgroundColor: AppColors.caribbeanGreen,
       body: Column(
         children: [
-          // AppBar
+          
           SafeArea(
             bottom: false,
             child: Padding(
@@ -72,7 +72,7 @@ class _ProfileSettingNotificationScreenState
               ),
             ),
           ),
-          // Nội dung
+          
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(top: 40),

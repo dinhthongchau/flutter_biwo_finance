@@ -5,6 +5,7 @@ import 'package:finance_management/presentation/screens/authentication/profile/p
 
 class ProfileTermAndConditionScreen extends StatefulWidget {
   static const String routeName = '/profile-term-and-condition';
+
   const ProfileTermAndConditionScreen({super.key});
 
   @override
@@ -22,7 +23,6 @@ class _ProfileTermAndConditionScreenState
       backgroundColor: AppColors.caribbeanGreen,
       body: Column(
         children: [
-          // AppBar
           SafeArea(
             bottom: false,
             child: Padding(
@@ -65,7 +65,7 @@ class _ProfileTermAndConditionScreenState
               ),
             ),
           ),
-          // Nội dung
+
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(top: 80),

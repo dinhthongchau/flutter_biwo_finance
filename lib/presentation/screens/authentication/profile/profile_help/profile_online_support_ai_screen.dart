@@ -147,7 +147,7 @@ class _ProfileOnlineSupportAiScreenState
           );
           _isSending = false;
         });
-        // Lưu lịch sử chat vào SharedPreferences
+
         final chatTitle = 'Support Assistant';
         await ChatHistoryStorage.saveChat(
           ChatHistory(
@@ -255,7 +255,7 @@ class _ProfileOnlineSupportAiScreenState
                                       ),
                                     ),
                                     onPressed: () async {
-                                      // Lưu chat đã ended
+
                                       final endedChat = ChatHistory(
                                         title: widget.chatHistory!.title,
                                         message: widget.chatHistory!.message,
@@ -266,7 +266,7 @@ class _ProfileOnlineSupportAiScreenState
                                         endedChat,
                                       );
 
-                                      // Xóa chat khỏi active history
+
                                       await ChatHistoryStorage.deleteActiveChat(
                                         widget.chatHistory!,
                                       );

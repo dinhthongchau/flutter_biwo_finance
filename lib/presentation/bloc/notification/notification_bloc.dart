@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:finance_management/data/model/notification_model.dart';
+import 'package:finance_management/data/model/notification/notification_model.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
 import 'package:finance_management/presentation/bloc/notification/notification_state.dart';
 import 'package:flutter/material.dart';

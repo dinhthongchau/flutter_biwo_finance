@@ -8,9 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_management/utils/notification_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
-// import 'package:flutter_bloc/flutter_bloc.dart';
-// import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
-// import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
 
 class ProfileOnlineSupportHelperCenterScreen extends StatefulWidget {
   static const String routeName = '/profile-online-support-helper-center';

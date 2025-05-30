@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 
 class PasswordChangedSplashScreen extends StatefulWidget {
+  static const String routeName = "/password-changed-plash";
   const PasswordChangedSplashScreen({super.key});
 
   @override

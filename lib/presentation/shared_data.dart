@@ -1,4 +1,4 @@
-export 'package:finance_management/data/model/category_model.dart';
+export 'package:finance_management/data/model/transaction/category_model.dart';
 export 'package:finance_management/presentation/screens/analysis/analysis/analysis_screen.dart';
 export 'package:finance_management/presentation/screens/analysis/analysis/analysis_screen_mixin.dart';
 export 'package:finance_management/presentation/screens/analysis/calendar/calendar_screen.dart';
@@ -20,16 +20,15 @@ export 'package:finance_management/presentation/screens/transaction/transaction_
 export 'package:finance_management/presentation/widgets/bottom_navigation_bar_scaffold.dart'; // export BottomNavigationBarScaffold
 export 'package:finance_management/data/repositories/category_repository.dart';
 export 'package:finance_management/core/utils/common_functions.dart';
-export 'package:finance_management/data/model/transaction_model.dart';
-export 'package:finance_management/gen/assets.gen.dart';
+export 'package:finance_management/data/model/transaction/transaction_model.dart';
+export 'package:finance_management/data/gen/assets.gen.dart';
 export 'package:finance_management/presentation/bloc/transaction/transaction_bloc.dart';
 export 'package:finance_management/presentation/bloc/transaction/transaction_event.dart';
 export 'package:finance_management/presentation/bloc/transaction/transaction_state.dart';
 export 'package:finance_management/presentation/screens/transaction/transaction_reused_widgets.dart';
 export 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 export 'package:finance_management/presentation/widgets/widget/text_styles.dart';
-export 'package:finance_management/data/model/user_model.dart';
-export 'package:finance_management/data/model/calendar_chart_model.dart';
+export 'package:finance_management/data/model/analysis/calendar_chart_model.dart';
 export 'package:finance_management/data/repositories/transaction_repository.dart';
 export 'package:finance_management/presentation/bloc/notification/notification_event.dart';
 export 'package:finance_management/presentation/bloc/notification/notification_state.dart';
@@ -40,8 +39,8 @@ export 'package:finance_management/presentation/widgets/build_app_bar.dart';
 export 'package:finance_management/presentation/bloc/calendar/calendar_bloc.dart';
 export 'package:finance_management/presentation/bloc/calendar/calendar_event.dart';
 export 'package:finance_management/presentation/bloc/calendar/calendar_state.dart';
-export 'package:finance_management/data/model/notification_model.dart';
-export 'package:finance_management/data/model/analysis_model.dart';
+export 'package:finance_management/data/model/notification/notification_model.dart';
+export 'package:finance_management/data/model/analysis/analysis_model.dart';
 export 'package:finance_management/presentation/bloc/category/category_bloc.dart';
 export 'package:finance_management/presentation/bloc/analysis/analysis_bloc.dart';
 export 'package:finance_management/presentation/bloc/analysis/analysis_event.dart';

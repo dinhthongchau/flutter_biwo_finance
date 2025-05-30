@@ -91,7 +91,7 @@ class AppMaterial extends StatelessWidget {
         );
       }
     });
-    // Lắng nghe khi user bấm vào notification (background/terminated)
+
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       final chatRoomId = message.data['chatRoomId'];
       if (chatRoomId != null) {

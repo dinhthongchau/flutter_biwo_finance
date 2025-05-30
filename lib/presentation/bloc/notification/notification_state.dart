@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:finance_management/data/model/notification_model.dart';
+import 'package:finance_management/data/model/notification/notification_model.dart';
 
 abstract class NotificationState extends Equatable {
   final List<NotificationModel>? notifications;

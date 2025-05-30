@@ -5,7 +5,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart' as url_launcher;
 import 'package:finance_management/presentation/shared_data.dart' as shared;
-import 'package:finance_management/gen/assets.gen.dart';
+import 'package:finance_management/data/gen/assets.gen.dart';
 
 class SecurityPinScreen extends StatefulWidget {
   static const String routeName = '/security-pin-screen';

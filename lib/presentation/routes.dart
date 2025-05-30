@@ -59,12 +59,12 @@ final router = GoRouter(
       builder: (context, state) => const SecurityPinScreen(),
     ),
     GoRoute(
-      path: '/new-password-screen',
+      path: NewPasswordScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const NewPasswordScreen(),
     ),
     GoRoute(
-      path: '/password-changed-splash',
+      path: PasswordChangedSplashScreen.routeName,
       parentNavigatorKey: _rootNavigatorKey,
       builder: (context, state) => const PasswordChangedSplashScreen(),
     ),
@@ -77,65 +77,55 @@ final router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/profile-security-screen',
+      path: ProfileSecurityScreen.routeName,
       builder: (context, state) => const ProfileSecurityScreen(),
     ),
     GoRoute(
-      path: '/profile-security-change-pin',
+      path: ProfileSecurityChangePinScreen.routeName,
       builder: (context, state) => const ProfileSecurityChangePinScreen(),
     ),
     GoRoute(
-      path: '/profile-term-and-condition',
+      path: ProfileTermAndConditionScreen.routeName,
       builder: (context, state) => const ProfileTermAndConditionScreen(),
     ),
     GoRoute(
-      path: '/profile-setting-screen',
+      path: ProfileSettingScreen.routeName,
       builder: (context, state) => const ProfileSettingScreen(),
     ),
     GoRoute(
-      path: '/profile-setting-notification',
+      path: ProfileSettingNotificationScreen.routeName,
       builder: (context, state) => const ProfileSettingNotificationScreen(),
     ),
     GoRoute(
-      path: '/profile-setting-password',
+      path: ProfileSettingPasswordScreen.routeName,
       builder: (context, state) => const ProfileSettingPasswordScreen(),
     ),
     GoRoute(
-      path: '/profile-setting-delete-account',
+      path: ProfileSettingDeleteAccountScreen.routeName,
       builder: (context, state) => const ProfileSettingDeleteAccountScreen(),
     ),
     GoRoute(
-      path: '/profile-splash',
+      path: ProfileSplashScreen.routeName,
       builder: (context, state) => const ProfileSplashScreen(),
     ),
     GoRoute(
-      path: '/profile-help-faqs',
+      path: ProfileHelpFaqsScreen.routeName,
       builder: (context, state) => const ProfileHelpFaqsScreen(),
     ),
-    // GoRoute(
-    //   path: '/profile-online-support-helper-chat',
-    //   builder: (context, state) {
-    //     final data = state.extra as Map<String, dynamic>;
-    //     return ProfileOnlineSupportHelperChatScreen(
-    //       chatRoom: data['chatRoom'],
-    //       helperId: data['helperId'],
-    //     );
-    //   },
-    // ),
     GoRoute(
-      path: '/profile-online-support-ai',
+      path: ProfileOnlineSupportAiScreen.routeName,
       builder: (context, state) => const ProfileOnlineSupportAiScreen(),
     ),
     GoRoute(
-      path: '/profile-online-support-ai-lobby',
+      path: ProfileOnlineSupportAiLobbyScreen.routeName,
       builder: (context, state) => const ProfileOnlineSupportAiLobbyScreen(),
     ),
     GoRoute(
-      path: '/profile-online-support-helper',
+      path: ProfileOnlineSupportHelperScreen.routeName,
       builder: (context, state) => const ProfileOnlineSupportHelperScreen(),
     ),
     GoRoute(
-      path: '/profile-online-support-helper-center',
+      path: ProfileOnlineSupportHelperCenterScreen.routeName,
       builder:
           (context, state) => const ProfileOnlineSupportHelperCenterScreen(),
     ),
@@ -291,7 +281,6 @@ final router = GoRouter(
                     child: ProfileScreen(userId: userState.user.id),
                   );
                 }
-                // Nếu chưa đăng nhập, có thể chuyển về login hoặc show loading
                 return const NoTransitionPage(
                   child: ProfileScreen(userId: '0'),
                 );

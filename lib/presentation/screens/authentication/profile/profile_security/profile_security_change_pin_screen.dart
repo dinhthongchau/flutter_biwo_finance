@@ -5,6 +5,7 @@ import 'package:finance_management/presentation/screens/authentication/profile/p
 
 class ProfileSecurityChangePinScreen extends StatefulWidget {
   static const String routeName = '/profile-security-change-pin';
+
   const ProfileSecurityChangePinScreen({super.key});
 
   @override
@@ -32,7 +33,6 @@ class _ProfileSecurityChangePinScreenState
 
   void _changePin() {
     if (_formKey.currentState!.validate()) {
-      // TODO: Thực hiện logic đổi mã pin
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Pin changed successfully!')),
       );
@@ -46,7 +46,6 @@ class _ProfileSecurityChangePinScreenState
       backgroundColor: AppColors.caribbeanGreen,
       body: Column(
         children: [
-          // AppBar
           SafeArea(
             bottom: false,
             child: Padding(
@@ -90,7 +89,7 @@ class _ProfileSecurityChangePinScreenState
               ),
             ),
           ),
-          // Nội dung
+
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(top: 80),

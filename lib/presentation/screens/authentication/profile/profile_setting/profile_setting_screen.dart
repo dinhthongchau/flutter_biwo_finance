@@ -16,7 +16,7 @@ class ProfileSettingScreen extends StatelessWidget {
       backgroundColor: AppColors.caribbeanGreen,
       body: Column(
         children: [
-          // AppBar
+          
           SafeArea(
             bottom: false,
             child: Padding(
@@ -59,7 +59,7 @@ class ProfileSettingScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Nội dung
+          
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(top: 80),

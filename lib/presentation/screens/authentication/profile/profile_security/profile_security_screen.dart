@@ -7,6 +7,7 @@ import 'package:finance_management/presentation/screens/authentication/profile/p
 
 class ProfileSecurityScreen extends StatelessWidget {
   static const String routeName = '/profile-security-screen';
+
   const ProfileSecurityScreen({super.key});
 
   @override
@@ -15,7 +16,6 @@ class ProfileSecurityScreen extends StatelessWidget {
       backgroundColor: AppColors.caribbeanGreen,
       body: Column(
         children: [
-          // AppBar
           SafeArea(
             bottom: false,
             child: Padding(
@@ -58,7 +58,7 @@ class ProfileSecurityScreen extends StatelessWidget {
               ),
             ),
           ),
-          // Nội dung
+
           Expanded(
             child: Container(
               margin: const EdgeInsets.only(top: 80),

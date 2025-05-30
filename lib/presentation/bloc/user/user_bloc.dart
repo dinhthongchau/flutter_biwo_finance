@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
-import 'package:finance_management/data/repository/user/user_repository.dart';
+import 'package:finance_management/data/repositories/user_repository.dart';
 
 // Events
 abstract class UserEvent {}

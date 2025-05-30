@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:finance_management/data/model/category_model.dart';
+import 'package:finance_management/data/model/transaction/category_model.dart';
 import 'package:flutter/material.dart';
 
 abstract class AddTransactionNewEvent extends Equatable {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/data/model/help_faqs/help_faqs_model.dart';
-import 'package:finance_management/data/repository/help_faqs/help_faqs_repository.dart';
+import 'package:finance_management/data/repositories/help_faqs_repository.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
