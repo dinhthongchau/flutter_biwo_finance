@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/shared_data.dart';
@@ -28,9 +27,11 @@ final router = GoRouter(
     GoRoute(
       path: '/',
       parentNavigatorKey: _rootNavigatorKey,
-      builder: (context, state) => const HomeScreen(  label: 'Home',
-        notificationsScreenPath:
-        '/home-screen/notifications-screen',),
+      builder:
+          (context, state) => const HomeScreen(
+            label: 'Home',
+            notificationsScreenPath: '/home-screen/notifications-screen',
+          ),
     ),
     GoRoute(
       path: SplashScreen.routeName,
@@ -101,8 +102,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/profile-setting-delete-account',
-      builder:
-          (context, state) => const ProfileSettingDeleteAccountScreen(),
+      builder: (context, state) => const ProfileSettingDeleteAccountScreen(),
     ),
     GoRoute(
       path: '/profile-splash',
@@ -128,8 +128,7 @@ final router = GoRouter(
     ),
     GoRoute(
       path: '/profile-online-support-ai-lobby',
-      builder:
-          (context, state) => const ProfileOnlineSupportAiLobbyScreen(),
+      builder: (context, state) => const ProfileOnlineSupportAiLobbyScreen(),
     ),
     GoRoute(
       path: '/profile-online-support-helper',
@@ -138,8 +137,7 @@ final router = GoRouter(
     GoRoute(
       path: '/profile-online-support-helper-center',
       builder:
-          (context, state) =>
-      const ProfileOnlineSupportHelperCenterScreen(),
+          (context, state) => const ProfileOnlineSupportHelperCenterScreen(),
     ),
     GoRoute(
       path: CategoryDetailScreen.routeName,
@@ -198,12 +196,12 @@ final router = GoRouter(
               path: HomeScreen.routeName,
               pageBuilder:
                   (context, state) => const NoTransitionPage(
-                child: HomeScreen(
-                  label: 'Home',
-                  notificationsScreenPath:
-                  '/home-screen/notifications-screen',
-                ),
-              ),
+                    child: HomeScreen(
+                      label: 'Home',
+                      notificationsScreenPath:
+                          '/home-screen/notifications-screen',
+                    ),
+                  ),
               routes: [
                 GoRoute(
                   path: NotificationScreen.routeName,
@@ -220,23 +218,23 @@ final router = GoRouter(
               path: AnalysisScreen.routeName,
               pageBuilder:
                   (context, state) => const NoTransitionPage(
-                child: AnalysisScreen(
-                  searchScreenPath: '/analysis-screen/search-screen',
-                  calendarScreenPath: '/analysis-screen/calendar-screen',
-                ),
-              ),
+                    child: AnalysisScreen(
+                      searchScreenPath: '/analysis-screen/search-screen',
+                      calendarScreenPath: '/analysis-screen/calendar-screen',
+                    ),
+                  ),
               routes: [
                 GoRoute(
                   path: SearchScreen.routeName,
                   pageBuilder:
                       (context, state) =>
-                  const NoTransitionPage(child: SearchScreen()),
+                          const NoTransitionPage(child: SearchScreen()),
                 ),
                 GoRoute(
                   path: CalendarScreen.routeName,
                   pageBuilder:
                       (context, state) =>
-                  const NoTransitionPage(child: CalendarScreen()),
+                          const NoTransitionPage(child: CalendarScreen()),
                 ),
               ],
             ),
@@ -249,7 +247,7 @@ final router = GoRouter(
               path: TransactionScreen.routeName,
               pageBuilder:
                   (context, state) =>
-              const NoTransitionPage(child: TransactionScreen()),
+                      const NoTransitionPage(child: TransactionScreen()),
             ),
           ],
         ),
@@ -260,18 +258,20 @@ final router = GoRouter(
               path: CategoriesScreen.routeName,
               pageBuilder:
                   (context, state) => const NoTransitionPage(
-                child: CategoriesScreen(
-                  categoriesScreenPath:
-                  '/categories-screen/category-list-screen',
-                ),
-              ),
+                    child: CategoriesScreen(
+                      categoriesScreenPath:
+                          '/categories-screen/category-list-screen',
+                    ),
+                  ),
               routes: [
                 GoRoute(
                   path: CategoryListScreen.routeName,
                   pageBuilder: (context, state) {
                     final moneyType = state.extra as MoneyType?;
                     return NoTransitionPage(
-                      child: CategoryListScreen(moneyType: moneyType ?? MoneyType.expense),
+                      child: CategoryListScreen(
+                        moneyType: moneyType ?? MoneyType.expense,
+                      ),
                     );
                   },
                 ),
@@ -292,7 +292,9 @@ final router = GoRouter(
                   );
                 }
                 // Nếu chưa đăng nhập, có thể chuyển về login hoặc show loading
-                return const NoTransitionPage(child: ProfileScreen(userId: '0'));
+                return const NoTransitionPage(
+                  child: ProfileScreen(userId: '0'),
+                );
               },
             ),
           ],

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_notification_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_password_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_delete_account_screen.dart';
 
 class ProfileSettingScreen extends StatelessWidget {
   static const String routeName = '/profile-setting-screen';
@@ -27,7 +31,7 @@ class ProfileSettingScreen extends StatelessWidget {
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => context.go('/profile-screen'),
+                    onPressed: () => context.go(ProfileScreen.routeName),
                   ),
                   const Text(
                     'Settings',
@@ -79,7 +83,7 @@ class ProfileSettingScreen extends StatelessWidget {
                       icon: Icons.notifications,
                       label: 'Notification Settings',
                       onTap: () {
-                        context.go('/profile-setting-notification');
+                        context.go(ProfileSettingNotificationScreen.routeName);
                       },
                     ),
                     const SizedBox(height: 18),
@@ -88,7 +92,7 @@ class ProfileSettingScreen extends StatelessWidget {
                       icon: Icons.vpn_key,
                       label: 'Password Settings',
                       onTap: () {
-                        context.go('/profile-setting-password');
+                        context.go(ProfileSettingPasswordScreen.routeName);
                       },
                     ),
                     const SizedBox(height: 18),
@@ -97,7 +101,7 @@ class ProfileSettingScreen extends StatelessWidget {
                       icon: Icons.person,
                       label: 'Delete Account',
                       onTap: () {
-                        context.go('/profile-setting-delete-account');
+                        context.go(ProfileSettingDeleteAccountScreen.routeName);
                       },
                     ),
                   ],

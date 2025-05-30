@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
 
 class ProfileSettingNotificationScreen extends StatefulWidget {
   static const String routeName = '/profile-setting-notification';
@@ -43,7 +44,7 @@ class _ProfileSettingNotificationScreenState
                 children: [
                   IconButton(
                     icon: const Icon(Icons.arrow_back, color: Colors.white),
-                    onPressed: () => context.go('/profile-setting-screen'),
+                    onPressed: () => context.go(ProfileSettingScreen.routeName),
                   ),
                   const Text(
                     'Notification Settings',
@@ -154,6 +155,10 @@ class _ProfileSettingNotificationScreenState
             value: value,
             onChanged: onChanged,
             activeColor: AppColors.caribbeanGreen,
+            inactiveTrackColor: AppColors.lightBlue.withValues(
+              alpha: (0.05 * 255).round().toDouble(),
+            ),
+            inactiveThumbColor: const Color.fromARGB(255, 48, 135, 222),
           ),
         ],
       ),

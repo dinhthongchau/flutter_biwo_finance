@@ -6,9 +6,11 @@ import 'package:finance_management/data/services/firebase_chat_service.dart';
 import 'package:finance_management/data/model/chat/chat_message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:finance_management/utils/notification_helper.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
-import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
+import 'package:go_router/go_router.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
+// import 'package:flutter_bloc/flutter_bloc.dart';
+// import 'package:finance_management/presentation/bloc/notification/notification_bloc.dart';
+// import 'package:finance_management/presentation/bloc/notification/notification_event.dart';
 
 class ProfileOnlineSupportHelperCenterScreen extends StatefulWidget {
   static const String routeName = '/profile-online-support-helper-center';
@@ -112,6 +114,12 @@ class _ProfileOnlineSupportHelperCenterScreenState
       backgroundColor: const Color(0xFFE8F5E9),
       appBar: AppBar(
         backgroundColor: const Color(0xFF1DE9B6),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.black),
+          onPressed: () {
+            context.go(ProfileOnlineSupportAiLobbyScreen.routeName);
+          },
+        ),
         title: const Text(
           'Help Center',
           style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),

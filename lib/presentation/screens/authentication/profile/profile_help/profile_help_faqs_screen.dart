@@ -4,6 +4,8 @@ import 'package:finance_management/data/repository/help_faqs/help_faqs_repositor
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
 
 class ProfileHelpFaqsScreen extends StatefulWidget {
   static const String routeName = '/profile-help-faqs';
@@ -60,7 +62,7 @@ class _ProfileHelpFaqsScreenState extends State<ProfileHelpFaqsScreen> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.arrow_back, color: Colors.white),
-                      onPressed: () => context.go('/profile-screen'),
+                      onPressed: () => context.go(ProfileScreen.routeName),
                     ),
                     const Text(
                       'Help & FAQS',
@@ -305,9 +307,12 @@ class _ProfileHelpFaqsScreenState extends State<ProfileHelpFaqsScreen> {
           ),
           child: ListTile(
             leading: CircleAvatar(
-              backgroundColor: AppColors.caribbeanGreen.withValues(
-                alpha: (0.15 * 255).round().toDouble(),
-              ),
+              backgroundColor: const Color.fromARGB(
+                255,
+                255,
+                255,
+                255,
+              ).withValues(alpha: (0.15 * 255).round().toDouble()),
               child: Icon(
                 contacts[i]['icon'] as IconData,
                 color: AppColors.caribbeanGreen,
@@ -325,7 +330,7 @@ class _ProfileHelpFaqsScreenState extends State<ProfileHelpFaqsScreen> {
             onTap: () async {
               final url = contacts[i]['url'];
               if (contacts[i]['label'] == 'Customer Service') {
-                context.push('/profile-online-support-ai-lobby');
+                context.push(ProfileOnlineSupportAiLobbyScreen.routeName);
                 return;
               }
               if (url != null && url is String && url.isNotEmpty) {

@@ -5,6 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_splash_screen.dart';
 
 class ProfileSettingDeleteAccountScreen extends StatefulWidget {
   static const String routeName = '/profile-setting-delete-account';
@@ -68,7 +70,10 @@ class _ProfileSettingDeleteAccountScreenState
       }
 
       if (mounted) {
-        context.go('/profile-splash', extra: 'Account deleted successfully!');
+        context.go(
+          ProfileSplashScreen.routeName,
+          extra: 'Account deleted successfully!',
+        );
       }
     } on FirebaseAuthException catch (e) {
       if (mounted) {
@@ -107,6 +112,7 @@ class _ProfileSettingDeleteAccountScreenState
                   child: ElevatedButton(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.caribbeanGreen,
+                      foregroundColor: AppColors.blackHeader,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
@@ -115,7 +121,10 @@ class _ProfileSettingDeleteAccountScreenState
                     onPressed: _deleteAccount,
                     child: const Text(
                       'Yes, Delete Account',
-                      style: TextStyle(fontWeight: FontWeight.bold),
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: AppColors.blackHeader,
+                      ),
                     ),
                   ),
                 ),
@@ -124,8 +133,9 @@ class _ProfileSettingDeleteAccountScreenState
                   width: double.infinity,
                   child: OutlinedButton(
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.caribbeanGreen,
-                      side: const BorderSide(color: AppColors.caribbeanGreen),
+                      foregroundColor: Colors.grey,
+                      side: const BorderSide(color: Colors.grey),
+                      backgroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(24),
                       ),
@@ -291,7 +301,10 @@ class _ProfileSettingDeleteAccountScreenState
                         onPressed: _onDeletePressed,
                         child: const Text(
                           'Yes, Delete Account',
-                          style: TextStyle(fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: AppColors.blackHeader,
+                          ),
                         ),
                       ),
                     ),
@@ -300,16 +313,16 @@ class _ProfileSettingDeleteAccountScreenState
                       width: double.infinity,
                       child: OutlinedButton(
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: AppColors.caribbeanGreen,
-                          side: const BorderSide(
-                            color: AppColors.caribbeanGreen,
-                          ),
+                          foregroundColor: Colors.grey,
+                          side: const BorderSide(color: Colors.grey),
+                          backgroundColor: Colors.white,
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(24),
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
-                        onPressed: () => context.go('/profile-setting-screen'),
+                        onPressed:
+                            () => context.go(ProfileSettingScreen.routeName),
                         child: const Text('Cancel'),
                       ),
                     ),

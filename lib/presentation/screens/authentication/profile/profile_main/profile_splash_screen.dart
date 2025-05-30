@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:finance_management/presentation/screens/authentication/profile/profile_main/profile_screen.dart';
+import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
 
 class ProfileSplashScreen extends StatefulWidget {
   static const String routeName = '/profile-splash';
@@ -21,7 +22,7 @@ class _ProfileSplashScreenState extends State<ProfileSplashScreen> {
       final message =
           GoRouterState.of(context).extra as String? ?? widget.message;
       if (message == 'Account deleted successfully!') {
-        context.go('/login-screen');
+        context.go(LoginScreen.routeName);
       } else {
         context.go(ProfileScreen.routeName);
       }

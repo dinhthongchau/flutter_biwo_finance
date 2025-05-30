@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 
 class NewPasswordScreen extends StatefulWidget {
   static const String routeName = '/new-password-screen';
@@ -116,8 +117,8 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                               suffixIcon: IconButton(
                                 icon: SvgPicture.asset(
                                   _isNewPasswordVisible
-                                      ? 'assets/FunctionalIcon/Vector-24.svg'
-                                      : 'assets/FunctionalIcon/Vector-23.svg',
+                                      ? Assets.functionalIcon.vector24.path
+                                      : Assets.functionalIcon.vector23.path,
                                   width: 14,
                                   height: 14,
                                   colorFilter: const ColorFilter.mode(
@@ -163,8 +164,8 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                               suffixIcon: IconButton(
                                 icon: SvgPicture.asset(
                                   _isConfirmPasswordVisible
-                                      ? 'assets/FunctionalIcon/Vector-24.svg'
-                                      : 'assets/FunctionalIcon/Vector-23.svg',
+                                      ? Assets.functionalIcon.vector24.path
+                                      : Assets.functionalIcon.vector23.path,
                                   width: 14,
                                   height: 14,
                                   colorFilter: const ColorFilter.mode(
@@ -217,7 +218,9 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                                                 .text
                                                 .isNotEmpty
                                         ? () {
-                                          context.go('/password-changed-splash');
+                                          context.go(
+                                            '/password-changed-splash',
+                                          );
                                         }
                                         : null,
                                 child: const Text(
@@ -232,7 +235,12 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                             ),
                           ),
                         ),
-                        SizedBox(height: MediaQuery.of(context).viewInsets.bottom > 0 ? 20 : 50),
+                        SizedBox(
+                          height:
+                              MediaQuery.of(context).viewInsets.bottom > 0
+                                  ? 20
+                                  : 50,
+                        ),
                       ],
                     ),
                   ),
