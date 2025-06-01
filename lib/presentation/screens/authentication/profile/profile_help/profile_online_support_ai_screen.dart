@@ -8,7 +8,7 @@ import 'package:finance_management/data/model/chat_history/chat_history_storage.
 import 'package:go_router/go_router.dart';
 import 'dart:async';
 import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_helper_center_screen.dart';
-import 'package:finance_management/utils/notification_helper.dart';
+import 'package:finance_management/core/utils/notification_helper.dart';
 
 class ProfileOnlineSupportAiScreen extends StatefulWidget {
   static const String routeName = '/profile-online-support-ai';

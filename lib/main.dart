@@ -1,7 +1,8 @@
+import 'package:finance_management/data/services/firebase_options.dart';
 import 'package:finance_management/presentation/routes.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:finance_management/presentation/widgets/cubit/theme/theme_cubit.dart';
-import 'package:finance_management/utils/notification_helper.dart';
+import 'package:finance_management/core/utils/notification_helper.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   if (message.notification != null) {
     final chatRoomId = message.data['chatRoomId'];
     NotificationHelper.show(
@@ -21,7 +22,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   await NotificationHelper.init();
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
   Bloc.observer = const MyBlocObserver();

@@ -28,6 +28,12 @@ class BottomNavigationBarScaffold extends StatelessWidget {
         }
       });
     }
+    if (index == 1) {
+      Future.delayed(const Duration(milliseconds: 1000), () {
+        context.read<AnalysisBloc>().add(const LoadAnalysisDataEvent());
+      });
+      //context.read<AnalysisBloc>().add(const ChangeTimeFilterEvent(TimeFilterAnalysis.daily));
+    }
   }
 
   @override

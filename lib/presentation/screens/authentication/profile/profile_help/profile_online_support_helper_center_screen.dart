@@ -5,7 +5,7 @@ import 'package:finance_management/presentation/widgets/chat_input_bar.dart';
 import 'package:finance_management/data/services/firebase_chat_service.dart';
 import 'package:finance_management/data/model/chat/chat_message_model.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:finance_management/utils/notification_helper.dart';
+import 'package:finance_management/core/utils/notification_helper.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
 

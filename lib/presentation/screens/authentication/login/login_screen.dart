@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:finance_management/data/model/user/user_model.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -29,8 +30,8 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   void initState() {
     super.initState();
-    _emailController.text = 'nkhiet@gmail.com';
-    _passwordController.text = 'nkhiet@gmail.com';
+    _emailController.text = 'test2@gmail.com';
+    _passwordController.text = 'password';
   }
 
   @override
@@ -49,40 +50,53 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
       try {
-        final credential = await FirebaseAuth.instance
-            .signInWithEmailAndPassword(
-              email: _emailController.text.trim(),
-              password: _passwordController.text,
-            );
-        final userDoc =
-            await FirebaseFirestore.instance
-                .collection('users')
-                .doc(credential.user!.uid)
-                .get();
-        final isHelper = userDoc['helper'] == true;
+        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+          email: _emailController.text.trim(),
+          password: _passwordController.text,
+        );
+        final userDoc = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(credential.user!.uid)
+            .get();
+
+        if (!userDoc.exists || userDoc.data() == null) {
+          throw Exception('User document does not exist or is invalid');
+        }
+
+        final data = userDoc.data()!;
+        final isHelper = data['helper'] == true;
         final userModel = UserModel(
           id: credential.user!.uid,
-          fullName: userDoc['fullName'] ?? '',
-          email: userDoc['email'] ?? '',
-          mobile: userDoc['mobile'] ?? '',
-          dob: userDoc['dob'] ?? '',
+          fullName: data['fullName'] ?? '',
+          email: data['email'] ?? '',
+          mobile: data['mobile'] ?? '',
+          dob: data['dob'] ?? '',
           password: '',
           helper: isHelper,
         );
+
+        if (kIsWeb) {
+          customPrint('Logged in on Web: ${credential.user!.uid}');
+        } else {
+          customPrint('Logged in on Mobile: ${credential.user!.uid}');
+        }
+
         if (!mounted) return;
         context.read<UserBloc>().add(UpdateUserEvent(userModel));
       } on FirebaseAuthException catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Login failed: ${e.message}')));
-        setState(() {
-          _isLoading = false;
-        });
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Login failed: ${e.message}')),
+        );
+        setState(() => _isLoading = false);
+      } catch (e) {
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+        setState(() => _isLoading = false);
       }
     }
   }

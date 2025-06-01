@@ -10,6 +10,9 @@ enum AppEnvironment { dev, prod }
 AppEnvironment currentEnvironment = AppEnvironment.dev;
 
 void customPrint(String message) {
+  if (kIsWeb) {
+    debugPrint('WEB: $message');
+  }
   if (kDebugMode && currentEnvironment == AppEnvironment.dev) {
     debugPrint('🔍 $message');
   }

@@ -28,6 +28,15 @@ class _AnalysisScreenState extends State<AnalysisScreen>
             SnackBar(content: Text(state.errorMessage ?? 'An error occurred')),
           );
         }
+        if (state is TransactionLoading) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, true);
+          });
+        } else {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            LoadingUtils.showLoading(context, false);
+          });
+        }
       },
       builder: (context, state) {
         if (state is AnalysisLoading ||
