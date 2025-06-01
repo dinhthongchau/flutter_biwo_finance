@@ -91,7 +91,7 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
       title: 'Transaction Added',
       subtitle:
       'Added ${_titleController.text} to ${state.selectedCategory!.categoryType}',
-      time: DateFormat('HH:mm - MMMM dd').format(state.selectedDate),
+      time: DateFormat('HH:mm - dd/MM/yyyy').format(state.selectedDate),
       date: DateTime.now().toIso8601String(),
     );
     context.read<NotificationBloc>().add(AddNotification(notificationModel));
@@ -180,7 +180,7 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
       readOnly: true,
       onTap: () => context.read<AddTransactionBloc>().add(SelectDateEvent(context)),
       controller: TextEditingController(
-        text: DateFormat('MMMM dd,yyyy').format(state.selectedDate),
+        text: DateFormat('dd/MM/yyyy').format(state.selectedDate),
       ),
       suffixIcon: Icons.calendar_today,
     );

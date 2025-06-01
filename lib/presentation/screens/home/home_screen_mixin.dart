@@ -571,7 +571,7 @@ mixin HomeScreenMixin {
   }
 
   String _formatDate(DateTime date, TimeFilterHome filter) {
-    return DateFormat('dd/MM/yy').format(date);
+    return DateFormat('dd/MM/yyyy').format(date);
   }
 
 }

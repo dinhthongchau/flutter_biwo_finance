@@ -631,7 +631,7 @@ mixin CalendarScreenMixin {
                   : isSave
                   ? Assets.iconComponents.vector7.path
                   : getExpenseIcon(transaction.idCategory.categoryType),
-              date: DateFormat('dd/MM/yy').format(transaction.time),
+              date: DateFormat('dd/MM/yyyy').format(transaction.time),
               label: transaction.idCategory.categoryType,
               amount: '${isIncome ? '' : '-'}${transaction.amount}',
               backgroundColor:

@@ -48,7 +48,7 @@ Widget buildTransactionItem({
           iconPath: Assets.iconComponents.check.path,
           title: 'Transaction Deleted',
           subtitle: 'Deleted $title',
-          time: DateFormat('HH:mm - MMMM dd').format(DateTime.now()),
+          time: DateFormat('HH:mm - dd/MM/yyyy').format(DateTime.now()),
           date: DateTime.now().toIso8601String(),
         );
         context.read<NotificationBloc>().add(
@@ -194,22 +194,53 @@ Future<void> _showEditTransactionDialog(
                 keyboardType: TextInputType.number,
               ),
               const SizedBox(height: 12),
-              TextFormField(
-                initialValue:
-                    '${editedDate.year}-${editedDate.month}-${editedDate.day}',
-                decoration: InputDecoration(
-                  labelText: 'Ngày (YYYY-MM-DD)',
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                onChanged: (value) {
-                  try {
-                    editedDate = DateTime.parse(value);
-                  } catch (e) {
-                    SnackbarUtils.showNoticeSnackbar(context, 'Invalid date format', true);
+              GestureDetector(
+                onTap: () async {
+                  final DateTime? pickedDate = await showDatePicker(
+                    context: context,
+                    initialDate: editedDate,
+                    firstDate: DateTime(2020),
+                    lastDate: DateTime(2030),
+                    builder: (BuildContext context, Widget? child) {
+                      return Theme(
+                        data: ThemeData.light().copyWith(
+                          colorScheme: const ColorScheme.light(
+                            primary: AppColors.caribbeanGreen,
+                            onPrimary: Colors.white,
+                          ),
+                          dialogBackgroundColor: Colors.white,
+                        ),
+                        child: child!,
+                      );
+                    },
+                  );
+                  if (pickedDate != null) {
+                    editedDate = DateTime(
+                      pickedDate.year,
+                      pickedDate.month,
+                      pickedDate.day,
+                      editedDate.hour,
+                      editedDate.minute,
+                    );
                   }
                 },
+                child: Container(
+                  padding: const EdgeInsets.symmetric(vertical: 15, horizontal: 12),
+                  decoration: BoxDecoration(
+                    border: Border.all(color: Colors.grey),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        DateFormat('dd/MM/yyyy').format(editedDate),
+                        style: const TextStyle(fontSize: 16),
+                      ),
+                      const Icon(Icons.calendar_today, color: AppColors.caribbeanGreen),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 12),
               TextFormField(
@@ -259,7 +290,7 @@ Future<void> _showEditTransactionDialog(
                 iconPath: Assets.iconComponents.check.path,
                 title: 'Transaction Edited',
                 subtitle: 'Edited $editedTitle',
-                time: DateFormat('HH:mm - MMMM dd').format(DateTime.now()),
+                time: DateFormat('HH:mm - dd/MM/yyyy').format(DateTime.now()),
                 date: DateTime.now().toIso8601String(),
               );
               context.read<NotificationBloc>().add(

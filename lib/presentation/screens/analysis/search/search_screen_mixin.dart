@@ -338,9 +338,9 @@ mixin SearchScreenMixin<T extends StatefulWidget> on State<T> {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text(
-                    state.selectedDate != null
-                        ? DateFormat('dd/MMM/yyyy').format(state.selectedDate!)
-                        : 'All Dates',
+                    state.selectedDate == null
+                         ? 'All Dates'
+                         : DateFormat('dd/MM/yyyy').format(state.selectedDate!),
                     style: const TextStyle(
                       color: AppColors.fenceGreen,
                       fontSize: 14,
@@ -509,7 +509,7 @@ mixin SearchScreenMixin<T extends StatefulWidget> on State<T> {
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  '${DateFormat('HH:mm').format(transaction.time)} - ${DateFormat('MMMM dd').format(transaction.time)}',
+                  '${DateFormat('HH:mm').format(transaction.time)} - ${DateFormat('dd/MM/yyyy').format(transaction.time)}',
                   style: const TextStyle(
                     fontSize: 12,
                     color: AppColors.lightBlue,
