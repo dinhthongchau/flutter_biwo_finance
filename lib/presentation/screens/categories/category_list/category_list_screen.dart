@@ -18,7 +18,7 @@ class _CategoryListScreenState extends State<CategoryListScreen>  with CategoryL
       floatingActionButton: buildFloatingCategoryList(context),
       appBar: buildAppBarCategoryList(context),
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBodyListScreen(),
+      body: Container(padding: SharedLayout.getScreenPadding(context),child: buildBodyListScreen()),
     );
   }
 

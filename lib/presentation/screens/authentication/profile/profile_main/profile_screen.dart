@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:finance_management/data/model/user/user_model.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
@@ -138,189 +139,134 @@ class _ProfileScreenState extends State<ProfileScreen> {
         } else if (state is UserLoaded) {
           final user = state.user;
           return Scaffold(
+            appBar: buildHeader(
+            context,
+            "Profile",
+            "/home-screen/notifications-screen",
+          ),
             backgroundColor: AppColors.caribbeanGreen,
-            body: Column(
-              children: [
-                // 1. AppBar (Profile + notification)
-                const ProfileAppBar(),
-                // 2. Stack để avatar nổi giữa 2 nền, còn lại là honeydew bo tròn
-                Expanded(
-                  child: Stack(
-                    alignment: Alignment.topCenter,
-                    children: [
-                      // Nền honeydew bo tròn lớn phía trên
-                      Container(
-                        margin: const EdgeInsets.only(top: 80),
-                        width: double.infinity,
-                        decoration: const BoxDecoration(
-                          color: AppColors.honeydew,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.circular(40),
-                            topRight: Radius.circular(40),
-                          ),
-                        ),
-                        child: Column(
-                          children: [
-                            const SizedBox(height: 70),
-                            // 3. Tên, ID
-                            ProfileAvatarName(user: user),
-                            const SizedBox(height: 32),
-                            // 4. Menu
-                            ProfileMenuList(onLogout: _showLogoutDialog),
-                          ],
-                        ),
-                      ),
-                      // Avatar nổi hoàn toàn trong nền honeydew
-                      Positioned(
-                        top: 30,
-                        child: Stack(
-                          alignment: Alignment.bottomRight,
-                          children: [
-                            Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: Colors.white,
-                                  width: 3,
-                                ),
-                              ),
-                              child: CircleAvatar(
-                                radius: 48,
-                                backgroundColor: AppColors.caribbeanGreen,
-                                backgroundImage:
-                                    user.avatarPath != null
-                                        ? FileImage(File(user.avatarPath!))
-                                        : null,
-                                child:
-                                    user.avatarPath == null
-                                        ? Text(
-                                          user.fullName[0].toUpperCase(),
-                                          style: const TextStyle(
-                                            fontSize: 40,
-                                            color: Colors.white,
-                                          ),
-                                        )
-                                        : null,
-                              ),
-                            ),
-                            Positioned(
-                              bottom: 4,
-                              right: 4,
-                              child: GestureDetector(
-                                onTap: () => _pickAvatar(state),
-                                child: Container(
-                                  padding: const EdgeInsets.all(4),
-                                  decoration: BoxDecoration(
-                                    color: AppColors.lightBlue,
-                                    shape: BoxShape.circle,
-                                    border: Border.all(
-                                      color: Colors.white,
-                                      width: 2,
-                                    ),
-                                  ),
-                                  child: const Icon(
-                                    Icons.camera_alt,
-                                    color: Colors.white,
-                                    size: 18,
-                                  ),
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+            body: Container(
+                padding: SharedLayout.getScreenPadding(context),
+                child: buildBodyProfile(user, state)),
           );
         } else if (state is UserError) {
           return Scaffold(body: Center(child: Text(state.message)));
         }
-        return const Scaffold(
-          body: Center(child: Text('Something went wrong')),
+        return Scaffold(
+          body: Column(
+            children: [
+              const Center(child: Text('Something went wrong')),
+              const SizedBox(height: 20),
+              //icon button onLogout
+              IconButton(onPressed: onLogout, icon: const Icon(Icons.logout)),
+           
+
+
+              //logout button
+
+            ],
+          ),
         );
       },
     );
   }
-}
 
-// Widget 1: AppBar
-class ProfileAppBar extends StatelessWidget {
-  const ProfileAppBar({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    // Giả sử bạn lấy chatRoomId từ UserBloc hoặc local storage, ví dụ:
-    // final chatRoomId = context.select((UserBloc bloc) => bloc.state.chatRoomId);
-    // Ở đây demo hardcode, bạn cần thay bằng lấy đúng chatRoomId thực tế
-    // final chatRoomId = 'main_user_helper_chat_room';
-    return SafeArea(
-      bottom: false,
-      child: Padding(
-        padding: const EdgeInsets.only(top: 36, left: 24, right: 24, bottom: 8),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(width: 40),
-            const Text(
-              'Profile',
-              style: TextStyle(
-                fontSize: 22,
-                fontWeight: FontWeight.bold,
-                color: Colors.black,
-              ),
-            ),
-            BlocBuilder<NotificationBloc, NotificationState>(
-              builder: (context, state) {
-                return Stack(
+  Widget buildBodyProfile(UserModel user, UserLoaded state) {
+    return Column(
+            children: [
+              Expanded(
+                child: Stack(
+                  alignment: Alignment.topCenter,
                   children: [
-                    IconButton(
-                      icon: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                        ),
-                        padding: const EdgeInsets.all(8),
-                        child: const Icon(
-                          Icons.notifications_none,
-                          color: Colors.black,
+                    // Nền honeydew bo tròn lớn phía trên
+                    Container(
+                      margin: const EdgeInsets.only(top: 80),
+                      width: double.infinity,
+                      decoration: const BoxDecoration(
+                        color: AppColors.honeydew,
+                        borderRadius: BorderRadius.only(
+                          topLeft: Radius.circular(40),
+                          topRight: Radius.circular(40),
                         ),
                       ),
-                      onPressed: () {
-                        //!TODO later
-                        // context.read<NotificationBloc>().add(
-                        //   NotificationRead(),
-                        // );
-                        // Điều hướng sang màn hình notification để chọn phòng chat
-                        context.go('/home-screen/notifications');
-                      },
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 70),
+                          // 3. Tên, ID
+                          ProfileAvatarName(user: user),
+                          const SizedBox(height: 32),
+                          // 4. Menu
+                          ProfileMenuList(onLogout: _showLogoutDialog),
+                        ],
+                      ),
                     ),
-                    //!TODO later
-                    // if (state.hasNewMessage)
-                    //   Positioned(
-                    //     right: 10,
-                    //     top: 10,
-                    //     child: Container(
-                    //       width: 12,
-                    //       height: 12,
-                    //       decoration: const BoxDecoration(
-                    //         color: Colors.red,
-                    //         shape: BoxShape.circle,
-                    //       ),
-                    //     ),
-                    //   ),
+                    // Avatar nổi hoàn toàn trong nền honeydew
+                    Positioned(
+                      top: 30,
+                      child: Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          Container(
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(
+                                color: Colors.white,
+                                width: 3,
+                              ),
+                            ),
+                            child: CircleAvatar(
+                              radius: 48,
+                              backgroundColor: AppColors.caribbeanGreen,
+                              backgroundImage:
+                                  user.avatarPath != null
+                                      ? FileImage(File(user.avatarPath!))
+                                      : null,
+                              child:
+                                  user.avatarPath == null
+                                      ? Text(
+                                        user.fullName[0].toUpperCase(),
+                                        style: const TextStyle(
+                                          fontSize: 40,
+                                          color: Colors.white,
+                                        ),
+                                      )
+                                      : null,
+                            ),
+                          ),
+                          Positioned(
+                            bottom: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              onTap: () => _pickAvatar(state),
+                              child: Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: BoxDecoration(
+                                  color: AppColors.lightBlue,
+                                  shape: BoxShape.circle,
+                                  border: Border.all(
+                                    color: Colors.white,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: const Icon(
+                                  Icons.camera_alt,
+                                  color: Colors.white,
+                                  size: 18,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
-                );
-              },
-            ),
-          ],
-        ),
-      ),
-    );
+                ),
+              ),
+            ],
+          );
   }
 }
+
 
 // Widget 2: Avatar, tên, ID
 class ProfileAvatarName extends StatelessWidget {

@@ -417,7 +417,7 @@ class _SplashScreenState extends State<SplashScreen>
               const SizedBox(height: 16),
               TextButton(
                 onPressed: () {
-                  context.go('/forget-password-screen');
+                  context.push('/forget-password-screen');
                 },
                 child: const Text(
                   'Forgot Password?',

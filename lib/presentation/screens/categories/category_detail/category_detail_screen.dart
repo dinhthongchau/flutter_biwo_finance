@@ -17,7 +17,9 @@ class CategoryDetailScreen extends StatelessWidget with CategoriesDetailScreenMi
       floatingActionButton: buildFloatingCategoryDetail(context, category),
       appBar: buildAppBarCategories(context, category),
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBodyCategories(category),
+      body: Container(
+          padding: SharedLayout.getScreenPadding(context),
+          child: buildBodyCategories(category)),
     );
   }
 

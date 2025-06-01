@@ -64,10 +64,70 @@ class BottomNavigationBarScaffold extends StatelessWidget {
       },
       child: Container(
         color: AppColors.honeydew,
-        child: Scaffold(
-          extendBody: true,
-          body: navigationShell,
-          bottomNavigationBar: _buildBottomNavigationBar(context),
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final isWeb = constraints.maxWidth >= 800;
+            
+            return Scaffold(
+              extendBody: !isWeb,
+              body: isWeb 
+                ? _buildWebLayout(context)
+                : navigationShell,
+              bottomNavigationBar: isWeb 
+                ? null 
+                : _buildBottomNavigationBar(context),
+            );
+          }
+        ),
+      ),
+    );
+  }
+  
+  Widget _buildWebLayout(BuildContext context) {
+    return Row(
+      children: [
+        _buildLeftNavigationBar(context),
+        Expanded(
+          child: navigationShell,
+        ),
+      ],
+    );
+  }
+  
+  Widget _buildLeftNavigationBar(BuildContext context) {
+    return Container(
+      width: 100,
+      decoration: const BoxDecoration(
+        color: AppColors.lightGreen,
+  
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 40),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(0, Assets.bottomNavigationIcon.homeSvg.path, context),
+            _buildNavItem(
+              1,
+              Assets.bottomNavigationIcon.analysisSvg.path,
+              context,
+            ),
+            _buildNavItem(
+              2,
+              Assets.bottomNavigationIcon.transactions.path,
+              context,
+            ),
+            _buildNavItem(
+              3,
+              Assets.bottomNavigationIcon.categorySvg.path,
+              context,
+            ),
+            _buildNavItem(
+              4,
+              Assets.bottomNavigationIcon.profileSvg.path,
+              context,
+            ),
+          ],
         ),
       ),
     );

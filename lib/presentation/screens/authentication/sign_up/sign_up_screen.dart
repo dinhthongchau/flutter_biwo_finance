@@ -1,8 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:finance_management/presentation/bloc/user/user_bloc.dart';
-import 'package:finance_management/presentation/screens/authentication/login/login_screen.dart';
-import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
-import 'package:finance_management/presentation/widgets/widget/text_styles.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -40,10 +37,8 @@ class _SignUpScreenState extends State<SignUpScreen> {
     _mobileController.text = '0889281122';
     _dobController.text = '01/01/2002';
     _passwordController.text = 'password';
-    _confirmPasswordController.text='password';
-
+    _confirmPasswordController.text = 'password';
   }
-
 
   @override
   void dispose() {
@@ -66,13 +61,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       }
 
       try {
-
         final credential = await FirebaseAuth.instance
             .createUserWithEmailAndPassword(
               email: _emailController.text.trim(),
               password: _passwordController.text,
             );
-
 
         await FirebaseFirestore.instance
             .collection('users')
@@ -147,8 +140,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
       child: Scaffold(
         backgroundColor: AppColors.caribbeanGreen,
-        body: SingleChildScrollView(
-          child: Column(children: [buildHeader(), buildBody()]),
+        body: Container(
+          padding: SharedLayout.getScreenPadding(context),
+          child: SingleChildScrollView(
+            child: Column(children: [buildHeader(), buildBody()]),
+          ),
         ),
       ),
     );

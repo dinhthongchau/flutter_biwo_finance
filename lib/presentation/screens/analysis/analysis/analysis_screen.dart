@@ -81,15 +81,25 @@ class _AnalysisScreenState extends State<AnalysisScreen>
             "/home-screen/notifications-screen",
           ),
           backgroundColor: AppColors.caribbeanGreen,
-          body: buildBody(
-            state,
-            chartData,
-            chartMaxY,
-            totalIncome,
-            totalExpense,
+          body: Container(
+            padding: SharedLayout.getScreenPadding(context),// Mobile padding
+            child: buildBody(
+              state,
+              chartData,
+              chartMaxY,
+              totalIncome,
+              totalExpense,
+            ),
           ),
         );
       },
     );
   }
 }
+
+// body: Container(
+//         padding: MediaQuery.of(context).size.width > 600
+//             ? const EdgeInsets.symmetric(horizontal: 100) // Web padding
+//             : EdgeInsets.zero, // Mobile padding
+//         child: buildBody(context),
+//       ),

@@ -118,126 +118,132 @@ class _LoginScreenState extends State<LoginScreen> {
       },
       child: Scaffold(
         backgroundColor: AppColors.caribbeanGreen,
-        body: Stack(
-          children: [
-            SafeArea(
-              child: Column(
-                children: [
-                  const LoginHeader(),
-                  Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      decoration: const BoxDecoration(
-                        color: AppColors.honeydew,
-                        borderRadius: BorderRadius.only(
-                          topLeft: Radius.circular(48),
-                          topRight: Radius.circular(48),
-                        ),
+        body: Container(
+            padding: SharedLayout.getScreenPadding(context),
+            child: buildBodyLogin(context)),
+      ),
+    );
+  }
+
+  Widget buildBodyLogin(BuildContext context) {
+    return Stack(
+        children: [
+          SafeArea(
+            child: Column(
+              children: [
+                const LoginHeader(),
+                Expanded(
+                  child: Container(
+                    width: double.infinity,
+                    decoration: const BoxDecoration(
+                      color: AppColors.honeydew,
+                      borderRadius: BorderRadius.only(
+                        topLeft: Radius.circular(48),
+                        topRight: Radius.circular(48),
                       ),
-                      child: SingleChildScrollView(
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 24,
-                            vertical: 32,
-                          ),
-                          child: Form(
-                            key: _formKey,
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                LoginFormFields(
-                                  emailController: _emailController,
-                                  passwordController: _passwordController,
-                                  obscurePassword: _obscurePassword,
-                                  onTogglePassword: () {
-                                    setState(() {
-                                      _obscurePassword = !_obscurePassword;
-                                    });
+                    ),
+                    child: SingleChildScrollView(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 24,
+                          vertical: 32,
+                        ),
+                        child: Form(
+                          key: _formKey,
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              LoginFormFields(
+                                emailController: _emailController,
+                                passwordController: _passwordController,
+                                obscurePassword: _obscurePassword,
+                                onTogglePassword: () {
+                                  setState(() {
+                                    _obscurePassword = !_obscurePassword;
+                                  });
+                                },
+                              ),
+                              const SizedBox(height: 32),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 40),
+                                child: Column(
+                                  children: [
+                                    LoginButton(
+                                      onPressed:
+                                          _isLoading ? null : _submitForm,
+                                      isLoading: _isLoading,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    ForgotPasswordButton(
+                                      onPressed:
+                                          _isLoading
+                                              ? null
+                                              : () {
+                                                context.push(
+                                                  ForgetPasswordScreen
+                                                      .routeName,
+                                                );
+                                              },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 15),
+                                child: SignUpButton(
+                                  onPressed: () {
+                                    context.go(SignUpScreen.routeName);
                                   },
                                 ),
-                                const SizedBox(height: 32),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 40),
-                                  child: Column(
-                                    children: [
-                                      LoginButton(
-                                        onPressed:
-                                            _isLoading ? null : _submitForm,
-                                        isLoading: _isLoading,
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 20),
+                                child: FingerprintAccess(),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 20),
+                                child: SocialLoginSection(
+                                  isFacebookHovered: _isFacebookHovered,
+                                  isGoogleHovered: _isGoogleHovered,
+                                  onFacebookHover:
+                                      (v) => setState(
+                                        () => _isFacebookHovered = v,
                                       ),
-                                      const SizedBox(height: 8),
-                                      ForgotPasswordButton(
-                                        onPressed:
-                                            _isLoading
-                                                ? null
-                                                : () {
-                                                  context.go(
-                                                    ForgetPasswordScreen
-                                                        .routeName,
-                                                  );
-                                                },
+                                  onGoogleHover:
+                                      (v) => setState(
+                                        () => _isGoogleHovered = v,
                                       ),
-                                    ],
-                                  ),
+                                  onFacebookTap:
+                                      () => _launchURL(
+                                        'https://www.facebook.com',
+                                      ),
+                                  onGoogleTap:
+                                      () => _launchURL(
+                                        'https://www.google.com',
+                                      ),
                                 ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 15),
-                                  child: SignUpButton(
-                                    onPressed: () {
-                                      context.go(SignUpScreen.routeName);
-                                    },
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 20),
-                                  child: FingerprintAccess(),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(top: 20),
-                                  child: SocialLoginSection(
-                                    isFacebookHovered: _isFacebookHovered,
-                                    isGoogleHovered: _isGoogleHovered,
-                                    onFacebookHover:
-                                        (v) => setState(
-                                          () => _isFacebookHovered = v,
-                                        ),
-                                    onGoogleHover:
-                                        (v) => setState(
-                                          () => _isGoogleHovered = v,
-                                        ),
-                                    onFacebookTap:
-                                        () => _launchURL(
-                                          'https://www.facebook.com',
-                                        ),
-                                    onGoogleTap:
-                                        () => _launchURL(
-                                          'https://www.google.com',
-                                        ),
-                                  ),
-                                ),
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 20),
-                                  child: SignUpPrompt(),
-                                ),
-                              ],
-                            ),
+                              ),
+                              const Padding(
+                                padding: EdgeInsets.only(top: 20),
+                                child: SignUpPrompt(),
+                              ),
+                            ],
                           ),
                         ),
                       ),
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            if (_isLoading)
-              Container(
-                color: Colors.black.withValues(alpha: 0.3),
-                child: Center(child: LoadingUtils.buildSpinKitSpinningLines()),
-              ),
-          ],
-        ),
-      ),
-    );
+          ),
+          if (_isLoading)
+            Container(
+              color: Colors.black.withValues(alpha: 0.3),
+              child: Center(child: LoadingUtils.buildSpinKitSpinningLines()),
+            ),
+        ],
+      );
   }
 }
 

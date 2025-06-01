@@ -15,8 +15,10 @@ class TransactionScreen extends StatelessWidget with TransactionScreenMixin {
         "/home-screen/notifications-screen",
       ),
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBlocBody(),
+      body: Container(
+        padding: SharedLayout.getScreenPadding(context),
+        child: buildBlocBody(),
+      ),
     );
   }
-
 }

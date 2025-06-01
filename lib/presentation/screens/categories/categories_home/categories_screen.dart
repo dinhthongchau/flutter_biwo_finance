@@ -16,7 +16,9 @@ class _CategoriesScreenState extends State<CategoriesScreen>with CategoriesScree
     return Scaffold(
       appBar: buildAppBarCategories(),
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBodyCategories(),
+      body: Container(
+          padding: SharedLayout.getScreenPadding(context),
+          child: buildBodyCategories()),
     );
   }
 }

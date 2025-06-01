@@ -23,7 +23,9 @@ class NotificationScreenState extends State<NotificationScreen> with Notificatio
         return Scaffold(
           backgroundColor: AppColors.caribbeanGreen,
           appBar: buildAppBarNotification(context),
-          body: buildBody(notificationData, state,context),
+          body: Container(
+              padding: SharedLayout.getScreenPadding(context),
+              child: buildBody(notificationData, state,context)),
         );
       },
     );

@@ -28,9 +28,7 @@ final router = GoRouter(
       path: '/',
       parentNavigatorKey: _rootNavigatorKey,
       builder:
-          (context, state) => const HomeScreen(
-            label: 'Home',
-            notificationsScreenPath: '/home-screen/notifications-screen',
+          (context, state) => const LoginScreen(
           ),
     ),
     GoRoute(

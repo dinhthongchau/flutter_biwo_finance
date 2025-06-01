@@ -15,7 +15,9 @@ class CategoryDetailSaveScreen extends StatelessWidget with CategoriesDetailScre
       floatingActionButton: buildFloatingCategorySave(context, category),
       appBar: buildAppBarSave(context, category),
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBodySave(category),
+      body: Container(
+          padding: SharedLayout.getScreenPadding(context),
+          child: buildBodySave(category)),
     );
   }
 

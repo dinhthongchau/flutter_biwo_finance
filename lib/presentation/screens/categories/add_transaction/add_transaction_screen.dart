@@ -32,7 +32,9 @@ class AddTransactionScreenState extends State<AddTransactionScreen> with AddTran
         child: Scaffold(
           appBar: buildAppBarTransaction(context),
           backgroundColor: AppColors.caribbeanGreen,
-          body: buildBody(context),
+          body: Container(
+              padding: SharedLayout.getScreenPadding(context),
+              child: buildBody(context)),
         ),
       ),
     );

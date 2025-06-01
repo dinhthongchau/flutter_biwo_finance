@@ -36,6 +36,7 @@ mixin AnalysisScreenMixin<T extends StatefulWidget> on State<T> {
                 spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  const SizedBox( height: 10),
                   _buildTabsSection(state.selectedTimeFilter ?? TimeFilterAnalysis.daily),
                   _buildChartSection(chartData, chartMaxY),
                   _buildIncomeExpenseSection(totalIncome, totalExpense),

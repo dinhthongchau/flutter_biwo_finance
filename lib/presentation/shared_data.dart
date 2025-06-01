@@ -82,7 +82,7 @@ export 'package:finance_management/presentation/screens/authentication/profile/p
 export 'package:finance_management/presentation/screens/authentication/profile/profile_setting/profile_setting_screen.dart';
 export 'package:finance_management/presentation/screens/authentication/sign_up/sign_up_screen.dart';
 export 'package:finance_management/presentation/screens/home/home_screen.dart';
-
+export 'package:finance_management/core/utils/shared_layout.dart';
 /*
 Tách theo tính năng/feature, không gom tất cả vào 1 file:
 

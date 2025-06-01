@@ -12,16 +12,13 @@ class SearchScreen extends StatefulWidget {
 }
 
 class _SearchScreenState extends State<SearchScreen> with SearchScreenMixin {
-
-
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<SearchBloc, SearchState>(
       listener: (context, state) {
         if (state is SearchError) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(state.errorMessage ?? 'An error occurred')),
+            SnackBar(content: Text(state.errorMessage ?? 'An error occurred')),
           );
         }
       },
@@ -29,7 +26,10 @@ class _SearchScreenState extends State<SearchScreen> with SearchScreenMixin {
         return Scaffold(
           backgroundColor: AppColors.caribbeanGreen,
           appBar: buildHeaderNotification(context),
-          body: buildBody(state),
+          body: Container(
+            padding: SharedLayout.getScreenPadding(context),
+            child: buildBody(state),
+          ),
         );
       },
     );

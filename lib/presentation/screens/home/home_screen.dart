@@ -1,3 +1,4 @@
+
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:flutter/material.dart';
 
@@ -17,7 +18,10 @@ class HomeScreen extends StatelessWidget with HomeScreenMixin {
     return Scaffold(
       appBar: buildHeaderHome(context, notificationsScreenPath),
       backgroundColor: AppColors.caribbeanGreen,
-      body: buildBody(context),
+      body: Container(
+        padding: SharedLayout.getScreenPadding(context), // Mobile padding
+        child: buildBody(context),
+      ),
     );
   }
 }

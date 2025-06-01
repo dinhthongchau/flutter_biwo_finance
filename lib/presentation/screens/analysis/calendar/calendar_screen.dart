@@ -21,10 +21,12 @@ class CalendarScreen extends StatelessWidget with CalendarScreenMixin {
         return Scaffold(
           backgroundColor: AppColors.caribbeanGreen,
           appBar: buildHeaderCalendar(context),
-          body: buildBody(state, context),
+          body: Container(
+            padding: SharedLayout.getScreenPadding(context),
+            child: buildBody(state, context),
+          ),
         );
       },
     );
   }
-
 }
