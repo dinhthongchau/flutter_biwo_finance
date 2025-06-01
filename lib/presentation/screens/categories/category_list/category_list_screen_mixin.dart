@@ -187,8 +187,8 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       gridDelegate:
-                      const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 3,
+                       SliverGridDelegateWithFixedCrossAxisCount(
+                        crossAxisCount: MediaQuery.of(context).size.width > 600 ? 6 : 3,
                         crossAxisSpacing: 10,
                         mainAxisSpacing: 10,
                         childAspectRatio: 1.0,

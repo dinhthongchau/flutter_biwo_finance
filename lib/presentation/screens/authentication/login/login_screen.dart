@@ -106,7 +106,11 @@ class _LoginScreenState extends State<LoginScreen> {
     return BlocListener<UserBloc, UserState>(
       listener: (context, state) {
         if (state is UserLoaded) {
-          context.go(HomeScreen.routeName);
+          if (state.user.helper) {
+            context.go(ProfileOnlineSupportHelperScreen.routeName);
+          } else {
+            context.go(HomeScreen.routeName);
+          }
         } else if (state is UserError) {
           ScaffoldMessenger.of(
             context,
@@ -115,6 +119,7 @@ class _LoginScreenState extends State<LoginScreen> {
             _isLoading = false;
           });
         }
+
       },
       child: Scaffold(
         backgroundColor: AppColors.caribbeanGreen,

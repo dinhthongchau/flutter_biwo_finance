@@ -375,8 +375,8 @@ mixin AnalysisScreenMixin<T extends StatefulWidget> on State<T> {
         GridView.builder(
           shrinkWrap: true,
           physics: const NeverScrollableScrollPhysics(),
-          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2,
+          gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: MediaQuery.of(context).size.width > 600 ? 5 : 2,
             crossAxisSpacing: 20,
             mainAxisSpacing: 20,
             childAspectRatio: 1.0,
