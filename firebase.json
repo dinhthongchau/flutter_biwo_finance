@@ -1,1 +1,37 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"finance-management-firebase","appId":"1:526297323248:android:c0586c4009530132419435","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"finance-management-firebase","configurations":{"android":"1:526297323248:android:c0586c4009530132419435","web":"1:526297323248:web:c00f4de087eb4e8d419435"}}}}}}
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "finance-management-firebase",
+          "appId": "1:526297323248:android:c0586c4009530132419435",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "finance-management-firebase",
+          "configurations": {
+            "android": "1:526297323248:android:c0586c4009530132419435",
+            "web": "1:526297323248:web:c00f4de087eb4e8d419435"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "site": "biwofinance",
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
