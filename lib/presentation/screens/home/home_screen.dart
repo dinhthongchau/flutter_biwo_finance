@@ -4,12 +4,10 @@ import 'package:flutter/material.dart';
 
 class HomeScreen extends StatelessWidget with HomeScreenMixin {
   static const String routeName = '/home-screen';
-  final String label;
   final String notificationsScreenPath;
 
   const HomeScreen({
     super.key,
-    required this.label,
     required this.notificationsScreenPath,
   });
 

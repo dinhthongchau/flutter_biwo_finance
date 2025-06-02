@@ -46,7 +46,7 @@ class _AnalysisScreenState extends State<AnalysisScreen>
             appBar: buildHeader(
               context,
               "Analysis",
-              "/home-screen/notifications-screen",
+              "${HomeScreen.routeName}${NotificationScreen.routeName}",
             ),
             backgroundColor: AppColors.caribbeanGreen,
             body: Center(child: LoadingUtils.buildSpinKitSpinningLinesWhite()),
@@ -78,7 +78,7 @@ class _AnalysisScreenState extends State<AnalysisScreen>
           appBar: buildHeader(
             context,
             "Analysis",
-            "/home-screen/notifications-screen",
+            "${HomeScreen.routeName}${NotificationScreen.routeName}",
           ),
           backgroundColor: AppColors.caribbeanGreen,
           body: Container(
@@ -97,9 +97,4 @@ class _AnalysisScreenState extends State<AnalysisScreen>
   }
 }
 
-// body: Container(
-//         padding: MediaQuery.of(context).size.width > 600
-//             ? const EdgeInsets.symmetric(horizontal: 100) // Web padding
-//             : EdgeInsets.zero, // Mobile padding
-//         child: buildBody(context),
-//       ),
+

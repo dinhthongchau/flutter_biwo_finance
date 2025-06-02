@@ -36,8 +36,10 @@ mixin AnalysisScreenMixin<T extends StatefulWidget> on State<T> {
                 spacing: 20,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox( height: 10),
+                  const SizedBox(height: 10),
                   _buildTabsSection(state.selectedTimeFilter ?? TimeFilterAnalysis.daily),
+                  if (state.selectedTimeFilter == TimeFilterAnalysis.daily || state.selectedTimeFilter == TimeFilterAnalysis.weekly)
+                    _buildDateRangeSelector(state),
                   _buildChartSection(chartData, chartMaxY),
                   _buildIncomeExpenseSection(totalIncome, totalExpense),
                   _buildTargetsSection(),
@@ -48,6 +50,246 @@ mixin AnalysisScreenMixin<T extends StatefulWidget> on State<T> {
         ),
       ],
     );
+  }
+
+  Widget _buildDateRangeSelector(AnalysisState state) {
+    final startDate = state.startDate ?? DateTime.now().subtract(const Duration(days: 7));
+    final endDate = state.endDate ?? DateTime.now();
+    
+    // Check if can navigate forward
+    bool canNavigateForward = true;
+    if (state.selectedTimeFilter == TimeFilterAnalysis.daily) {
+      canNavigateForward = !endDate.isAfter(DateTime.now().subtract(const Duration(days: 1)));
+    } else if (state.selectedTimeFilter == TimeFilterAnalysis.weekly) {
+      final currentMonth = DateTime(DateTime.now().year, DateTime.now().month, 1);
+      canNavigateForward = !(startDate.year == currentMonth.year && startDate.month == currentMonth.month);
+    }
+    
+    // We always allow navigating backward, but you can add restrictions if needed
+    bool canNavigateBackward = true;
+    
+    String dateRangeText;
+    if (state.selectedTimeFilter == TimeFilterAnalysis.daily) {
+      dateRangeText = '${DateFormat('dd/MM').format(startDate)} - ${DateFormat('dd/MM').format(endDate)}';
+    } else if (state.selectedTimeFilter == TimeFilterAnalysis.weekly) {
+      // For weekly view, show the month name
+      dateRangeText = DateFormat('MMMM yyyy').format(startDate);
+    } else {
+      // For monthly and yearly views
+      dateRangeText = '${DateFormat('dd MMM').format(startDate)} - ${DateFormat('dd MMM').format(endDate)}';
+    }
+    
+    return Container(
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          GestureDetector(
+            onTap: canNavigateBackward ? () => _navigateDateRange(false, state) : null,
+            child: Opacity(
+              opacity: canNavigateBackward ? 1.0 : 0.5,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.caribbeanGreen,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.chevron_left,
+                  color: AppColors.fenceGreen,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: () => _showDateRangePicker(state),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              decoration: BoxDecoration(
+                color: AppColors.lightGreen,
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: Text(
+                dateRangeText,
+                style: const TextStyle(
+                  color: AppColors.fenceGreen,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
+                ),
+              ),
+            ),
+          ),
+          GestureDetector(
+            onTap: canNavigateForward ? () => _navigateDateRange(true, state) : null,
+            child: Opacity(
+              opacity: canNavigateForward ? 1.0 : 0.5,
+              child: Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppColors.caribbeanGreen,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Icon(
+                  Icons.chevron_right,
+                  color: AppColors.fenceGreen,
+                  size: 24,
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _navigateDateRange(bool isForward, AnalysisState state) {
+    final startDate = state.startDate ?? DateTime.now().subtract(const Duration(days: 7));
+    final endDate = state.endDate ?? DateTime.now();
+    
+    DateTime newStartDate;
+    DateTime newEndDate;
+    
+    if (state.selectedTimeFilter == TimeFilterAnalysis.daily) {
+      // For daily view, move by 7 days (a full week)
+      if (isForward) {
+        // Don't allow moving forward past today
+        if (endDate.isAfter(DateTime.now().subtract(const Duration(days: 1)))) return;
+        
+        newStartDate = startDate.add(const Duration(days: 7));
+        newEndDate = endDate.add(const Duration(days: 7));
+        
+        // Don't go beyond today
+        if (newEndDate.isAfter(DateTime.now())) {
+          newEndDate = DateTime.now();
+          // Find the Monday of the current week
+          final currentWeekday = newEndDate.weekday;
+          newStartDate = newEndDate.subtract(Duration(days: currentWeekday - 1));
+        }
+      } else {
+        // Move back by 7 days
+        newStartDate = startDate.subtract(const Duration(days: 7));
+        newEndDate = endDate.subtract(const Duration(days: 7));
+      }
+    } else if (state.selectedTimeFilter == TimeFilterAnalysis.weekly) {
+      // For weekly view, move by months
+      if (isForward) {
+        // Don't allow moving forward past current month
+        final currentMonth = DateTime(DateTime.now().year, DateTime.now().month, 1);
+        if (startDate.year == currentMonth.year && startDate.month == currentMonth.month) return;
+        
+        // Move to next month
+        final nextMonth = startDate.month + 1;
+        final nextMonthYear = startDate.year + (nextMonth > 12 ? 1 : 0);
+        final nextMonthValue = nextMonth > 12 ? 1 : nextMonth;
+        
+        newStartDate = DateTime(nextMonthYear, nextMonthValue, 1);
+        // Calculate last day of next month correctly
+        final lastDay = DateTime(nextMonthYear, nextMonthValue + 1, 0).day;
+        newEndDate = DateTime(nextMonthYear, nextMonthValue, lastDay, 23, 59, 59);
+        
+        // Don't go beyond current month
+        final now = DateTime.now();
+        if (newStartDate.year > now.year || 
+            (newStartDate.year == now.year && newStartDate.month > now.month)) {
+          newStartDate = DateTime(now.year, now.month, 1);
+          final lastDayCurrentMonth = DateTime(now.year, now.month + 1, 0).day;
+          newEndDate = DateTime(now.year, now.month, lastDayCurrentMonth, 23, 59, 59);
+        }
+      } else {
+        // Move back by one month
+        final prevMonth = startDate.month - 1;
+        final prevMonthYear = startDate.year - (prevMonth < 1 ? 1 : 0);
+        final prevMonthValue = prevMonth < 1 ? 12 : prevMonth;
+        
+        newStartDate = DateTime(prevMonthYear, prevMonthValue, 1);
+        // Calculate last day of previous month correctly
+        final lastDay = DateTime(prevMonthYear, prevMonthValue + 1, 0).day;
+        newEndDate = DateTime(prevMonthYear, prevMonthValue, lastDay, 23, 59, 59);
+      }
+    } else {
+      // For monthly and yearly views
+      if (isForward) {
+        final nextMonth = startDate.month + 1;
+        final nextMonthYear = startDate.year + (nextMonth > 12 ? 1 : 0);
+        final nextMonthValue = nextMonth > 12 ? 1 : nextMonth;
+        
+        newStartDate = DateTime(nextMonthYear, nextMonthValue, 1);
+        final lastDay = DateTime(nextMonthYear, nextMonthValue + 1, 0).day;
+        newEndDate = DateTime(nextMonthYear, nextMonthValue, lastDay, 23, 59, 59);
+      } else {
+        final prevMonth = startDate.month - 1;
+        final prevMonthYear = startDate.year - (prevMonth < 1 ? 1 : 0);
+        final prevMonthValue = prevMonth < 1 ? 12 : prevMonth;
+        
+        newStartDate = DateTime(prevMonthYear, prevMonthValue, 1);
+        final lastDay = DateTime(prevMonthYear, prevMonthValue + 1, 0).day;
+        newEndDate = DateTime(prevMonthYear, prevMonthValue, lastDay, 23, 59, 59);
+      }
+    }
+    
+    context.read<AnalysisBloc>().add(ChangeDateRangeEvent(
+      startDate: newStartDate,
+      endDate: newEndDate,
+    ));
+  }
+
+  Future<void> _showDateRangePicker(AnalysisState state) async {
+    if (state.selectedTimeFilter == TimeFilterAnalysis.weekly) {
+      // For weekly view, show month picker instead
+      final initialDate = state.startDate ?? DateTime.now();
+      
+      showMonthPicker(
+        context: context,
+        initialDate: initialDate,
+        firstDate: DateTime(2020),
+        lastDate: DateTime.now(),
+      ).then((selectedDate) {
+        if (selectedDate != null) {
+          final startDate = DateTime(selectedDate.year, selectedDate.month, 1);
+          // Calculate last day of month correctly
+          final lastDay = DateTime(selectedDate.year, selectedDate.month + 1, 0).day;
+          final endDate = DateTime(selectedDate.year, selectedDate.month, lastDay, 23, 59, 59);
+          
+          context.read<AnalysisBloc>().add(ChangeDateRangeEvent(
+            startDate: startDate,
+            endDate: endDate,
+          ));
+        }
+      });
+      return;
+    }
+    
+    final initialDateRange = DateTimeRange(
+      start: state.startDate ?? DateTime.now().subtract(const Duration(days: 7)),
+      end: state.endDate ?? DateTime.now(),
+    );
+    
+    final pickedDateRange = await showDateRangePicker(
+      context: context,
+      initialDateRange: initialDateRange,
+      firstDate: DateTime(2020),
+      lastDate: DateTime.now(),
+      builder: (context, child) {
+        return Theme(
+          data: Theme.of(context).copyWith(
+            colorScheme: const ColorScheme.light(
+              primary: AppColors.caribbeanGreen,
+              onPrimary: AppColors.fenceGreen,
+              onSurface: AppColors.fenceGreen,
+            ),
+          ),
+          child: child!,
+        );
+      },
+    );
+    
+    if (pickedDateRange != null) {
+      context.read<AnalysisBloc>().add(ChangeDateRangeEvent(
+        startDate: pickedDateRange.start,
+        endDate: pickedDateRange.end,
+      ));
+    }
   }
 
   Widget buildCards(int totalBalance, int totalExpense) {
@@ -442,6 +684,150 @@ mixin AnalysisScreenMixin<T extends StatefulWidget> on State<T> {
               ),
             );
           },
+        ),
+      ],
+    );
+  }
+
+  Future<DateTime?> showMonthPicker({
+    required BuildContext context,
+    required DateTime initialDate,
+    required DateTime firstDate,
+    required DateTime lastDate,
+  }) async {
+    return showDialog<DateTime>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20.0),
+          ),
+          backgroundColor: AppColors.honeydew,
+          title: const Text(
+            'Select Month',
+            style: TextStyle(
+              color: AppColors.fenceGreen,
+              fontWeight: FontWeight.bold,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          content: SizedBox(
+            width: double.maxFinite,
+            height: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                _buildYearSelector(context, initialDate, firstDate, lastDate),
+                const SizedBox(height: 20),
+                Expanded(
+                  child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 3,
+                      childAspectRatio: 1.5,
+                    ),
+                    itemCount: 12,
+                    itemBuilder: (context, index) {
+                      final month = index + 1;
+                      final date = DateTime(initialDate.year, month);
+                      final isDisabled = date.isBefore(firstDate) || date.isAfter(lastDate);
+                      final isSelected = date.year == initialDate.year && date.month == initialDate.month;
+                      
+                      return GestureDetector(
+                        onTap: isDisabled ? null : () {
+                          Navigator.pop(context, date);
+                        },
+                        child: Container(
+                          margin: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: isSelected ? AppColors.caribbeanGreen : AppColors.lightGreen,
+                            borderRadius: BorderRadius.circular(12),
+                            border: isSelected ? Border.all(color: AppColors.fenceGreen) : null,
+                          ),
+                          alignment: Alignment.center,
+                          child: Text(
+                            DateFormat('MMM').format(DateTime(2025, month)),
+                            style: TextStyle(
+                              color: isDisabled ? AppColors.lightGrey : AppColors.fenceGreen,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                            ),
+                          ),
+                        ),
+                      );
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              style: TextButton.styleFrom(foregroundColor: AppColors.fenceGreen),
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildYearSelector(
+    BuildContext context, 
+    DateTime initialDate, 
+    DateTime firstDate, 
+    DateTime lastDate
+  ) {
+    final bool canNavigateBack = initialDate.year > firstDate.year;
+    final bool canNavigateForward = initialDate.year < lastDate.year;
+    
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Opacity(
+          opacity: canNavigateBack ? 1.0 : 0.5,
+          child: IconButton(
+            icon: const Icon(Icons.chevron_left, color: AppColors.fenceGreen),
+            onPressed: canNavigateBack ? () {
+              final newDate = DateTime(initialDate.year - 1, initialDate.month);
+              Navigator.pop(context);
+              showMonthPicker(
+                context: context,
+                initialDate: newDate,
+                firstDate: firstDate,
+                lastDate: lastDate,
+              ).then((date) {
+                if (date != null) Navigator.pop(context, date);
+              });
+            } : null,
+          ),
+        ),
+        Text(
+          initialDate.year.toString(),
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: AppColors.fenceGreen,
+          ),
+        ),
+        Opacity(
+          opacity: canNavigateForward ? 1.0 : 0.5,
+          child: IconButton(
+            icon: const Icon(Icons.chevron_right, color: AppColors.fenceGreen),
+            onPressed: canNavigateForward ? () {
+              final newDate = DateTime(initialDate.year + 1, initialDate.month);
+              Navigator.pop(context);
+              showMonthPicker(
+                context: context,
+                initialDate: newDate,
+                firstDate: firstDate,
+                lastDate: lastDate,
+              ).then((date) {
+                if (date != null) Navigator.pop(context, date);
+              });
+            } : null,
+          ),
         ),
       ],
     );

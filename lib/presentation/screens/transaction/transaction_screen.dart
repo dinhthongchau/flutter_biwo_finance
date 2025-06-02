@@ -12,7 +12,7 @@ class TransactionScreen extends StatelessWidget with TransactionScreenMixin {
       appBar: buildHeader(
         context,
         "Transaction",
-        "/home-screen/notifications-screen",
+        "${HomeScreen.routeName}${NotificationScreen.routeName}",
       ),
       backgroundColor: AppColors.caribbeanGreen,
       body: Container(

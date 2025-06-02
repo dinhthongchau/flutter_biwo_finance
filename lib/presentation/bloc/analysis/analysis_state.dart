@@ -6,13 +6,16 @@ abstract class AnalysisState extends Equatable {
   final List<BaseAnalysis>? currentChartData;
   final TimeFilterAnalysis? selectedTimeFilter;
   final DateTime? currentDate;
-
+  final DateTime? startDate;
+  final DateTime? endDate;
 
   const AnalysisState({
     this.allTransactions,
     this.currentChartData,
     this.selectedTimeFilter,
     this.currentDate,
+    this.startDate,
+    this.endDate,
   });
 
   @override
@@ -21,6 +24,8 @@ abstract class AnalysisState extends Equatable {
     currentChartData,
     selectedTimeFilter,
     currentDate,
+    startDate,
+    endDate,
   ];
 }
 
@@ -30,7 +35,19 @@ class AnalysisInitial extends AnalysisState {
     super.currentChartData,
     super.selectedTimeFilter = TimeFilterAnalysis.daily,
     super.currentDate,
+    super.startDate,
+    super.endDate,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+  ];
 }
 
 class AnalysisLoading extends AnalysisState {
@@ -39,6 +56,8 @@ class AnalysisLoading extends AnalysisState {
     super.currentChartData,
     super.selectedTimeFilter,
     super.currentDate,
+    super.startDate,
+    super.endDate,
   });
 
   AnalysisLoading.fromState({required AnalysisState state})
@@ -47,7 +66,19 @@ class AnalysisLoading extends AnalysisState {
     currentChartData: state.currentChartData,
     selectedTimeFilter: state.selectedTimeFilter,
     currentDate: state.currentDate,
+    startDate: state.startDate,
+    endDate: state.endDate,
   );
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+  ];
 }
 
 class AnalysisSuccess extends AnalysisState {
@@ -56,7 +87,19 @@ class AnalysisSuccess extends AnalysisState {
     super.currentChartData,
     super.selectedTimeFilter,
     super.currentDate,
+    super.startDate,
+    super.endDate,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+  ];
 }
 
 class AnalysisError extends AnalysisState {
@@ -66,6 +109,19 @@ class AnalysisError extends AnalysisState {
     super.currentChartData,
     super.selectedTimeFilter,
     super.currentDate,
+    super.startDate,
+    super.endDate,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+    errorMessage,
+  ];
 }

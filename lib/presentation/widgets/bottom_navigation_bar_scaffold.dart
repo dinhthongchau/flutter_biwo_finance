@@ -30,7 +30,10 @@ class BottomNavigationBarScaffold extends StatelessWidget {
     }
     if (index == 1) {
       Future.delayed(const Duration(milliseconds: 1000), () {
-        context.read<AnalysisBloc>().add(const LoadAnalysisDataEvent());
+        if ( context.mounted) {
+          context.read<AnalysisBloc>().add(const LoadAnalysisDataEvent());
+        }
+
       });
       //context.read<AnalysisBloc>().add(const ChangeTimeFilterEvent(TimeFilterAnalysis.daily));
     }
@@ -56,7 +59,7 @@ class BottomNavigationBarScaffold extends StatelessWidget {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Lỗi tải dữ liệu: ${state.errorMessage}"),
+              content: Text("Error loading data: ${state.errorMessage}"),
               backgroundColor: Colors.red,
             ),
           );

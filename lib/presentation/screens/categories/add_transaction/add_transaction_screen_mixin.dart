@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:finance_management/data/repositories/user_repository.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -20,8 +22,22 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
     _messageController.text = '--Message Test--';
   }
 
+  void _debounceUpdate(TextEditingController? controller, String value) {
+    if (controller == null) return;
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(milliseconds: 200), () {
+      controller.text = value;
+      controller.selection = TextSelection.fromPosition(
+        TextPosition(offset: value.length),
+      );
+    });
+  }
+
+  Timer? _debounceTimer;
+
   @override
   void dispose() {
+    _debounceTimer?.cancel();
     _amountController.dispose();
     _titleController.dispose();
     _messageController.dispose();
@@ -364,6 +380,8 @@ mixin AddTransactionScreenMixin<T extends StatefulWidget> on State<T> {
             ),
           ),
           validator: validator,
+          onChanged: (value) => _debounceUpdate(controller, value),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
         ),
       ],
     );

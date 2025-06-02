@@ -50,6 +50,15 @@ class TransactionInitial extends TransactionState {
   });
 
   @override
+  List<Object?> get props => [
+    allTransactions,
+    selectedMonth,
+    availableMonths,
+    currentListFilterType,
+    financialsForSummary,
+  ];
+
+  @override
   TransactionInitial copyWith({
     List<TransactionModel>? allTransactions,
     String? selectedMonth,
@@ -85,6 +94,15 @@ class TransactionLoading extends TransactionState {
     currentListFilterType: state.currentListFilterType,
     financialsForSummary: state.financialsForSummary,
   );
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    selectedMonth,
+    availableMonths,
+    currentListFilterType,
+    financialsForSummary,
+  ];
 
   @override
   TransactionLoading copyWith({
@@ -113,6 +131,15 @@ class TransactionSuccess extends TransactionState {
     required super.currentListFilterType,
     required super.financialsForSummary,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    selectedMonth,
+    availableMonths,
+    currentListFilterType,
+    financialsForSummary,
+  ];
 
   @override
   TransactionSuccess copyWith({
@@ -143,6 +170,16 @@ class TransactionError extends TransactionState {
     super.financialsForSummary,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    selectedMonth,
+    availableMonths,
+    currentListFilterType,
+    financialsForSummary,
+    errorMessage,
+  ];
 
   @override
   TransactionError copyWith({

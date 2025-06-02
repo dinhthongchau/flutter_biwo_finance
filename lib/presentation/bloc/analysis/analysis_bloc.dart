@@ -10,9 +10,12 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     currentChartData: const [],
     selectedTimeFilter: TimeFilterAnalysis.daily,
     currentDate: DateTime.now(),
+    startDate: DateTime.now().subtract(const Duration(days: 7)),
+    endDate: DateTime.now(),
   )) {
     on<LoadAnalysisDataEvent>(_onLoadAnalysisData);
     on<ChangeTimeFilterEvent>(_onChangeTimeFilter);
+    on<ChangeDateRangeEvent>(_onChangeDateRange);
   }
 
   Future<void> _onLoadAnalysisData(
@@ -28,13 +31,42 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
 
       final timeFilter = state.selectedTimeFilter ?? TimeFilterAnalysis.daily;
       final currentDate = DateTime.now();
-      final chartData = _generateChartData(transactions, timeFilter, currentDate);
+      
+      // Calculate default date range based on filter
+      DateTime startDate;
+      DateTime endDate;
+      
+      if (timeFilter == TimeFilterAnalysis.daily) {
+        // For daily view, start from Monday of current week
+        final currentWeekday = currentDate.weekday;
+        startDate = currentDate.subtract(Duration(days: currentWeekday - 1));
+        endDate = currentDate;
+      } else if (timeFilter == TimeFilterAnalysis.weekly) {
+        // For weekly view, set date range to current month
+        final currentMonth = DateTime(currentDate.year, currentDate.month, 1);
+        final lastDayOfMonth = DateTime(currentDate.year, currentDate.month + 1, 0);
+        startDate = currentMonth;
+        endDate = lastDayOfMonth;
+      } else {
+        startDate = state.startDate ?? currentDate.subtract(const Duration(days: 7));
+        endDate = state.endDate ?? currentDate;
+      }
+      
+      final chartData = _generateChartData(
+        transactions, 
+        timeFilter, 
+        currentDate,
+        startDate,
+        endDate,
+      );
 
       emit(AnalysisSuccess(
         allTransactions: transactions,
         currentChartData: chartData,
         selectedTimeFilter: timeFilter,
         currentDate: currentDate,
+        startDate: startDate,
+        endDate: endDate,
       ));
     } catch (e, stackTrace) {
       String errorMessage;
@@ -49,6 +81,8 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
         currentChartData: state.currentChartData,
         selectedTimeFilter: state.selectedTimeFilter,
         currentDate: state.currentDate,
+        startDate: state.startDate,
+        endDate: state.endDate,
         errorMessage: errorMessage,
       ));
     }
@@ -64,6 +98,81 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
         currentChartData: state.currentChartData,
         selectedTimeFilter: event.timeFilter,
         currentDate: state.currentDate,
+        startDate: state.startDate,
+        endDate: state.endDate,
+        errorMessage: 'No transactions available to filter',
+      ));
+      return;
+    }
+
+    emit(AnalysisLoading.fromState(state: state));
+
+    try {
+      final currentDate = state.currentDate ?? DateTime.now();
+      
+      // Reset date range when changing filter
+      DateTime startDate;
+      DateTime endDate;
+      
+      if (event.timeFilter == TimeFilterAnalysis.daily) {
+        // For daily view, start from Monday of current week
+        final currentWeekday = currentDate.weekday;
+        startDate = currentDate.subtract(Duration(days: currentWeekday - 1));
+        endDate = currentDate;
+      } else if (event.timeFilter == TimeFilterAnalysis.weekly) {
+        // For weekly view, set date range to current month
+        final currentMonth = DateTime(currentDate.year, currentDate.month, 1);
+        final lastDayOfMonth = DateTime(currentDate.year, currentDate.month + 1, 0);
+        startDate = currentMonth;
+        endDate = lastDayOfMonth;
+      } else {
+        startDate = state.startDate ?? currentDate.subtract(const Duration(days: 7));
+        endDate = state.endDate ?? currentDate;
+      }
+      
+      final chartData = _generateChartData(
+        state.allTransactions!,
+        event.timeFilter,
+        currentDate,
+        startDate,
+        endDate,
+      );
+
+      emit(AnalysisSuccess(
+        allTransactions: state.allTransactions,
+        currentChartData: chartData,
+        selectedTimeFilter: event.timeFilter,
+        currentDate: currentDate,
+        startDate: startDate,
+        endDate: endDate,
+      ));
+    } catch (e, stackTrace) {
+      String errorMessage = 'Failed to filter data: ${e.toString()}';
+      customPrint('Stack trace: $stackTrace');
+      emit(AnalysisError(
+        allTransactions: state.allTransactions,
+        currentChartData: state.currentChartData,
+        selectedTimeFilter: event.timeFilter,
+        currentDate: state.currentDate,
+        startDate: state.startDate,
+        endDate: state.endDate,
+        errorMessage: errorMessage,
+      ));
+    }
+  }
+
+  Future<void> _onChangeDateRange(
+      ChangeDateRangeEvent event,
+      Emitter<AnalysisState> emit,
+      ) async {
+    if (state.allTransactions == null || state.allTransactions!.isEmpty) {
+      emit(AnalysisError(
+        allTransactions: state.allTransactions,
+        currentChartData: state.currentChartData,
+        selectedTimeFilter: state.selectedTimeFilter,
+        currentDate: state.currentDate,
+        startDate: event.startDate,
+        endDate: event.endDate,
         errorMessage: 'No transactions available to filter',
       ));
       return;
@@ -74,24 +183,30 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
     try {
       final chartData = _generateChartData(
         state.allTransactions!,
-        event.timeFilter,
+        state.selectedTimeFilter ?? TimeFilterAnalysis.daily,
         state.currentDate ?? DateTime.now(),
+        event.startDate,
+        event.endDate,
       );
 
       emit(AnalysisSuccess(
         allTransactions: state.allTransactions,
         currentChartData: chartData,
-        selectedTimeFilter: event.timeFilter,
+        selectedTimeFilter: state.selectedTimeFilter,
         currentDate: state.currentDate,
+        startDate: event.startDate,
+        endDate: event.endDate,
       ));
     } catch (e, stackTrace) {
-      String errorMessage = 'Failed to filter data: ${e.toString()}';
+      String errorMessage = 'Failed to change date range: ${e.toString()}';
       customPrint('Stack trace: $stackTrace');
       emit(AnalysisError(
         allTransactions: state.allTransactions,
         currentChartData: state.currentChartData,
-        selectedTimeFilter: event.timeFilter,
+        selectedTimeFilter: state.selectedTimeFilter,
         currentDate: state.currentDate,
+        startDate: event.startDate,
+        endDate: event.endDate,
         errorMessage: errorMessage,
       ));
     }
@@ -101,12 +216,14 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       List<TransactionModel> transactions,
       TimeFilterAnalysis filter,
       DateTime currentDate,
+      DateTime startDate,
+      DateTime endDate,
       ) {
     switch (filter) {
       case TimeFilterAnalysis.daily:
-        return _generateDailyData(transactions, currentDate);
+        return _generateDailyData(transactions, currentDate, startDate, endDate);
       case TimeFilterAnalysis.weekly:
-        return _generateWeeklyData(transactions, currentDate);
+        return _generateWeeklyData(transactions, currentDate, startDate, endDate);
       case TimeFilterAnalysis.monthly:
         return _generateMonthlyData(transactions, currentDate);
       case TimeFilterAnalysis.year:
@@ -117,11 +234,24 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   List<DailyAnalysis> _generateDailyData(
       List<TransactionModel> transactions,
       DateTime currentDate,
+      DateTime startDate,
+      DateTime endDate,
       ) {
     List<DailyAnalysis> dailyData = [];
-
-    for (int i = 6; i >= 0; i--) {
-      final targetDate = currentDate.subtract(Duration(days: i));
+    
+    // Ensure we're starting from a Monday
+    if (startDate.weekday != 1) {
+      final daysToSubtract = startDate.weekday - 1;
+      startDate = startDate.subtract(Duration(days: daysToSubtract));
+    }
+    
+    // Always show 7 days (a full week)
+    final int daysToShow = 7;
+    
+    // Generate data for each day of the week (Monday to Sunday)
+    for (int i = 0; i < daysToShow; i++) {
+      final targetDate = startDate.add(Duration(days: i));
+      
       final startOfDay = DateTime(targetDate.year, targetDate.month, targetDate.day);
       final endOfDay = DateTime(targetDate.year, targetDate.month, targetDate.day, 23, 59, 59);
 
@@ -156,16 +286,57 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
   List<WeeklyAnalysis> _generateWeeklyData(
       List<TransactionModel> transactions,
       DateTime currentDate,
+      DateTime startDate,
+      DateTime endDate,
       ) {
     List<WeeklyAnalysis> weeklyData = [];
-
-    for (int i = 3; i >= 0; i--) {
-      final startOfWeek = currentDate.subtract(Duration(days: currentDate.weekday - 1 + (i * 7)));
-      final endOfWeek = startOfWeek.add(const Duration(days: 6, hours: 23, minutes: 59, seconds: 59));
-
+    
+    // Get the current month from startDate (which should be first day of month)
+    final currentMonth = DateTime(startDate.year, startDate.month, 1);
+    
+    // Calculate the last day of the month
+    final lastDayOfMonth = DateTime(currentMonth.year, currentMonth.month + 1, 0).day;
+    
+    // Define the 4 weeks of the month
+    final weeks = [
+      // Week 1: 1-7
+      {
+        'start': DateTime(currentMonth.year, currentMonth.month, 1),
+        'end': DateTime(currentMonth.year, currentMonth.month, 7, 23, 59, 59),
+        'number': 1
+      },
+      // Week 2: 8-14
+      {
+        'start': DateTime(currentMonth.year, currentMonth.month, 8),
+        'end': DateTime(currentMonth.year, currentMonth.month, 14, 23, 59, 59),
+        'number': 2
+      },
+      // Week 3: 15-21
+      {
+        'start': DateTime(currentMonth.year, currentMonth.month, 15),
+        'end': DateTime(currentMonth.year, currentMonth.month, 21, 23, 59, 59),
+        'number': 3
+      },
+      // Week 4: 22-end of month
+      {
+        'start': DateTime(currentMonth.year, currentMonth.month, 22),
+        'end': DateTime(currentMonth.year, currentMonth.month, lastDayOfMonth, 23, 59, 59),
+        'number': 4
+      },
+    ];
+    
+    // Generate data for each week
+    for (var week in weeks) {
+      final weekStartDate = week['start'] as DateTime;
+      final weekEndDate = week['end'] as DateTime;
+      final weekNumber = week['number'] as int;
+      
+      // Skip weeks that don't exist in short months (e.g. February might not have full 4th week)
+      if (weekStartDate.day > lastDayOfMonth) continue;
+      
       final weekTransactions = transactions.where((transaction) {
-        return transaction.time.isAfter(startOfWeek.subtract(const Duration(milliseconds: 1))) &&
-            transaction.time.isBefore(endOfWeek.add(const Duration(milliseconds: 1)));
+        return transaction.time.isAfter(weekStartDate.subtract(const Duration(milliseconds: 1))) &&
+            transaction.time.isBefore(weekEndDate.add(const Duration(milliseconds: 1)));
       }).toList();
 
       int totalIncome = 0;
@@ -180,14 +351,14 @@ class AnalysisBloc extends Bloc<AnalysisEvent, AnalysisState> {
       }
 
       weeklyData.add(WeeklyAnalysis(
-        4 - i,
-        startOfWeek,
-        endOfWeek,
+        weekNumber,
+        weekStartDate,
+        weekEndDate,
         totalIncome,
         totalExpense,
       ));
     }
-
+    
     return weeklyData;
   }
 

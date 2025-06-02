@@ -150,7 +150,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(
-                            "Lỗi tải dữ liệu: ${state.errorMessage}",
+                            "Error loading data: ${state.errorMessage}",
                           ),
                           backgroundColor: Colors.red,
                         ),
@@ -162,7 +162,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                   if (state is CategoryError) {
                     return Center(
                       child: Text(
-                        'Error loading categories: ${state.errorMessage}',
+                        'Error loading data: ${state.errorMessage}',
                       ),
                     );
                   }

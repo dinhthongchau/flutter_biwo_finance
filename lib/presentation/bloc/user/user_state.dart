@@ -8,9 +8,15 @@ abstract class UserState extends Equatable {
   List<Object?> get props => [];
 }
 
-class UserInitial extends UserState {}
+class UserInitial extends UserState {
+  @override
+  List<Object?> get props => [];
+}
 
-class UserLoading extends UserState {}
+class UserLoading extends UserState {
+  @override
+  List<Object?> get props => [];
+}
 
 class UserLoaded extends UserState {
   final UserModel user;
@@ -39,7 +45,10 @@ class UserUpdated extends UserState {
   List<Object?> get props => [user];
 }
 
-class UserDeleted extends UserState {}
+class UserDeleted extends UserState {
+  @override
+  List<Object?> get props => [];
+}
 
 class UserLoggedIn extends UserState {
   final UserModel user;

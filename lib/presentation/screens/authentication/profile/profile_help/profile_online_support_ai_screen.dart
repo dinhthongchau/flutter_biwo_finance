@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
 import 'package:finance_management/data/model/chat_history/chat_history_model.dart';
 import 'package:finance_management/data/model/chat_history/chat_history_storage.dart';
@@ -29,7 +30,8 @@ class _ProfileOnlineSupportAiScreenState
   DateTime? _lastMessageTime;
   int _selectedTab = 0; // 0: Support Assistant
 
-  final String geminiApiKey = 'AIzaSyBjIkKHpPonJbuIABGEIBNxHs19WpppSIY';
+ // final String geminiApiKey = 'AIzaSyBjIkKHpPonJbuIABGEIBNxHs19WpppSIY';
+ final String geminiApiKey = dotenv.env['GEMINI_API_KEY'] ?? "xxx";
 
   @override
   void initState() {
@@ -65,7 +67,7 @@ class _ProfileOnlineSupportAiScreenState
   Future<String> fetchGeminiReply(String userMsg, String apiKey) async {
     if (apiKey.isEmpty) {
       throw Exception(
-        'Vui lòng cấu hình API key Gemini tại https://aistudio.google.com/app/apikey',
+        'Please configure Gemini API key at https://aistudio.google.com/app/apikey',
       );
     }
 
@@ -94,14 +96,14 @@ class _ProfileOnlineSupportAiScreenState
         final error = jsonDecode(response.body);
         if (error['error']['code'] == 429) {
           throw Exception(
-            'Đã hết quota miễn phí. Vui lòng thử lại sau 24h hoặc tạo API key mới.',
+            'Free quota exhausted. Please try again after 24 hours or create a new API key.',
           );
         }
-        throw Exception('Lỗi Gemini: ${error['error']['message']}');
+        throw Exception('Gemini Error: ${error['error']['message']}');
       }
     } catch (e) {
       if (e.toString().contains('SocketException')) {
-        throw Exception('Không có kết nối internet. Vui lòng kiểm tra lại.');
+        throw Exception('No internet connection. Please check your network.');
       }
       rethrow;
     }
@@ -164,7 +166,7 @@ class _ProfileOnlineSupportAiScreenState
         setState(() {
           _messages.add(
             _ChatMessage(
-              text: 'Lỗi: $e',
+              text: 'Error: $e',
               isBot: true,
               time: _formatTime(DateTime.now()),
             ),

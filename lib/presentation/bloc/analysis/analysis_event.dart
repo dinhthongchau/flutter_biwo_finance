@@ -23,3 +23,16 @@ class ChangeTimeFilterEvent extends AnalysisEvent {
   @override
   List<Object?> get props => [timeFilter];
 }
+
+class ChangeDateRangeEvent extends AnalysisEvent {
+  final DateTime startDate;
+  final DateTime endDate;
+
+  const ChangeDateRangeEvent({
+    required this.startDate,
+    required this.endDate,
+  });
+
+  @override
+  List<Object?> get props => [startDate, endDate];
+}

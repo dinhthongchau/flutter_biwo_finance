@@ -17,6 +17,9 @@ abstract class NotificationState extends Equatable {
 
 class NotificationInitial extends NotificationState {
   const NotificationInitial({super.notifications, super.notificationCount = 0});
+  
+  @override
+  List<Object?> get props => [notifications, notificationCount];
 }
 
 class NotificationLoading extends NotificationState {
@@ -27,10 +30,16 @@ class NotificationLoading extends NotificationState {
     notifications: state.notifications,
     notificationCount: state.notificationCount,
   );
+  
+  @override
+  List<Object?> get props => [notifications, notificationCount];
 }
 
 class NotificationSuccess extends NotificationState {
   const NotificationSuccess({super.notifications, super.notificationCount});
+  
+  @override
+  List<Object?> get props => [notifications, notificationCount];
 }
 
 class NotificationError extends NotificationState {
@@ -40,4 +49,7 @@ class NotificationError extends NotificationState {
     super.notificationCount,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [notifications, notificationCount, errorMessage];
 }
