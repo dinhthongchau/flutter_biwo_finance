@@ -393,24 +393,14 @@ class LoginButton extends StatelessWidget {
             elevation: 0,
           ),
           onPressed: onPressed,
-          child:
-              isLoading
-                  ? const SizedBox(
-                    width: 24,
-                    height: 24,
-                    child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                      strokeWidth: 2,
-                    ),
-                  )
-                  : const Text(
-                    'Log In',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: AppColors.blackHeader,
-                    ),
-                  ),
+          child: const Text(
+            'Log In',
+            style: TextStyle(
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
+              color: AppColors.blackHeader,
+            ),
+          ),
         ),
       ),
     );

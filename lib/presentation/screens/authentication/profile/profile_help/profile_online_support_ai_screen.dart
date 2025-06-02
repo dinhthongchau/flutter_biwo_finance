@@ -4,6 +4,7 @@ import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:http/http.dart' as http;
 import 'package:finance_management/data/model/chat_history/chat_history_model.dart';
 import 'package:finance_management/data/model/chat_history/chat_history_storage.dart';
+import 'package:finance_management/presentation/screens/authentication/profile/profile_help/profile_online_support_ai_lobby.dart';
 
 import 'package:go_router/go_router.dart';
 import 'dart:async';
@@ -195,6 +196,11 @@ class _ProfileOnlineSupportAiScreenState
         ),
         iconTheme: const IconThemeData(color: AppColors.blackHeader),
         elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: AppColors.blackHeader),
+          onPressed:
+              () => context.go(ProfileOnlineSupportAiLobbyScreen.routeName),
+        ),
         actions: [
           IconButton(
             icon: const Icon(
@@ -255,7 +261,6 @@ class _ProfileOnlineSupportAiScreenState
                                       ),
                                     ),
                                     onPressed: () async {
-
                                       final endedChat = ChatHistory(
                                         title: widget.chatHistory!.title,
                                         message: widget.chatHistory!.message,
@@ -265,7 +270,6 @@ class _ProfileOnlineSupportAiScreenState
                                       await ChatHistoryStorage.saveChat(
                                         endedChat,
                                       );
-
 
                                       await ChatHistoryStorage.deleteActiveChat(
                                         widget.chatHistory!,
