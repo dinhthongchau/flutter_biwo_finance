@@ -142,7 +142,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             appBar: buildHeader(
             context,
             "Profile",
-            "/home-screen/notifications-screen",
+            "${HomeScreen.routeName}${NotificationScreen.routeName}",
           ),
             backgroundColor: AppColors.caribbeanGreen,
             body: Container(

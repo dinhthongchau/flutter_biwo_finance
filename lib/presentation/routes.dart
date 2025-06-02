@@ -185,9 +185,8 @@ final router = GoRouter(
               pageBuilder:
                   (context, state) => const NoTransitionPage(
                     child: HomeScreen(
-                      label: 'Home',
                       notificationsScreenPath:
-                          '/home-screen/notifications-screen',
+                      '${HomeScreen.routeName}${NotificationScreen.routeName}',
                     ),
                   ),
               routes: [
