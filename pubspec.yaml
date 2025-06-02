@@ -47,6 +47,7 @@ flutter:
     - assets/FunctionalIcon/
     - assets/BottomNavigationIcon/
     #assets:
+    - assets/dotenv
 flutter_gen:
   output: lib/gen/
   integrations:

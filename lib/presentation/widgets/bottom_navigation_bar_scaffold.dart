@@ -59,7 +59,7 @@ class BottomNavigationBarScaffold extends StatelessWidget {
 
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text("Lỗi tải dữ liệu: ${state.errorMessage}"),
+              content: Text("Error loading data: ${state.errorMessage}"),
               backgroundColor: Colors.red,
             ),
           );

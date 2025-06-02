@@ -38,6 +38,16 @@ class AnalysisInitial extends AnalysisState {
     super.startDate,
     super.endDate,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+  ];
 }
 
 class AnalysisLoading extends AnalysisState {
@@ -59,6 +69,16 @@ class AnalysisLoading extends AnalysisState {
     startDate: state.startDate,
     endDate: state.endDate,
   );
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+  ];
 }
 
 class AnalysisSuccess extends AnalysisState {
@@ -70,6 +90,16 @@ class AnalysisSuccess extends AnalysisState {
     super.startDate,
     super.endDate,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+  ];
 }
 
 class AnalysisError extends AnalysisState {
@@ -83,4 +113,15 @@ class AnalysisError extends AnalysisState {
     super.endDate,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [
+    allTransactions,
+    currentChartData,
+    selectedTimeFilter,
+    currentDate,
+    startDate,
+    endDate,
+    errorMessage,
+  ];
 }

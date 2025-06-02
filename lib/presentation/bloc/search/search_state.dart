@@ -35,6 +35,15 @@ class SearchInitial extends SearchState {
     super.selectedReportType,
     required super.allCategories,
   });
+  
+  @override
+  List<Object?> get props => [
+    filteredTransactions,
+    selectedCategory,
+    selectedDate,
+    selectedReportType,
+    allCategories,
+  ];
 }
 
 class SearchLoading extends SearchState {
@@ -54,6 +63,15 @@ class SearchLoading extends SearchState {
     selectedReportType: state.selectedReportType,
     allCategories: state.allCategories,
   );
+  
+  @override
+  List<Object?> get props => [
+    filteredTransactions,
+    selectedCategory,
+    selectedDate,
+    selectedReportType,
+    allCategories,
+  ];
 }
 
 class SearchSuccess extends SearchState {
@@ -64,6 +82,15 @@ class SearchSuccess extends SearchState {
     super.selectedReportType,
     required super.allCategories,
   });
+  
+  @override
+  List<Object?> get props => [
+    filteredTransactions,
+    selectedCategory,
+    selectedDate,
+    selectedReportType,
+    allCategories,
+  ];
 }
 
 class SearchError extends SearchState {
@@ -76,4 +103,14 @@ class SearchError extends SearchState {
     required super.allCategories,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [
+    filteredTransactions,
+    selectedCategory,
+    selectedDate,
+    selectedReportType,
+    allCategories,
+    errorMessage,
+  ];
 }

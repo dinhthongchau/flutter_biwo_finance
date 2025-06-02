@@ -32,6 +32,14 @@ class AddTransactionInitial extends AddTransactionState {
     super.selectedCategory,
     required super.availableCategories,
   });
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    moneyType,
+    selectedCategory,
+    availableCategories,
+  ];
 }
 
 class AddTransactionLoading extends AddTransactionState {
@@ -49,6 +57,14 @@ class AddTransactionLoading extends AddTransactionState {
     selectedCategory: state.selectedCategory,
     availableCategories: state.availableCategories,
   );
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    moneyType,
+    selectedCategory,
+    availableCategories,
+  ];
 }
 
 class AddTransactionSuccess extends AddTransactionState {
@@ -58,6 +74,14 @@ class AddTransactionSuccess extends AddTransactionState {
     super.selectedCategory,
     required super.availableCategories,
   });
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    moneyType,
+    selectedCategory,
+    availableCategories,
+  ];
 }
 
 class AddTransactionError extends AddTransactionState {
@@ -69,4 +93,13 @@ class AddTransactionError extends AddTransactionState {
     required super.availableCategories,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    moneyType,
+    selectedCategory,
+    availableCategories,
+    errorMessage,
+  ];
 }

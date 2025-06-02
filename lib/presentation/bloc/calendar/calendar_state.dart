@@ -39,6 +39,16 @@ class CalendarInitial extends CalendarState {
     required super.chartData,
     super.allTransactions,
   });
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    currentMonth,
+    selectedChartType,
+    showAllMonth,
+    chartData,
+    allTransactions,
+  ];
 }
 
 class CalendarLoading extends CalendarState {
@@ -60,6 +70,16 @@ class CalendarLoading extends CalendarState {
     chartData: state.chartData,
     allTransactions: state.allTransactions,
   );
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    currentMonth,
+    selectedChartType,
+    showAllMonth,
+    chartData,
+    allTransactions,
+  ];
 }
 
 class CalendarSuccess extends CalendarState {
@@ -71,6 +91,16 @@ class CalendarSuccess extends CalendarState {
     required super.chartData,
     super.allTransactions,
   });
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    currentMonth,
+    selectedChartType,
+    showAllMonth,
+    chartData,
+    allTransactions,
+  ];
 }
 
 class CalendarError extends CalendarState {
@@ -84,4 +114,15 @@ class CalendarError extends CalendarState {
     super.allTransactions,
     required this.errorMessage,
   });
+  
+  @override
+  List<Object?> get props => [
+    selectedDate,
+    currentMonth,
+    selectedChartType,
+    showAllMonth,
+    chartData,
+    allTransactions,
+    errorMessage,
+  ];
 }

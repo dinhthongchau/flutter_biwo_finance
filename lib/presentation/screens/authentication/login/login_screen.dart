@@ -180,7 +180,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                 children: [
                                   LoginButton(
                                     onPressed: _isLoading ? null : _submitForm,
-                                    isLoading: _isLoading,
+                                    //isLoading: _isLoading,
                                   ),
                                   const SizedBox(height: 8),
                                   ForgotPasswordButton(

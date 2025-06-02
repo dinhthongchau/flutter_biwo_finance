@@ -14,6 +14,9 @@ abstract class CategoryState extends Equatable {
 
 class CategoryInitial extends CategoryState {
    const CategoryInitial({required super.categories});
+   
+   @override
+   List<Object?> get props => [categories];
 }
 
 class CategoryLoading extends CategoryState {
@@ -21,13 +24,22 @@ class CategoryLoading extends CategoryState {
 
   CategoryLoading.fromState({required CategoryState state})
       : super(categories: state.categories);
+      
+  @override
+  List<Object?> get props => [categories];
 }
 
 class CategorySuccess extends CategoryState {
   const CategorySuccess({required super.categories});
+  
+  @override
+  List<Object?> get props => [categories];
 }
 
 class CategoryError extends CategoryState {
   final String? errorMessage;
   const CategoryError({required this.errorMessage, super.categories});
+  
+  @override
+  List<Object?> get props => [categories, errorMessage];
 }
