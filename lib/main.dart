@@ -20,6 +20,7 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
     );
   }
 }
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
@@ -34,7 +35,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SafeArea(child: AppProviders());
+    return const AppProviders();
   }
 }
 
@@ -46,18 +47,23 @@ class AppProviders extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider<TransactionBloc>(
-          create: (context) =>
-          TransactionBloc(TransactionRepository())..add(const LoadTransactionsEvent()),
+          create:
+              (context) =>
+                  TransactionBloc(TransactionRepository())
+                    ..add(const LoadTransactionsEvent()),
         ),
         BlocProvider<NotificationBloc>(
-          create: (context) => NotificationBloc()..add(const LoadNotifications()),
+          create:
+              (context) => NotificationBloc()..add(const LoadNotifications()),
         ),
         BlocProvider<CategoryBloc>(
           create: (context) => CategoryBloc(CategoryRepository()),
         ),
         BlocProvider<CalendarBloc>(
-          create: (context) =>
-          CalendarBloc(TransactionRepository())..add(const LoadCalendarTransactionsEvent()),
+          create:
+              (context) =>
+                  CalendarBloc(TransactionRepository())
+                    ..add(const LoadCalendarTransactionsEvent()),
         ),
         BlocProvider<AnalysisBloc>(
           create: (context) => AnalysisBloc(TransactionRepository()),
@@ -65,23 +71,46 @@ class AppProviders extends StatelessWidget {
         BlocProvider<SearchBloc>(
           create: (context) => SearchBloc(context.read<TransactionBloc>()),
         ),
-        BlocProvider<HomeBloc>(
-          create: (context) => HomeBloc(),
-        ),
+        BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
         BlocProvider(create: (_) => UserBloc()),
         BlocProvider(create: (_) => ThemeCubit()),
-        //BlocProvider(create: (_) => NotificationBloc()),
       ],
       child: const AppMaterial(),
     );
   }
 }
 
-class AppMaterial extends StatelessWidget {
+class AppMaterial extends StatefulWidget {
   const AppMaterial({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  State<AppMaterial> createState() => _AppMaterialState();
+}
+
+class _AppMaterialState extends State<AppMaterial> with WidgetsBindingObserver {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    _setupFirebaseMessaging();
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      // Reload necessary data when app is resumed
+      context.read<TransactionBloc>().add(const LoadTransactionsEvent());
+      context.read<NotificationBloc>().add(const LoadNotifications());
+    }
+  }
+
+  void _setupFirebaseMessaging() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final chatRoomId = message.data['chatRoomId'];
       if (message.notification != null) {
@@ -101,16 +130,18 @@ class AppMaterial extends StatelessWidget {
         );
       }
     });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeData>(
       builder: (context, theme) {
-        return SafeArea(
-          child: MaterialApp.router(
-            theme: theme.copyWith(
-              textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
-            ),
-            debugShowCheckedModeBanner: false,
-            routerConfig: router,
+        return MaterialApp.router(
+          theme: theme.copyWith(
+            textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
           ),
+          debugShowCheckedModeBanner: false,
+          routerConfig: router,
         );
       },
     );
