@@ -52,14 +52,16 @@ class _LoginScreenState extends State<LoginScreen> {
     if (_formKey.currentState!.validate()) {
       setState(() => _isLoading = true);
       try {
-        final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
-          email: _emailController.text.trim(),
-          password: _passwordController.text,
-        );
-        final userDoc = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(credential.user!.uid)
-            .get();
+        final credential = await FirebaseAuth.instance
+            .signInWithEmailAndPassword(
+              email: _emailController.text.trim(),
+              password: _passwordController.text,
+            );
+        final userDoc =
+            await FirebaseFirestore.instance
+                .collection('users')
+                .doc(credential.user!.uid)
+                .get();
 
         if (!userDoc.exists || userDoc.data() == null) {
           throw Exception('User document does not exist or is invalid');
@@ -87,15 +89,15 @@ class _LoginScreenState extends State<LoginScreen> {
         context.read<UserBloc>().add(UpdateUserEvent(userModel));
       } on FirebaseAuthException catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: ${e.message}')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Login failed: ${e.message}')));
         setState(() => _isLoading = false);
       } catch (e) {
         if (!mounted) return;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(SnackBar(content: Text('Error: $e')));
         setState(() => _isLoading = false);
       }
     }
@@ -103,152 +105,147 @@ class _LoginScreenState extends State<LoginScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<UserBloc, UserState>(
-      listener: (context, state) {
-        if (state is UserLoaded) {
-          if (state.user.helper) {
-            context.go(ProfileOnlineSupportHelperScreen.routeName);
-          } else {
-            context.go(HomeScreen.routeName);
+    return WillPopScope(
+      onWillPop: () async => false,
+      child: BlocListener<UserBloc, UserState>(
+        listener: (context, state) {
+          if (state is UserLoaded) {
+            if (state.user.helper) {
+              context.go(ProfileOnlineSupportHelperScreen.routeName);
+            } else {
+              context.go(HomeScreen.routeName);
+            }
+          } else if (state is UserError) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.message)));
+            setState(() {
+              _isLoading = false;
+            });
           }
-        } else if (state is UserError) {
-          ScaffoldMessenger.of(
-            context,
-          ).showSnackBar(SnackBar(content: Text(state.message)));
-          setState(() {
-            _isLoading = false;
-          });
-        }
-
-      },
-      child: Scaffold(
-        backgroundColor: AppColors.caribbeanGreen,
-        body: Container(
+        },
+        child: Scaffold(
+          backgroundColor: AppColors.caribbeanGreen,
+          body: Container(
             padding: SharedLayout.getScreenPadding(context),
-            child: buildBodyLogin(context)),
+            child: buildBodyLogin(context),
+          ),
+        ),
       ),
     );
   }
 
   Widget buildBodyLogin(BuildContext context) {
     return Stack(
-        children: [
-          SafeArea(
-            child: Column(
-              children: [
-                const LoginHeader(),
-                Expanded(
-                  child: Container(
-                    width: double.infinity,
-                    decoration: const BoxDecoration(
-                      color: AppColors.honeydew,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.circular(48),
-                        topRight: Radius.circular(48),
-                      ),
+      children: [
+        SafeArea(
+          child: Column(
+            children: [
+              const LoginHeader(),
+              Expanded(
+                child: Container(
+                  width: double.infinity,
+                  decoration: const BoxDecoration(
+                    color: AppColors.honeydew,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(48),
+                      topRight: Radius.circular(48),
                     ),
-                    child: SingleChildScrollView(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 24,
-                          vertical: 32,
-                        ),
-                        child: Form(
-                          key: _formKey,
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.center,
-                            children: [
-                              LoginFormFields(
-                                emailController: _emailController,
-                                passwordController: _passwordController,
-                                obscurePassword: _obscurePassword,
-                                onTogglePassword: () {
-                                  setState(() {
-                                    _obscurePassword = !_obscurePassword;
-                                  });
+                  ),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 32,
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            LoginFormFields(
+                              emailController: _emailController,
+                              passwordController: _passwordController,
+                              obscurePassword: _obscurePassword,
+                              onTogglePassword: () {
+                                setState(() {
+                                  _obscurePassword = !_obscurePassword;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 32),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 40),
+                              child: Column(
+                                children: [
+                                  LoginButton(
+                                    onPressed: _isLoading ? null : _submitForm,
+                                    isLoading: _isLoading,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  ForgotPasswordButton(
+                                    onPressed:
+                                        _isLoading
+                                            ? null
+                                            : () {
+                                              context.push(
+                                                ForgetPasswordScreen.routeName,
+                                              );
+                                            },
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 15),
+                              child: SignUpButton(
+                                onPressed: () {
+                                  context.go(SignUpScreen.routeName);
                                 },
                               ),
-                              const SizedBox(height: 32),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 40),
-                                child: Column(
-                                  children: [
-                                    LoginButton(
-                                      onPressed:
-                                          _isLoading ? null : _submitForm,
-                                      isLoading: _isLoading,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    ForgotPasswordButton(
-                                      onPressed:
-                                          _isLoading
-                                              ? null
-                                              : () {
-                                                context.push(
-                                                  ForgetPasswordScreen
-                                                      .routeName,
-                                                );
-                                              },
-                                    ),
-                                  ],
-                                ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: FingerprintAccess(),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 20),
+                              child: SocialLoginSection(
+                                isFacebookHovered: _isFacebookHovered,
+                                isGoogleHovered: _isGoogleHovered,
+                                onFacebookHover:
+                                    (v) =>
+                                        setState(() => _isFacebookHovered = v),
+                                onGoogleHover:
+                                    (v) => setState(() => _isGoogleHovered = v),
+                                onFacebookTap:
+                                    () =>
+                                        _launchURL('https://www.facebook.com'),
+                                onGoogleTap:
+                                    () => _launchURL('https://www.google.com'),
                               ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 15),
-                                child: SignUpButton(
-                                  onPressed: () {
-                                    context.go(SignUpScreen.routeName);
-                                  },
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child: FingerprintAccess(),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.only(top: 20),
-                                child: SocialLoginSection(
-                                  isFacebookHovered: _isFacebookHovered,
-                                  isGoogleHovered: _isGoogleHovered,
-                                  onFacebookHover:
-                                      (v) => setState(
-                                        () => _isFacebookHovered = v,
-                                      ),
-                                  onGoogleHover:
-                                      (v) => setState(
-                                        () => _isGoogleHovered = v,
-                                      ),
-                                  onFacebookTap:
-                                      () => _launchURL(
-                                        'https://www.facebook.com',
-                                      ),
-                                  onGoogleTap:
-                                      () => _launchURL(
-                                        'https://www.google.com',
-                                      ),
-                                ),
-                              ),
-                              const Padding(
-                                padding: EdgeInsets.only(top: 20),
-                                child: SignUpPrompt(),
-                              ),
-                            ],
-                          ),
+                            ),
+                            const Padding(
+                              padding: EdgeInsets.only(top: 20),
+                              child: SignUpPrompt(),
+                            ),
+                          ],
                         ),
                       ),
                     ),
                   ),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-          if (_isLoading)
-            Container(
-              color: Colors.black.withValues(alpha: 0.3),
-              child: Center(child: LoadingUtils.buildSpinKitSpinningLines()),
-            ),
-        ],
-      );
+        ),
+        if (_isLoading)
+          Container(
+            color: Colors.black.withValues(alpha: 0.3),
+            child: Center(child: LoadingUtils.buildSpinKitSpinningLines()),
+          ),
+      ],
+    );
   }
 }
 

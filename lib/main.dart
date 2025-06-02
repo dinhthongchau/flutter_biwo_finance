@@ -35,7 +35,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const AppProviders();
+    return const SafeArea(child: AppProviders());
   }
 }
 
@@ -74,43 +74,18 @@ class AppProviders extends StatelessWidget {
         BlocProvider<HomeBloc>(create: (context) => HomeBloc()),
         BlocProvider(create: (_) => UserBloc()),
         BlocProvider(create: (_) => ThemeCubit()),
+        //BlocProvider(create: (_) => NotificationBloc()),
       ],
       child: const AppMaterial(),
     );
   }
 }
 
-class AppMaterial extends StatefulWidget {
+class AppMaterial extends StatelessWidget {
   const AppMaterial({super.key});
 
   @override
-  State<AppMaterial> createState() => _AppMaterialState();
-}
-
-class _AppMaterialState extends State<AppMaterial> with WidgetsBindingObserver {
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-    _setupFirebaseMessaging();
-  }
-
-  @override
-  void dispose() {
-    WidgetsBinding.instance.removeObserver(this);
-    super.dispose();
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    if (state == AppLifecycleState.resumed) {
-      // Reload necessary data when app is resumed
-      context.read<TransactionBloc>().add(const LoadTransactionsEvent());
-      context.read<NotificationBloc>().add(const LoadNotifications());
-    }
-  }
-
-  void _setupFirebaseMessaging() {
+  Widget build(BuildContext context) {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       final chatRoomId = message.data['chatRoomId'];
       if (message.notification != null) {
@@ -130,18 +105,16 @@ class _AppMaterialState extends State<AppMaterial> with WidgetsBindingObserver {
         );
       }
     });
-  }
-
-  @override
-  Widget build(BuildContext context) {
     return BlocBuilder<ThemeCubit, ThemeData>(
       builder: (context, theme) {
-        return MaterialApp.router(
-          theme: theme.copyWith(
-            textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
+        return SafeArea(
+          child: MaterialApp.router(
+            theme: theme.copyWith(
+              textTheme: GoogleFonts.poppinsTextTheme(theme.textTheme),
+            ),
+            debugShowCheckedModeBanner: false,
+            routerConfig: router,
           ),
-          debugShowCheckedModeBanner: false,
-          routerConfig: router,
         );
       },
     );
