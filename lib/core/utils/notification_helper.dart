@@ -1,6 +1,7 @@
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter/material.dart';
 import 'package:finance_management/presentation/routes.dart';
+import 'package:finance_management/presentation/shared_data.dart';
 
 class NotificationHelper {
   static final _notifications = FlutterLocalNotificationsPlugin();
@@ -16,7 +17,7 @@ class NotificationHelper {
           final chatRoomId = response.payload;
           // Navigate to chat screen with chatRoomId
           router.go(
-            '/profile-online-support-helper-center?chatRoomId=$chatRoomId',
+            '${ProfileOnlineSupportHelperCenterScreen.routeName}?chatRoomId=$chatRoomId',
           );
         }
       },

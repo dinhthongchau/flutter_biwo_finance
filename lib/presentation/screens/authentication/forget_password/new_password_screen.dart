@@ -218,7 +218,8 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                                                 .isNotEmpty
                                         ? () {
                                           context.go(
-                                            '/password-changed-splash',
+                                            PasswordChangedSplashScreen
+                                                .routeName,
                                           );
                                         }
                                         : null,
