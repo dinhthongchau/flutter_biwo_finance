@@ -1,3 +1,4 @@
+import 'package:finance_management/presentation/screens/chatbot_finance/chatbot_finance_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:finance_management/presentation/shared_data.dart';
@@ -187,12 +188,18 @@ final router = GoRouter(
                     child: HomeScreen(
                       notificationsScreenPath:
                       '${HomeScreen.routeName}${NotificationScreen.routeName}',
+                      chatbotFinanceScreenPath:
+                      '${HomeScreen.routeName}${ChatbotFinanceScreen.routeName}',
                     ),
                   ),
               routes: [
                 GoRoute(
                   path: NotificationScreen.routeName,
                   builder: (context, state) => const NotificationScreen(),
+                ),
+                GoRoute(
+                  path: ChatbotFinanceScreen.routeName,
+                  builder: (context, state) =>  ChatbotFinanceScreen(),
                 ),
               ],
             ),

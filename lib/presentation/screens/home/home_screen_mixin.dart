@@ -6,6 +6,260 @@ import 'package:intl/intl.dart';
 import 'package:finance_management/presentation/shared_data.dart';
 
 mixin HomeScreenMixin {
+  Widget buildFloatingActionButtonChatbotFinance(
+    BuildContext context,
+    chatbotFinanceScreenPath,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 100),
+      child: GestureDetector(
+        onTap: () {
+          context.push(chatbotFinanceScreenPath);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.caribbeanGreen, AppColors.oceanBlue],
+            ),
+            borderRadius: BorderRadius.circular(28),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.oceanBlue.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Robot icon
+              Container(
+                width: 32,
+                height: 32,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Stack(
+                  children: [
+                    // Robot eyes
+                    Positioned(
+                      top: 8,
+                      left: 8,
+                      child: Container(
+                        width: 3,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: AppColors.oceanBlue,
+                          borderRadius: BorderRadius.circular(1.5),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 8,
+                      right: 8,
+                      child: Container(
+                        width: 3,
+                        height: 3,
+                        decoration: BoxDecoration(
+                          color: AppColors.oceanBlue,
+                          borderRadius: BorderRadius.circular(1.5),
+                        ),
+                      ),
+                    ),
+                    // Robot mouth
+                    Positioned(
+                      bottom: 8,
+                      left: 10,
+                      right: 10,
+                      child: Container(
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: AppColors.caribbeanGreen,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                    ),
+                    // Robot antenna
+                    Positioned(
+                      top: 2,
+                      left: 14,
+                      child: Container(
+                        width: 2,
+                        height: 4,
+                        color: AppColors.fenceGreen,
+                      ),
+                    ),
+                    Positioned(
+                      top: 0,
+                      left: 13,
+                      child: Container(
+                        width: 4,
+                        height: 4,
+                        decoration: BoxDecoration(
+                          color: AppColors.fenceGreen,
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 12),
+              // Chat AI text
+              Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text(
+                    'Chat AI',
+                    style: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Text(
+                    'Trợ lý tài chính',
+                    style: TextStyle(
+                      color: Colors.white70,
+                      fontSize: 11,
+                      fontWeight: FontWeight.w400,
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(width: 8),
+              // Status indicator
+              Container(
+                width: 8,
+                height: 8,
+                decoration: BoxDecoration(
+                  color: AppColors.honeydew,
+                  borderRadius: BorderRadius.circular(4),
+                  boxShadow: [
+                    BoxShadow(
+                      color: AppColors.honeydew.withOpacity(0.5),
+                      blurRadius: 4,
+                      spreadRadius: 1,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  // Phiên bản compact hơn nếu cần
+  Widget buildFloatingActionButtonChatbotFinanceCompact(
+    BuildContext context,
+    chatbotFinanceScreenPath,
+  ) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 100),
+      child: GestureDetector(
+        onTap: () {
+          context.push(chatbotFinanceScreenPath);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.caribbeanGreen, AppColors.oceanBlue],
+            ),
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: [
+              BoxShadow(
+                color: AppColors.oceanBlue.withOpacity(0.3),
+                blurRadius: 12,
+                offset: const Offset(0, 6),
+              ),
+            ],
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Robot icon nhỏ gọn
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                child: Stack(
+                  children: [
+                    Positioned(
+                      top: 6,
+                      left: 6,
+                      child: Container(
+                        width: 2,
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: AppColors.oceanBlue,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      top: 6,
+                      right: 6,
+                      child: Container(
+                        width: 2,
+                        height: 2,
+                        decoration: BoxDecoration(
+                          color: AppColors.oceanBlue,
+                          borderRadius: BorderRadius.circular(1),
+                        ),
+                      ),
+                    ),
+                    Positioned(
+                      bottom: 6,
+                      left: 8,
+                      right: 8,
+                      child: Container(
+                        height: 1,
+                        color: AppColors.caribbeanGreen,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(width: 10),
+              // Text rõ ràng
+              const Text(
+                'Chat AI',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+              const SizedBox(width: 6),
+              // Online indicator
+              Container(
+                width: 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: AppColors.honeydew,
+                  borderRadius: BorderRadius.circular(3),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
   Widget buildBody(BuildContext context) {
     return SingleChildScrollView(
       child: Column(

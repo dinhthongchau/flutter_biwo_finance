@@ -785,11 +785,18 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
             ? int.tryParse(updatedGoalSave!)
             : null,
       );
-      context.read<CategoryBloc>().add(
-        UpdateCategory(updatedCategory),
-      );
-      context.pop();
-      LoadingUtils.showLoading(context, true);
+      if ( context.mounted ){
+        context.read<CategoryBloc>().add(
+          UpdateCategory(updatedCategory),
+        );
+        context.read<TransactionBloc>().add(const LoadTransactionsEvent());
+        context.read<AddTransactionBloc>().add(const LoadCategoriesEvent());
+        context.read<SearchBloc>().add(const ApplyFiltersEvent());
+        context.pop();
+        LoadingUtils.showLoading(context, true);
+      }
+
+
       Future.delayed(const Duration(seconds: 1), () {
         if (context.mounted) {
           LoadingUtils.showLoading(context, false);

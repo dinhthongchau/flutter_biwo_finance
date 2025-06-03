@@ -10,19 +10,18 @@ part 'category_state.dart';
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepository categoryRepository;
 
-  CategoryBloc(this.categoryRepository) : super(const CategoryInitial(
-    categories: [],
-  )) {
+  CategoryBloc(this.categoryRepository)
+    : super(const CategoryInitial(categories: [])) {
     on<LoadCategories>(_onLoadCategories);
     on<UpdateCategory>(_onUpdateCategory);
     on<DeleteCategory>(_onDeleteCategory);
     on<AddCategory>(_onAddCategory);
     on<InitializeCategories>(_onInitializeCategories);
-    
+
     // Khởi tạo danh mục khi bloc được tạo
     add(const InitializeCategories());
   }
-  
+
   Future<void> _onInitializeCategories(
     InitializeCategories event,
     Emitter<CategoryState> emit,
@@ -38,12 +37,14 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
 
   Future<void> _onLoadCategories(
-      LoadCategories event,
-      Emitter<CategoryState> emit,
-      ) async {
+    LoadCategories event,
+    Emitter<CategoryState> emit,
+  ) async {
     emit(const CategoryLoading());
     try {
-      final categories = await categoryRepository.getCategoriesByMoneyType(event.moneyType);
+      final categories = await categoryRepository.getCategoriesByMoneyType(
+        event.moneyType,
+      );
       if (categories.isEmpty) {
         throw Exception('No categories found');
       }
@@ -61,27 +62,37 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   }
 
   Future<void> _onUpdateCategory(
-      UpdateCategory event,
-      Emitter<CategoryState> emit,
-      ) async {
+    UpdateCategory event,
+    Emitter<CategoryState> emit,
+  ) async {
     emit(CategoryLoading.fromState(state: state));
     try {
-      await categoryRepository.updateCategory(event.category);
-      final updatedCategories = List<CategoryModel>.from(state.categories)
-        ..removeWhere((c) => c.id == event.category.id)
-        ..add(event.category);
+      // Lấy category cũ từ state
+      final oldCategory = state.categories.firstWhere(
+        (c) => c.id == event.category.id,
+      );
+      // Update category và toàn bộ transaction liên quan
+      await TransactionRepository().updateCategoryAndTransactions(
+        oldCategory,
+        event.category.categoryType,
+      );
+      final updatedCategories =
+          List<CategoryModel>.from(state.categories)
+            ..removeWhere((c) => c.id == event.category.id)
+            ..add(event.category);
+
       emit(CategorySuccess(categories: updatedCategories));
     } catch (e, stackTrace) {
-      String errorMessage = 'Failed to update category: ${e.toString()}';
+      String errorMessage = 'Failed to update category: e.toString()';
       debugPrint('Stack trace: $stackTrace');
       emit(CategoryError(errorMessage: errorMessage));
     }
   }
 
   Future<void> _onDeleteCategory(
-      DeleteCategory event,
-      Emitter<CategoryState> emit,
-      ) async {
+    DeleteCategory event,
+    Emitter<CategoryState> emit,
+  ) async {
     emit(CategoryLoading.fromState(state: state));
     try {
       await categoryRepository.deleteCategory(event.categoryId);
@@ -94,10 +105,11 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
       emit(CategoryError(errorMessage: errorMessage));
     }
   }
+
   Future<void> _onAddCategory(
-      AddCategory event,
-      Emitter<CategoryState> emit,
-      ) async {
+    AddCategory event,
+    Emitter<CategoryState> emit,
+  ) async {
     emit(CategoryLoading.fromState(state: state));
     try {
       await categoryRepository.addCategory(

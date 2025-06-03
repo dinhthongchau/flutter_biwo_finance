@@ -1,3 +1,4 @@
+import 'package:finance_management/presentation/widgets/widget/app_colors.dart';
 import 'package:flutter/material.dart';
 
 class ChatInputBar extends StatelessWidget {
@@ -66,6 +67,76 @@ class ChatInputBar extends StatelessWidget {
                       )
                       : const Icon(Icons.send, color: Colors.white),
               onPressed: isSending ? null : onSend,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+class ChatInputBarFinance extends StatelessWidget {
+  final TextEditingController controller;
+  final bool isSending;
+  final VoidCallback onSend;
+  const ChatInputBarFinance({
+    super.key,
+    required this.controller,
+    required this.isSending,
+    required this.onSend,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: MediaQuery.of(context).size.width * 0.95,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.04),
+            blurRadius: 8,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              controller: controller,
+              enabled: !isSending,
+              decoration: InputDecoration(
+                hintText: isSending ? 'Đang gửi...' : 'Nhập nội dung...',
+              ),
+              onSubmitted: (_) {
+                if (!isSending) onSend();
+              },
+            ),
+          ),
+          GestureDetector(
+            onTap: isSending ? null : onSend,
+            child: Container(
+              margin: const EdgeInsets.only(left: 8),
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
+                color: isSending ? Colors.grey : AppColors.oceanBlue,
+                borderRadius: BorderRadius.circular(18),
+              ),
+              child:
+              isSending
+                  ? const SizedBox(
+                width: 18,
+                height: 18,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2.2,
+                  valueColor: AlwaysStoppedAnimation<Color>(
+                    Colors.white,
+                  ),
+                ),
+              )
+                  : const Icon(Icons.send, color: Colors.white, size: 20),
             ),
           ),
         ],

@@ -10,6 +10,7 @@ class BottomNavigationBarScaffold extends StatelessWidget {
   final StatefulNavigationShell navigationShell;
 
   void _onItemTapped(int index, BuildContext context) {
+
     // Only go to branch if it's not the current index or force navigation to the same tab
     navigationShell.goBranch(
       index,
@@ -37,6 +38,17 @@ class BottomNavigationBarScaffold extends StatelessWidget {
       });
       //context.read<AnalysisBloc>().add(const ChangeTimeFilterEvent(TimeFilterAnalysis.daily));
     }
+    if (index == 0) {
+      Future.delayed(const Duration(milliseconds: 100), () {
+        if (context.mounted) {
+          context.read<TransactionBloc>().add(
+            const LoadTransactionsEvent(month: "All"),
+          );
+        }
+
+      });
+      //context.read<AnalysisBloc>().add(const ChangeTimeFilterEvent(TimeFilterAnalysis.daily));
+    }
   }
 
   @override
@@ -51,6 +63,10 @@ class BottomNavigationBarScaffold extends StatelessWidget {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             LoadingUtils.showLoading(context, false);
           });
+          print("Hello BlocListenerTransactionBloc");
+          context.read<TransactionBloc>().add(
+            const SelectFilterTypeEvent(null),
+          );
         } else if (state is TransactionError) {
           WidgetsBinding.instance.addPostFrameCallback((_) {
             LoadingUtils.showLoading(context, false);
@@ -70,14 +86,14 @@ class BottomNavigationBarScaffold extends StatelessWidget {
         child: LayoutBuilder(
           builder: (context, constraints) {
             final isWeb = constraints.maxWidth >= 800;
-            
+
             return Scaffold(
               extendBody: !isWeb,
-              body: isWeb 
+              body: isWeb
                 ? _buildWebLayout(context)
                 : navigationShell,
-              bottomNavigationBar: isWeb 
-                ? null 
+              bottomNavigationBar: isWeb
+                ? null
                 : _buildBottomNavigationBar(context),
             );
           }

@@ -13,6 +13,7 @@ class CategoryRepository {
     CategoryModel(5, MoneyType.expense, "Rent"),
     CategoryModel(6, MoneyType.expense, "Gifts"),
     CategoryModel(7, MoneyType.expense, "Entertainment"),
+    CategoryModel(80, MoneyType.expense, "Other Expense"),
     CategoryModel(11, MoneyType.income, "Salary"),
     CategoryModel(12, MoneyType.income, "Other Income"),
     CategoryModel(8, MoneyType.save, "Travel", goalSave: 1000),
@@ -245,5 +246,13 @@ class CategoryRepository {
     _cachedCategories = [];
     _isInitialized = false;
     _log('Category cache cleared');
+  }
+  // Thêm hàm getCategories để lấy danh mục từ Firestore hoặc cache
+  Future<List<CategoryModel>> getCategories(String userId) async {
+    if (!_isInitialized) {
+      await initializeDefaultCategories(); // Khởi tạo danh mục nếu chưa có
+    }
+    _log('Returning ${ _cachedCategories.length} categories for user $userId');
+    return List.from(_cachedCategories); // Trả về bản sao của cache
   }
 }
