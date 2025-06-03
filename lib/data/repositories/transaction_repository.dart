@@ -36,7 +36,11 @@ class TransactionRepository {
       final user = await UserRepository().getUserById(authUser.uid);
       if (user == null) return;
 
-      final categories = CategoryRepository.getAllCategories();
+      await CategoryRepository().initializeDefaultCategories();
+      final categories = await CategoryRepository.getAllCategories();
+      debugPrint(
+        'All categories: ${categories.map((e) => '${e.categoryType} - ${e.moneyType}').toList()}',
+      );
       final snapshot =
           await FirebaseFirestore.instance
               .collection('transactions')
@@ -56,7 +60,17 @@ class TransactionRepository {
           (c) =>
               c.moneyType == moneyType &&
               c.categoryType == data['categoryType'],
-          orElse: () => categories.first,
+          orElse: () {
+            debugPrint(
+              '⚠️ Warning: Could not find category ${data['categoryType']} of type $moneyType',
+            );
+            // Tạo category tạm thời
+            return CategoryModel(
+              -1, // id đặc biệt
+              moneyType,
+              '[Deleted] ${data['categoryType']}',
+            );
+          },
         );
 
         transactions.add(

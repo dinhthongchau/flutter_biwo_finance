@@ -55,10 +55,10 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
     }
   }
 
-  Container buildFloatingCategoryList(BuildContext context) {
+  Widget buildFloatingCategoryList(BuildContext context) {
     return Container(
       alignment: Alignment.bottomCenter,
-      padding: const EdgeInsets.only(bottom: 80.0, left: 150),
+      padding: const EdgeInsets.only(bottom: 80.0),
       child: GestureDetector(
         onTap: () {
           context.push(AddTransactionScreen.routeName, extra: (widget as CategoryListScreen).moneyType);
@@ -431,49 +431,7 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                     GestureDetector(
                       onTap: () {
                         if (updatedName != null && updatedName!.isNotEmpty) {
-                          final categories =
-                          CategoryRepository.getAllCategories();
-                          if (categories.any(
-                                (c) =>
-                            c.categoryType.toLowerCase() ==
-                                updatedName!.toLowerCase() &&
-                                c.moneyType == category.moneyType &&
-                                c.id != category.id,
-                          )) {
-                            SnackbarUtils.showNoticeSnackbar(
-                              context,
-                              'Category already exists',
-                              true,
-                            );
-                            return;
-                          }
-                          if (category.moneyType == MoneyType.save &&
-                              (updatedGoalSave == null ||
-                                  updatedGoalSave!.isEmpty)) {
-                            SnackbarUtils.showNoticeSnackbar(
-                              context,
-                              'Goal Save is required',
-                              true,
-                            );
-                            return;
-                          }
-                          final updatedCategory = CategoryModel(
-                            category.id,
-                            category.moneyType,
-                            updatedName!,
-                            goalSave:
-                            category.moneyType == MoneyType.save
-                                ? int.tryParse(updatedGoalSave!)
-                                : null,
-                          );
-                          context.read<CategoryBloc>().add(
-                            UpdateCategory(updatedCategory),
-                          );
-                          context.pop();
-                          DialogUtils.isSuccessDialog(
-                            context,
-                            'Updated $updatedName',
-                          );
+                          _updateCategory(context, category, updatedName!, updatedGoalSave);
                         }
                       },
                       child: Container(
@@ -502,10 +460,16 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                           DeleteCategory(category.id),
                         );
                         context.pop();
-                        DialogUtils.isSuccessDialog(
-                          context,
-                          'Deleted ${category.categoryType}',
-                        );
+                        LoadingUtils.showLoading(context, true);
+                        Future.delayed(const Duration(seconds: 1), () {
+                          if (context.mounted) {
+                            LoadingUtils.showLoading(context, false);
+                            DialogUtils.isSuccessDialog(
+                              context,
+                              'Deleted ${category.categoryType}',
+                            );
+                          }
+                        });
                       },
                       child: Container(
                         width: double.infinity * 0.8,
@@ -680,40 +644,9 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
                     ],
                     const SizedBox(height: 24),
                     GestureDetector(
-                      onTap: () {
+                      onTap: () async {
                         if (inputName != null && inputName!.isNotEmpty) {
-                          final categories =
-                          CategoryRepository.getAllCategories();
-                          if (categories.any(
-                                (c) =>
-                            c.categoryType.toLowerCase() ==
-                                inputName!.toLowerCase() &&
-                                c.moneyType == moneyType,
-                          )) {
-                            SnackbarUtils.showNoticeSnackbar(
-                              context,
-                              'Category already exists',
-                              true,
-                            );
-                            return;
-                          }
-                          if (moneyType == MoneyType.save &&
-                              (inputGoalSave == null ||
-                                  inputGoalSave!.isEmpty)) {
-                            SnackbarUtils.showNoticeSnackbar(
-                              context,
-                              'Goal Save is required',
-                              true,
-                            );
-                            return;
-                          }
-                          context.pop({
-                            'name': inputName,
-                            'goalSave':
-                            inputGoalSave != null
-                                ? int.tryParse(inputGoalSave!)
-                                : null,
-                          });
+                          _addNewCategory(context, inputName!, moneyType, inputGoalSave);
                         }
                       },
                       child: Container(
@@ -781,61 +714,177 @@ mixin CategoryListScreenMixin<T extends StatefulWidget> on State<T>  {
             return;
           }
 
-          final newId =
-          CategoryRepository.getAllCategories().isEmpty
-              ? 1
-              : CategoryRepository.getAllCategories()
-              .map((c) => c.id)
-              .reduce((a, b) => a > b ? a : b) +
-              1;
-          final newCategory = CategoryModel(
-            newId,
-            moneyType,
-            newCategoryName!,
-            goalSave: goalSave,
-          );
-
-          if (context.mounted) {
-            context.read<CategoryBloc>().add(AddCategory(newCategory));
-            DialogUtils.isSuccessDialog(context, 'Added $newCategoryName');
-          }
+          _createNewCategory(context, newCategoryName!, moneyType, goalSave);
         }
       },
-      child: Transform.scale(
-        scale: 1.05,
-        child: Opacity(
-          opacity: 1.0,
-          child: Container(
-            decoration: BoxDecoration(
-              color: AppColors.caribbeanGreen,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(
-                  color: AppColors.fenceGreen.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 4),
-                ),
-              ],
+      child: Container(
+        decoration: BoxDecoration(
+          color: AppColors.caribbeanGreen,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: AppColors.fenceGreen.withValues(alpha: 0.1),
+              blurRadius: 5,
+              offset: const Offset(0, 3),
             ),
-            child: const Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(Icons.add, size: 40, color: AppColors.honeydew),
-                SizedBox(height: 8),
-                Text(
-                  'Add More',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w500,
-                    color: AppColors.honeydew,
-                  ),
-                ),
-              ],
+          ],
+        ),
+        child: const Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.add, size: 40, color: AppColors.honeydew),
+            SizedBox(height: 8),
+            Text(
+              'Add More',
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w500,
+                color: AppColors.honeydew,
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );
+  }
+
+  Future<void> _updateCategory(BuildContext context, CategoryModel category, String updatedName, String? updatedGoalSave) async {
+    try {
+      final categories = await CategoryRepository.getAllCategories();
+      if (categories.any(
+            (c) =>
+        c.categoryType.toLowerCase() ==
+            updatedName.toLowerCase() &&
+            c.moneyType == category.moneyType &&
+            c.id != category.id,
+      )) {
+        SnackbarUtils.showNoticeSnackbar(
+          context,
+          'Category already exists',
+          true,
+        );
+        return;
+      }
+      if (category.moneyType == MoneyType.save &&
+          (updatedGoalSave == null ||
+              updatedGoalSave.isEmpty)) {
+        SnackbarUtils.showNoticeSnackbar(
+          context,
+          'Goal Save is required',
+          true,
+        );
+        return;
+      }
+      final updatedCategory = CategoryModel(
+        category.id,
+        category.moneyType,
+        updatedName,
+        goalSave:
+        category.moneyType == MoneyType.save
+            ? int.tryParse(updatedGoalSave!)
+            : null,
+      );
+      context.read<CategoryBloc>().add(
+        UpdateCategory(updatedCategory),
+      );
+      context.pop();
+      LoadingUtils.showLoading(context, true);
+      Future.delayed(const Duration(seconds: 1), () {
+        if (context.mounted) {
+          LoadingUtils.showLoading(context, false);
+          DialogUtils.isSuccessDialog(
+            context,
+            'Updated $updatedName',
+          );
+        }
+      });
+    } catch (e) {
+      debugPrint('Error updating category: $e');
+      SnackbarUtils.showNoticeSnackbar(
+        context,
+        'Error updating category',
+        true,
+      );
+    }
+  }
+
+  Future<void> _createNewCategory(BuildContext context, String name, MoneyType moneyType, int? goalSave) async {
+    try {
+      final categories = await CategoryRepository.getAllCategories();
+      final newId = categories.isEmpty
+          ? 1
+          : categories.map((c) => c.id).reduce((a, b) => a > b ? a : b) + 1;
+          
+      final newCategory = CategoryModel(
+        newId,
+        moneyType,
+        name,
+        goalSave: goalSave,
+      );
+
+      if (context.mounted) {
+        context.read<CategoryBloc>().add(AddCategory(newCategory));
+        LoadingUtils.showLoading(context, true);
+        Future.delayed(const Duration(seconds: 1), () {
+          if (context.mounted) {
+            LoadingUtils.showLoading(context, false);
+            DialogUtils.isSuccessDialog(context, 'Added $name');
+          }
+        });
+      }
+    } catch (e) {
+      debugPrint('Error creating category: $e');
+      if (context.mounted) {
+        SnackbarUtils.showNoticeSnackbar(
+          context,
+          'Error creating category',
+          true,
+        );
+      }
+    }
+  }
+
+  Future<void> _addNewCategory(BuildContext context, String inputName, MoneyType moneyType, String? inputGoalSave) async {
+    try {
+      final categories = await CategoryRepository.getAllCategories();
+      if (categories.any(
+            (c) =>
+        c.categoryType.toLowerCase() ==
+            inputName.toLowerCase() &&
+            c.moneyType == moneyType,
+      )) {
+        SnackbarUtils.showNoticeSnackbar(
+          context,
+          'Category already exists',
+          true,
+        );
+        return;
+      }
+      if (moneyType == MoneyType.save &&
+          (inputGoalSave == null ||
+              inputGoalSave.isEmpty)) {
+        SnackbarUtils.showNoticeSnackbar(
+          context,
+          'Goal Save is required',
+          true,
+        );
+        return;
+      }
+      context.pop({
+        'name': inputName,
+        'goalSave':
+        inputGoalSave != null
+            ? int.tryParse(inputGoalSave)
+            : null,
+      });
+    } catch (e) {
+      debugPrint('Error checking category: $e');
+      SnackbarUtils.showNoticeSnackbar(
+        context,
+        'Error checking category',
+        true,
+      );
+    }
   }
 }

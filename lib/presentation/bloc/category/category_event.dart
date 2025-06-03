@@ -7,6 +7,13 @@ abstract class CategoryEvent extends Equatable {
   List<Object?> get props => [];
 }
 
+class InitializeCategories extends CategoryEvent {
+  const InitializeCategories();
+  
+  @override
+  List<Object?> get props => [];
+}
+
 class LoadCategories extends CategoryEvent {
   final MoneyType moneyType;
 

@@ -10,13 +10,31 @@ part 'category_state.dart';
 class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
   final CategoryRepository categoryRepository;
 
-  CategoryBloc(this.categoryRepository) : super( const CategoryInitial(
+  CategoryBloc(this.categoryRepository) : super(const CategoryInitial(
     categories: [],
   )) {
     on<LoadCategories>(_onLoadCategories);
     on<UpdateCategory>(_onUpdateCategory);
     on<DeleteCategory>(_onDeleteCategory);
     on<AddCategory>(_onAddCategory);
+    on<InitializeCategories>(_onInitializeCategories);
+    
+    // Khởi tạo danh mục khi bloc được tạo
+    add(const InitializeCategories());
+  }
+  
+  Future<void> _onInitializeCategories(
+    InitializeCategories event,
+    Emitter<CategoryState> emit,
+  ) async {
+    try {
+      await categoryRepository.initializeDefaultCategories();
+      // Không cần emit state ở đây vì chúng ta sẽ tải danh mục khi cần
+    } catch (e, stackTrace) {
+      debugPrint('Error initializing categories: $e');
+      debugPrint('Stack trace: $stackTrace');
+      // Không emit error state ở đây để tránh hiển thị lỗi khi khởi động app
+    }
   }
 
   Future<void> _onLoadCategories(
