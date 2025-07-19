@@ -6,7 +6,8 @@ Finance Management is a modern mobile application built with Flutter, designed t
 
 ## Screenshots
 
-![Uploading image.png…]()
+<img width="1486" height="1167" alt="image" src="https://github.com/user-attachments/assets/1b454d06-9d72-4db9-aef1-1c69a2ebf425" />
+
 
 
 ---
